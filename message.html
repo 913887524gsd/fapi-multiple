@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>game</title>
+    <style>
+        label,
+        input,
+        textarea,
+        button,
+        #result{
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* input[type="number"], */
+        input,
+        textarea {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px;
+            margin: 2px 0;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result div {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0;
+            border-bottom: 1px solid #ccc;
+            width: 100%;
+        }
+        
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0;
+            border-bottom: 1px solid #ccc;
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div>
+        <div>可以用手机直接打开(suitable for mobile)</div>
+        <div>你的等级(my level)</div>
+        <input id="my_level" type="number" value="14" />
+    </div>
+    <div>
+        <div>你的土豆(my gold potato)</div>
+        <input id="my_gp" type="number" value="150" />
+    </div>
+    <div>
+        <div>你的经验(my exp)</div>
+        <input id="my_xp" type="number" value="15" />
+    </div>
+    <div>
+        <div>加点(my points)</div>
+        <input id="my_points" value="14,2,8,18,5" />
+    </div>
+    <div>
+        <div>BOSS等级(boss level)</div>
+        <input id="boss_level" type="number" value="21" />
+    </div>
+    <div>
+        <div>BUFF攻击(buff atk = point/20000)</div>
+        <input id="bonus_atk" type="number" value="0.67" />
+    </div>
+    <div>
+        <div>BUFF经验(buff xp = point/20000)</div>
+        <input id="bonus_xp" type="number" value="0.10" />
+    </div>
+    <div>
+        <div>BUFF土豆(buff gp = point/20000)</div>
+        <input id="bonus_gp" type="number" value="0.15" />
+    </div>
+
+    <div>
+        <div>排名伤害, 填写第1、3、10、50、250、1000、2500、99999名的伤害 </div>
+        <div>对了,1000以后的只能猜,除非你有2500名的朋友 </div>
+        <div>fill in the damages of rank 1、3、10、50、250、1000、2500、99999</div>
+        <div>notice that if your damage < damage of rank 99999, gp and xp will be 0</div>
+        <textarea id="rank_scores" type="text"
+            style="width: 100%; height: 78px; font-size: 25px;">3000,2800,2700,2600,2100,2000,1800,1500</textarea>
+    </div>
+
+    <div>
+        <button onclick="cmd()">执行(do cmd)</button>
+    </div>
+
+    <div>
+        <button onclick="show_cost()">查看继续升级消耗(show next cost)</button>
+    </div>
+
+    <div>
+        <div id="result"></div>
+    </div>
+
+
+
+</body>
+
+<script>
+
+    var my_level = 0
+    var my_gp = 0
+    var my_xp = 0
+    var my_points = 0
+    var boss_level = 0
+    var bonus_atk = 0
+    var bonus_gp = 0
+    var bonus_xp = 0
+    var rank_scores = 0
+
+
+    function shop_cost(which, level) {
+        if (which == 0) {
+            return Math.floor((5 + level) * (1 + 0.1 * level))
+        }
+
+        if (which == 1) {
+            return Math.floor((25 + 25 * level) * (Math.pow(1.6, level)))
+        }
+
+        if (which == 4) {
+            return Math.floor((10) * (Math.pow(2, level)))
+        }
+
+        return Math.floor((5 + level) * (1 + 0.05 * level))
+    }
+
+
+    function cal_damage(points) {
+        let atk1 = 20 + points[0] * 2 + my_level
+        let num = 8 + points[4]
+        let total = 0
+        for (let i = 0; i < num; i++) {
+            let atk2 = Math.ceil((atk1 + i * (points[1] + 1)) * (1 + bonus_atk))
+            let atk3 = Math.ceil(atk2 * (1 + my_level / 100))
+            total += atk3
+        }
+        return total
+    }
+
+    function cal_scale(damage) {
+        let scale = 1.35
+        for (i = 0; i < rank_scores.length; i++) {
+            let rd = rank_scores[i]
+            console.log(damage, rd)
+            if (damage < rd) {
+                scale -= 0.05
+            } else {
+                return [scale, i]
+            }
+        }
+        return [0, 7]
+    }
+
+    function cal_reward(points) {
+
+        damage = cal_damage(points)
+        let [rank_scale, rank] = cal_scale(damage)
+        let xp = Math.ceil((10 + boss_level) * (1 + 0.02 * points[2]) * Math.pow(1.05, boss_level) * rank_scale)
+        xp = Math.ceil(xp * (1 + bonus_xp))
+        let gp = Math.ceil((10 + boss_level) * (1 + 0.02 * points[3]) * Math.pow(1.05, boss_level) * rank_scale)
+        gp = Math.ceil(gp * (1 + bonus_gp))
+
+        return [xp, gp, rank]
+    }
+
+    function init_value(){
+        my_level = Number(document.getElementById('my_level').value)
+        my_gp = Number(document.getElementById('my_gp').value)
+        my_xp = Number(document.getElementById('my_xp').value)
+        boss_level = Number(document.getElementById('boss_level').value)
+        bonus_atk = Number(document.getElementById('bonus_atk').value)
+        bonus_gp = Number(document.getElementById('bonus_gp').value)
+        bonus_xp = Number(document.getElementById('bonus_xp').value)
+
+        my_points = document.getElementById('my_points').value
+        my_points = my_points.match(/([0-9]+)/g)
+        my_points = my_points.map(Number)
+
+        rank_scores = document.getElementById('rank_scores').value
+        rank_scores = rank_scores.match(/([0-9]+)/g)
+        rank_scores = rank_scores.map(Number)
+        save()
+    }
+
+    function save(){
+
+        let ids = ["my_level", "my_gp", "my_xp",
+            "boss_level",
+            "bonus_atk",
+            "bonus_gp",
+            "bonus_xp",
+            "my_points",
+            "rank_scores"
+            ]
+
+        for(let k of ids){
+            localStorage.setItem(k, document.getElementById(k).value)
+            console.log('save', document.getElementById(k).value)
+        }
+    }
+
+    function load(){
+        let ids = ["my_level", "my_gp", "my_xp",
+            "boss_level",
+            "bonus_atk",
+            "bonus_gp",
+            "bonus_xp",
+            "my_points",
+            "rank_scores"
+            ]
+
+        for(let k of ids){
+            console.log('load', localStorage.getItem(k))
+            let r = localStorage.getItem(k)
+            if(r != null){
+                document.getElementById(k).value = r
+            }
+        }
+    }
+
+    load()
+
+
+    function cmd() {
+        init_value()
+        let enums = enum_(my_points, my_gp, 0)
+
+        let results = []
+
+        for (let pair of enums) {
+            let [ps, rest_gp] = pair
+            let damage = cal_damage(ps)
+            let [xp, gp, rank] = cal_reward(ps)
+            rank = [1, 3, 10, 50, 250, 1000, 2500, 9999][rank]
+            results.push([damage, gp, xp, rest_gp, rank, ps])
+        }
+
+        results.sort((a, b) => { return b[0] - a[0] })
+
+        let result_dom = document.getElementById('result')
+        result_dom.innerHTML = ""
+
+        let ws = [15,15,15,15,15]
+        ws.push(100 - ws.reduce((a,b)=>a+b , 0))
+
+        let new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        let titles = ["伤害", "得土豆", "得经验", "剩土豆", "排名", "加点"]
+        for(let i=0;i<6;i++){
+            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
+        }
+        result_dom.appendChild(new_div);
+        
+        new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        titles = ["damage", "get gp", "get xp", "rest gp", "rank", "points"]
+        for(let i=0;i<6;i++){
+            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
+        }
+        result_dom.appendChild(new_div);
+
+        for (let r of results) {
+            let new_div = document.createElement("div");
+
+            new_div.style = "display:flex;"
+            for(let i=0;i<6;i++){
+                new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r[i] +"</div>"
+            }
+            result_dom.appendChild(new_div);
+
+        }
+
+    }
+
+    function show_cost() {
+        init_value()
+        let result_dom = document.getElementById('result')
+        result_dom.innerHTML = ""
+
+        let ws = [16,16,16,16,16]
+        ws.push(100 - ws.reduce((a,b)=>a+b , 0))
+
+        let new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        let titles = ["你等级", "攻击+2", "连打系数", "加经验", "加土豆", "攻击次数"]
+        for(let i=0;i<6;i++){
+            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
+        }
+        result_dom.appendChild(new_div);
+
+        new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        titles = ["levelup", "atk+2", "c atk", "add xp", "add gp", "atk charge"]
+        for(let i=0;i<6;i++){
+            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
+        }
+        result_dom.appendChild(new_div);
+
+        for (let n=0;n<10;n++){ 
+            let new_div = document.createElement("div");
+            new_div.style = "display:flex;"
+
+            for(let i=0;i<6;i++){
+                let r = 0
+                if (i==0){
+                    r = level_exp(my_level + n)
+                }else{
+                    r = shop_cost(i-1, my_points[i-1]+n)
+                }
+
+                new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r +"</div>"
+            }
+            result_dom.appendChild(new_div);
+        }
+    }
+
+    function level_exp(n) {
+        return Math.floor((10 + n * 5) * Math.pow(1.02, n))
+    }
+
+    function enum_(points, gp, index = 0) {
+
+        let enough = []
+
+
+        for (let i = index; i < 5; i++) {
+            if (gp >= shop_cost(i, points[i])) {
+                enough.push(i)
+            }
+        }
+
+        if (enough.length == 0) {
+            console.log('end', points, gp)
+            return [[points, gp]]
+        }
+
+
+        let results = []
+        for (let i of enough) {
+            let _points = JSON.parse(JSON.stringify(points));
+            let cost = shop_cost(i, _points[i])
+            let _gp = gp - cost
+            _points[i] += 1;
+            results = results.concat(enum_(_points, _gp, i));
+        }
+
+        return results
+    }
+
+
+
+</script>
