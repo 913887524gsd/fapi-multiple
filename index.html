@@ -96,10 +96,17 @@
             style="width: 100%; height: 60px; font-size: 20px;">3000,2800,2700,2600,2100,2000,1800,1500</textarea>
     </div>
     <div>
-        <div>寻找伤害可能的加点方式，经验等级由‘你的等级’固定，土豆总数上限由‘你的土豆’限制</div>
+        <div>寻找伤害可能的加点方式，经验等级由‘你的等级’固定</div>
         <div>支持对多个伤害查找，伤害之间用逗号隔开</div>
-        <div>find points match input damage, exp level is fixed by my level, total gp is limited by my gold potato</div>
+        <div>find points match input damage, exp level is fixed by 'my level'</div>
         <div>support finding multiple damages, damages are splitted by comma</div>
+    </div>
+    <div style="display: inline-flex">
+        <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="if_limit_dmg_cost" type="checkbox"  checked="false">
+        <label style="white-space: nowrap; align-content: center; margin-right: 5px;">限制伤害花费(limit damage cost)</label>
+        <input id="limit_dmg_cost" type="number" value="1919">
+    </div>
+    <div>
         <textarea id="target_dmgs" type="text"
             style="width: 100%; height: 60px; font-size: 20px;">114,514</textarea>
     </div>
@@ -144,6 +151,8 @@
     var bonus_xp = 0
     var rank_scores = 0
     var target_dmgs = 0
+    var if_limit_dmg_cost = 0
+    var limit_dmg_cost = 0
 
     function shop_cost(which, level) {
         if (which == 0) {
@@ -221,6 +230,9 @@
         target_dmgs = target_dmgs.match(/([0-9]+)/g) || []
         target_dmgs = [...new Set(target_dmgs.map(Number))].sort((a, b) => a - b)
 
+        if_limit_dmg_cost = Boolean(document.getElementById('if_limit_dmg_cost').checked)
+        limit_dmg_cost = Number(document.getElementById('limit_dmg_cost').value)
+
         save()
     }
 
@@ -228,28 +240,40 @@
         let ids = ["my_level", "my_gp", "my_xp",
             "bonus_atk", "bonus_gp", "bonus_xp",
             "my_points", "boss_level", "rank_scores",
-            "target_dmgs"
+            "target_dmgs", "limit_dmg_cost"
         ]
 
         for(let k of ids){
             localStorage.setItem(k, document.getElementById(k).value)
-            console.log('save', document.getElementById(k).value)
+            console.log('save', k, document.getElementById(k).value)
         }
+
+        let k = 'if_limit_dmg_cost'
+        console.log('save', k, document.getElementById(k).checked)
+        localStorage.setItem(k, document.getElementById(k).checked)
     }
 
     function load(){
         let ids = ["my_level", "my_gp", "my_xp",
             "bonus_atk", "bonus_gp", "bonus_xp",
             "my_points", "boss_level", "rank_scores",
-            "target_dmgs"
+            "target_dmgs", "limit_dmg_cost"
         ]
 
         for(let k of ids){
-            console.log('load', localStorage.getItem(k))
+            console.log('load', k, localStorage.getItem(k))
             let r = localStorage.getItem(k)
             if(r != null){
                 document.getElementById(k).value = r
             }
+        }
+
+        let k = 'if_limit_dmg_cost'
+        console.log('load', k, localStorage.getItem(k))
+        let r = localStorage.getItem(k)
+        if (r != null) {
+            let checked = r == "true"
+            document.getElementById(k).checked = checked 
         }
     }
 
@@ -355,12 +379,12 @@
 
     function find_points() {
         init_value()
-        let enums = enum_dmg([0, 0, 0, 0, 0], my_gp, 0)
+        let enums = enum_dmg([0, 0, 0, 0, 0], limit_dmg_cost, 0)
 
         let results = []
         for (let pair of enums) {
             let [ps, gp] = pair
-            results.push([cal_damage(ps), my_gp - gp, ps])
+            results.push([cal_damage(ps), limit_dmg_cost - gp, ps])
         }
         results.sort((a, b) => {
             if (a[0] != b[0])
@@ -455,9 +479,9 @@
 
         for (let i = index; i < 3; i++) {
             let _index = dmg_index[i]
-            if (gp >= shop_cost(_index, points[_index])) {
-                enough.push(i)
-            }
+            if (if_limit_dmg_cost && shop_cost(_index, points[_index]) > gp)
+                continue
+            enough.push(i)
         }
 
         for (let i of enough) {
