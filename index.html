@@ -57,56 +57,57 @@
 </head>
 
 <body>
-
+    <div>可以用手机直接打开(suitable for mobile)</div>
     <div>
-        <div>可以用手机直接打开(suitable for mobile)</div>
-        <div>你的等级(my level)</div>
+        <div>BOSS等级(boss level)</div>
+        <input id="boss_level" type="number" value="21" />
+    </div>
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div style="text-align: left; flex: 1;">你的等级 (my level)</div>
+        <div style="text-align: left; flex: 1;">你的经验 (my exp)</div>
+        <div style="text-align: left; flex: 1;">你的土豆 (my gold potato)</div>
+    </div>
+    <div style="display: flex; justify-content: space-between; width: 100%;">
         <input id="my_level" type="number" value="14" />
-    </div>
-    <div>
-        <div>你的土豆(my gold potato)</div>
-        <input id="my_gp" type="number" value="150" />
-    </div>
-    <div>
-        <div>你的经验(my exp)</div>
         <input id="my_xp" type="number" value="15" />
+        <input id="my_gp" type="number" value="150" />
     </div>
     <div>
         <div>加点(my points)</div>
         <input id="my_points" value="14,2,8,18,5" />
     </div>
-    <div>
-        <div>BOSS等级(boss level)</div>
-        <input id="boss_level" type="number" value="21" />
+    <div>BUFF计算方式：点数/10000(buff formular: points/10000)</div>
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div style="text-align: left; flex: 1;">BUFF攻击(buff atk)</div>
+        <div style="text-align: left; flex: 1;">BUFF经验(buff xp)</div>
+        <div style="text-align: left; flex: 1;">BUFF土豆(buff gp)</div>
     </div>
-    <div>
-        <div>BUFF攻击(buff atk = point/10000)</div>
+    <div style="display: flex; justify-content: space-between; width: 100%;">
         <input id="bonus_atk" type="number" value="0.67" />
-    </div>
-    <div>
-        <div>BUFF经验(buff xp = point/10000)</div>
         <input id="bonus_xp" type="number" value="0.10" />
-    </div>
-    <div>
-        <div>BUFF土豆(buff gp = point/10000)</div>
         <input id="bonus_gp" type="number" value="0.15" />
     </div>
-
     <div>
         <div>排名伤害, 填写第1、3、10、50、250、1000、2500、99999名的伤害 </div>
         <div>对了,1000以后的只能猜,除非你有2500名的朋友 </div>
         <div>fill in the damages of rank 1、3、10、50、250、1000、2500、99999</div>
         <div>notice that if your damage < damage of rank 99999, gp and xp will be 0</div>
         <textarea id="rank_scores" type="text"
-            style="width: 100%; height: 78px; font-size: 25px;">3000,2800,2700,2600,2100,2000,1800,1500</textarea>
+            style="width: 100%; height: 60px; font-size: 20px;">3000,2800,2700,2600,2100,2000,1800,1500</textarea>
+    </div>
+    <div>
+        <div>寻找伤害可能的加点方式，经验等级由‘你的等级’固定，土豆总数上限由‘你的土豆’限制</div>
+        <div>支持对多个伤害查找，伤害之间用逗号隔开</div>
+        <div>find points match input damage, exp level is fixed by my level, total gp is limited by my gold potato</div>
+        <div>support finding multiple damages, damages are splitted by comma</div>
+        <textarea id="target_dmgs" type="text"
+            style="width: 100%; height: 60px; font-size: 20px;">114,514</textarea>
     </div>
 
-    <div>
+    <div id="button-container">
         <button onclick="cmd()">执行(do cmd)</button>
-    </div>
-
-    <div>
         <button onclick="show_cost()">查看继续升级消耗(show next cost)</button>
+        <button onclick="find_points()">伤害可能加点(find possible points)</button>
     </div>
 
     <div>
@@ -118,6 +119,20 @@
 </body>
 
 <script>
+    function applyStyle() {
+        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+        const container = document.getElementById("button-container");
+
+        if (isMobile) {
+            container.style.display = "block";
+        } else {
+            container.style.display = "flex";
+            container.style.gap = "10px";
+        }
+    }
+
+    applyStyle();
+    window.addEventListener("resize", applyStyle);
 
     var my_level = 0
     var my_gp = 0
@@ -128,7 +143,7 @@
     var bonus_gp = 0
     var bonus_xp = 0
     var rank_scores = 0
-
+    var target_dmgs = 0
 
     function shop_cost(which, level) {
         if (which == 0) {
@@ -201,19 +216,20 @@
         rank_scores = document.getElementById('rank_scores').value
         rank_scores = rank_scores.match(/([0-9]+)/g)
         rank_scores = rank_scores.map(Number)
+
+        target_dmgs = document.getElementById('target_dmgs').value
+        target_dmgs = target_dmgs.match(/([0-9]+)/g) || []
+        target_dmgs = [...new Set(target_dmgs.map(Number))].sort((a, b) => a - b)
+
         save()
     }
 
     function save(){
-
         let ids = ["my_level", "my_gp", "my_xp",
-            "boss_level",
-            "bonus_atk",
-            "bonus_gp",
-            "bonus_xp",
-            "my_points",
-            "rank_scores"
-            ]
+            "bonus_atk", "bonus_gp", "bonus_xp",
+            "my_points", "boss_level", "rank_scores",
+            "target_dmgs"
+        ]
 
         for(let k of ids){
             localStorage.setItem(k, document.getElementById(k).value)
@@ -223,13 +239,10 @@
 
     function load(){
         let ids = ["my_level", "my_gp", "my_xp",
-            "boss_level",
-            "bonus_atk",
-            "bonus_gp",
-            "bonus_xp",
-            "my_points",
-            "rank_scores"
-            ]
+            "bonus_atk", "bonus_gp", "bonus_xp",
+            "my_points", "boss_level", "rank_scores",
+            "target_dmgs"
+        ]
 
         for(let k of ids){
             console.log('load', localStorage.getItem(k))
@@ -245,7 +258,7 @@
 
     function cmd() {
         init_value()
-        let enums = enum_(my_points, my_gp, 0)
+        let enums = enum_gp(my_points, my_gp, 0)
 
         let results = []
 
@@ -340,14 +353,62 @@
         }
     }
 
+    function find_points() {
+        init_value()
+        let enums = enum_dmg([0, 0, 0, 0, 0], my_gp, 0)
+
+        let results = []
+        for (let pair of enums) {
+            let [ps, gp] = pair
+            results.push([cal_damage(ps), my_gp - gp, ps])
+        }
+        results.sort((a, b) => {
+            if (a[0] != b[0])
+                return a[0] - b[0]
+            return a[1] - b[1]
+        })
+
+        let result_dom = document.getElementById('result')
+        result_dom.innerHTML = ""
+
+        let ws = [33, 33]
+        ws.push(100 - ws.reduce((a,b)=>a+b , 0))
+
+        let new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        let titles = ["伤害", "伤害花费", "加点"]
+        for(let i=0;i<3;i++){
+            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
+        }
+        result_dom.appendChild(new_div);
+
+        new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        titles = ["damage", "damage cost", "points"]
+        for(let i=0;i<3;i++){
+            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
+        }
+        result_dom.appendChild(new_div);
+
+        for (let r of results) {
+            let new_div = document.createElement("div");
+            new_div.style = "display:flex;"
+            for(let i=0;i<3;i++){
+                new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r[i] +"</div>"
+            }
+            result_dom.appendChild(new_div);
+        }
+    }
+
     function level_exp(n) {
         return Math.floor((10 + n * 5) * Math.pow(1.02, n))
     }
 
-    function enum_(points, gp, index = 0) {
+    function enum_gp(points, gp, index = 0) {
 
         let enough = []
-
 
         for (let i = index; i < 5; i++) {
             if (gp >= shop_cost(i, points[i])) {
@@ -367,12 +428,47 @@
             let cost = shop_cost(i, _points[i])
             let _gp = gp - cost
             _points[i] += 1;
-            results = results.concat(enum_(_points, _gp, i));
+            results = results.concat(enum_gp(_points, _gp, i));
         }
 
         return results
     }
 
+    function enum_dmg(points, gp, index = 0) {
+        let dmg_index = [0, 1, 4]
+        let max_dmg = 0
+        if (target_dmgs.length > 0)
+            max_dmg = target_dmgs[target_dmgs.length - 1]
 
+        let results = []
+        let dmg = cal_damage(points)
+        if (max_dmg < dmg)
+            return results
+        for (let i of target_dmgs) {
+            if (i == dmg) {
+                console.log('valid', points, gp)
+                results = results.concat([[points, gp]])
+            }
+        }
+
+        let enough = []
+
+        for (let i = index; i < 3; i++) {
+            let _index = dmg_index[i]
+            if (gp >= shop_cost(_index, points[_index])) {
+                enough.push(i)
+            }
+        }
+
+        for (let i of enough) {
+            let _points = JSON.parse(JSON.stringify(points))
+            let _index = dmg_index[i]
+            let cost = shop_cost(_index, _points[_index])
+            let _gp = gp - cost
+            _points[_index] += 1
+            results = results.concat(enum_dmg(_points, _gp, i));
+        }
+        return results
+    }
 
 </script>
