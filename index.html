@@ -113,7 +113,7 @@
 
     <div id="button-container">
         <button onclick="cmd()">执行(do cmd)</button>
-        <button onclick="show_cost()">查看继续升级消耗(show next cost)</button>
+        <button onclick="show_cost()">查看消耗(show cost)</button>
         <button onclick="find_points()">伤害可能加点(find possible points)</button>
     </div>
 
@@ -168,6 +168,16 @@
         }
 
         return Math.floor((5 + level) * (1 + 0.05 * level))
+    }
+
+    function cal_cost(points) {
+        let result = 0
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < points[i]; j++) {
+                result += shop_cost(i,j)
+            }
+        }
+        return result
     }
 
 
@@ -338,13 +348,53 @@
         let result_dom = document.getElementById('result')
         result_dom.innerHTML = ""
 
-        let ws = [16,16,16,16,16]
+        let ws = [50]
         ws.push(100 - ws.reduce((a,b)=>a+b , 0))
-
+    
         let new_div = document.createElement("div");
         new_div.style = "display:flex; width=100%;"
         new_div.innerHTML = ""
-        let titles = ["你等级", "攻击+2", "连打系数", "加经验", "加土豆", "攻击次数"]
+        for(let i=0;i<2;i++) {
+            let r = 0
+            if (i == 0) {
+                r = "加点消耗"
+            } else if (i == 1) {
+                r = "points cost"
+            }
+            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r +"</div>"
+        }
+        result_dom.appendChild(new_div);
+
+        new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        for(let i=0;i<2;i++) {
+            let r = cal_cost(my_points)
+            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r +"</div>"
+        }
+        result_dom.appendChild(new_div);
+
+        new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        for(let i=0;i<2;i++) {
+            let r = 0
+            if (i == 0) {
+                r = "未来加点/经验需求"
+            } else if (i == 1) {
+                r = "future points/exp cost"
+            }
+            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r +"</div>"
+        }
+        result_dom.appendChild(new_div);
+
+        ws = [16,16,16,16,16]
+        ws.push(100 - ws.reduce((a,b)=>a+b , 0))
+
+        new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        let titles = ["等级提升", "基础攻击", "连击", "加经验", "加土豆", "攻击次数"]
         for(let i=0;i<6;i++){
             new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
         }
