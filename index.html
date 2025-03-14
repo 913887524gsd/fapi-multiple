@@ -289,6 +289,30 @@
 
     load()
 
+    function get_ws(index, total) {
+        let step = Math.floor(100 / total)
+        if (index + 1 < total)
+            return step
+        else
+            return 100 - step * (total - 1)
+    }
+
+    function gen_line(objlist) {
+        let objlen = objlist.length
+        let new_div = document.createElement("div");
+        new_div.style = "display:flex; width=100%;"
+        new_div.innerHTML = ""
+        for(let i = 0; i < objlen; i++){
+            new_div.innerHTML += "<div style='width: "+ get_ws(i, objlen) +"%;'>"+ objlist[i] +"</div>"
+        }
+        return new_div
+    }
+
+    function gen_empty_line() {
+        let empty_div = document.createElement("div");
+        empty_div.style = "display:flex; width:100%; height:20px;"; // 可以调整高度
+        return empty_div;
+    }
 
     function cmd() {
         init_value()
@@ -309,36 +333,16 @@
         let result_dom = document.getElementById('result')
         result_dom.innerHTML = ""
 
-        let ws = [15,15,15,15,15]
-        ws.push(100 - ws.reduce((a,b)=>a+b , 0))
+        let objlist = []
 
-        let new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        let titles = ["伤害", "得土豆", "得经验", "剩土豆", "排名", "加点"]
-        for(let i=0;i<6;i++){
-            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
-        }
-        result_dom.appendChild(new_div);
+        objlist = ["伤害", "得土豆", "得经验", "剩土豆", "排名", "加点"]
+        result_dom.appendChild(gen_line(objlist));
         
-        new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        titles = ["damage", "get gp", "get xp", "rest gp", "rank", "points"]
-        for(let i=0;i<6;i++){
-            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
-        }
-        result_dom.appendChild(new_div);
+        objlist = ["damage", "get gp", "get xp", "rest gp", "rank", "points"]
+        result_dom.appendChild(gen_line(objlist));
 
         for (let r of results) {
-            let new_div = document.createElement("div");
-
-            new_div.style = "display:flex;"
-            for(let i=0;i<6;i++){
-                new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r[i] +"</div>"
-            }
-            result_dom.appendChild(new_div);
-
+            result_dom.appendChild(gen_line(r));
         }
 
     }
@@ -347,83 +351,53 @@
         init_value()
         let result_dom = document.getElementById('result')
         result_dom.innerHTML = ""
-
-        let ws = [50]
-        ws.push(100 - ws.reduce((a,b)=>a+b , 0))
     
-        let new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        for(let i=0;i<2;i++) {
-            let r = 0
-            if (i == 0) {
-                r = "加点消耗"
-            } else if (i == 1) {
-                r = "points cost"
-            }
-            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r +"</div>"
+        let objlist = []
+        objlist = ["加点消耗", "points cost"]
+        result_dom.appendChild(gen_line(objlist));
+
+        objlist = [cal_cost(my_points), cal_cost(my_points)]
+        result_dom.appendChild(gen_line(objlist));
+
+        result_dom.appendChild(gen_empty_line());
+
+        objlist = ["点攻击性价比", "attack cost efficiency"]
+        result_dom.appendChild(gen_line(objlist));
+
+        objlist = ["攻击类型", "提升攻击", "攻击花费", "攻击性价比"]
+        result_dom.appendChild(gen_line(objlist));
+
+        objlist = ["atk type", "atk boost", "atk cost", "atk effeciency"]
+        result_dom.appendChild(gen_line(objlist));
+        
+        let results = enum_atk_eff(my_points)
+        for (let r of results) {
+            result_dom.appendChild(gen_line(r))
         }
-        result_dom.appendChild(new_div);
 
-        new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        for(let i=0;i<2;i++) {
-            let r = cal_cost(my_points)
-            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r +"</div>"
-        }
-        result_dom.appendChild(new_div);
+        result_dom.appendChild(gen_empty_line());
 
-        new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        for(let i=0;i<2;i++) {
-            let r = 0
-            if (i == 0) {
-                r = "未来加点/经验需求"
-            } else if (i == 1) {
-                r = "future points/exp cost"
-            }
-            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r +"</div>"
-        }
-        result_dom.appendChild(new_div);
+        objlist = ["未来加点/经验需求", "future points/exp cost"]
+        result_dom.appendChild(gen_line(objlist));
 
-        ws = [16,16,16,16,16]
-        ws.push(100 - ws.reduce((a,b)=>a+b , 0))
+        objlist = ["等级提升", "基础攻击", "连击", "加经验", "加土豆", "攻击次数"]
+        result_dom.appendChild(gen_line(objlist));
 
-        new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        let titles = ["等级提升", "基础攻击", "连击", "加经验", "加土豆", "攻击次数"]
-        for(let i=0;i<6;i++){
-            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
-        }
-        result_dom.appendChild(new_div);
+        objlist = ["levelup", "atk+3", "c atk", "add xp", "add gp", "atk charge"]
+        result_dom.appendChild(gen_line(objlist));
 
-        new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        titles = ["levelup", "atk+2", "c atk", "add xp", "add gp", "atk charge"]
-        for(let i=0;i<6;i++){
-            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
-        }
-        result_dom.appendChild(new_div);
-
-        for (let n=0;n<10;n++){ 
-            let new_div = document.createElement("div");
-            new_div.style = "display:flex;"
-
+        for (let n = 0; n < 10; n++){ 
+            objlist = []
             for(let i=0;i<6;i++){
                 let r = 0
-                if (i==0){
+                if (i == 0){
                     r = level_exp(my_level + n)
-                }else{
+                } else {
                     r = shop_cost(i-1, my_points[i-1]+n)
                 }
-
-                new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r +"</div>"
+                objlist.push(r)
             }
-            result_dom.appendChild(new_div);
+            result_dom.appendChild(gen_line(objlist));
         }
     }
 
@@ -445,34 +419,16 @@
         let result_dom = document.getElementById('result')
         result_dom.innerHTML = ""
 
-        let ws = [33, 33]
-        ws.push(100 - ws.reduce((a,b)=>a+b , 0))
+        let objlist = []
+        
+        objlist = ["伤害", "伤害花费", "加点"]
+        result_dom.appendChild(gen_line(objlist));
 
-        let new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        let titles = ["伤害", "伤害花费", "加点"]
-        for(let i=0;i<3;i++){
-            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
-        }
-        result_dom.appendChild(new_div);
-
-        new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        titles = ["damage", "damage cost", "points"]
-        for(let i=0;i<3;i++){
-            new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ titles[i] +"</div>"
-        }
-        result_dom.appendChild(new_div);
+        objlist = ["damage", "damage cost", "points"]
+        result_dom.appendChild(gen_line(objlist));
 
         for (let r of results) {
-            let new_div = document.createElement("div");
-            new_div.style = "display:flex;"
-            for(let i=0;i<3;i++){
-                new_div.innerHTML += "<div style='width: "+ ws[i] +"%;'>"+ r[i] +"</div>"
-            }
-            result_dom.appendChild(new_div);
+            result_dom.appendChild(gen_line(r));
         }
     }
 
@@ -542,6 +498,24 @@
             _points[_index] += 1
             results = results.concat(enum_dmg(_points, _gp, i));
         }
+        return results
+    }
+
+    function enum_atk_eff(points) {
+        let results = []
+        let dmg_index = [0, 1, 4]
+        let dmg_type = ["基础攻击 atk+3", "连击 c atk", "攻击次数 atk charge"]
+
+        for (let i = 0; i < dmg_index.length; i++) {
+            let index = dmg_index[i]
+            let _points = JSON.parse(JSON.stringify(points))
+            _points[index] += 1
+            let dmg_diff = cal_damage(_points) - cal_damage(points)
+            let dmg_cost = shop_cost(index, points[index])
+            let dmg_eff = dmg_diff / dmg_cost
+            results.push([dmg_type[i], dmg_diff, dmg_cost, dmg_eff])
+        }
+
         return results
     }
 
