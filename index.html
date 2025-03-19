@@ -141,6 +141,7 @@
     applyStyle();
     window.addEventListener("resize", applyStyle);
 
+    var debug = false
     var my_level = 0
     var my_gp = 0
     var my_xp = 0
@@ -171,6 +172,8 @@
     }
 
     function cal_cost(points) {
+        if (debug)
+            console.log(points)
         let result = 0
         for (let i = 0; i < 5; i++) {
             for (let j = 0; j < points[i]; j++) {
@@ -197,7 +200,8 @@
         let scale = 1.10
         for (i = 0; i < rank_scores.length; i++) {
             let rd = rank_scores[i]
-            console.log(damage, rd)
+            if (debug)
+                console.log(damage, rd)
             if (damage < rd) {
                 scale -= 0.02
             } else {
@@ -255,11 +259,13 @@
 
         for(let k of ids){
             localStorage.setItem(k, document.getElementById(k).value)
-            console.log('save', k, document.getElementById(k).value)
+            if (debug)
+                console.log('save', k, document.getElementById(k).value)
         }
 
         let k = 'if_limit_dmg_cost'
-        console.log('save', k, document.getElementById(k).checked)
+        if (debug)
+            console.log('save', k, document.getElementById(k).checked)
         localStorage.setItem(k, document.getElementById(k).checked)
     }
 
@@ -271,7 +277,8 @@
         ]
 
         for(let k of ids){
-            console.log('load', k, localStorage.getItem(k))
+            if (debug)
+                console.log('load', k, localStorage.getItem(k))
             let r = localStorage.getItem(k)
             if(r != null){
                 document.getElementById(k).value = r
@@ -279,7 +286,8 @@
         }
 
         let k = 'if_limit_dmg_cost'
-        console.log('load', k, localStorage.getItem(k))
+        if (debug)
+            console.log('load', k, localStorage.getItem(k))
         let r = localStorage.getItem(k)
         if (r != null) {
             let checked = r == "true"
@@ -353,10 +361,18 @@
         result_dom.innerHTML = ""
     
         let objlist = []
-        objlist = ["加点消耗", "points cost"]
+        objlist = ["加点", "加点花费", "伤害花费", "经济花费"]
         result_dom.appendChild(gen_line(objlist));
 
-        objlist = [cal_cost(my_points), cal_cost(my_points)]
+        objlist = ["points", "points cost", "damage cost", "eco cost"]
+        result_dom.appendChild(gen_line(objlist));
+
+        objlist = [
+            my_points,
+            cal_cost(my_points),
+            cal_cost([my_points[0], my_points[1], 0, 0, my_points[4]]),
+            cal_cost([0, 0, my_points[2], my_points[3], 0])
+        ]
         result_dom.appendChild(gen_line(objlist));
 
         result_dom.appendChild(gen_empty_line());
@@ -447,7 +463,8 @@
         }
 
         if (enough.length == 0) {
-            console.log('end', points, gp)
+            if (debug)
+                console.log('gp', points, gp)
             return [[points, gp]]
         }
 
@@ -476,7 +493,8 @@
             return results
         for (let i of target_dmgs) {
             if (i == dmg) {
-                console.log('valid', points, gp)
+                if (debug)
+                    console.log('dmg', points, gp)
                 results = results.concat([[points, gp]])
             }
         }
