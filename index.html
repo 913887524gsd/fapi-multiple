@@ -57,7 +57,11 @@
 </head>
 
 <body>
-    <div>可以用手机直接打开(suitable for mobile)</div>
+    <div style="display: inline-flex;">
+        <div style="white-space: nowrap; align-content: center; margin-right: 5px;">可以用手机直接打开(suitable for mobile)</div>
+        <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="console_debug" type="checkbox">
+        <div style="white-space: nowrap; align-content: center; margin-right: 5px;">操纵台调试(console debug)</div>
+    </div>
     <div>
         <div>BOSS等级(boss level)</div>
         <input id="boss_level" type="number" value="21" />
@@ -102,7 +106,7 @@
         <div>support finding multiple damages, damages are splitted by comma</div>
     </div>
     <div style="display: inline-flex">
-        <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="if_limit_dmg_cost" type="checkbox"  checked="false">
+        <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="if_limit_dmg_cost" type="checkbox">
         <label style="white-space: nowrap; align-content: center; margin-right: 5px;">限制伤害花费(limit damage cost)</label>
         <input id="limit_dmg_cost" type="number" value="1919">
     </div>
@@ -188,14 +192,21 @@
     }
 
 
-    function cal_damage(points) {
+    function cal_damage(points, debug) {
         let atk1 = 20 + points[0] * 3 + my_level
         let num = 8 + points[4] + Math.floor(my_level / 25)
         let total = 0
+        let dmgs = []
         for (let i = 0; i < num; i++) {
             let atk2 = (atk1 + i * (points[1] + 1)) * (1 + bonus_atk)
             let atk3 = Math.ceil(atk2 * (1 + my_level / 100))
             total += atk3
+            if (debug)
+                dmgs.push(atk3)
+        }
+        if (debug) {
+            console.log(points)
+            console.log(dmgs)
         }
         return total
     }
@@ -215,7 +226,7 @@
 
     function cal_reward(points) {
 
-        damage = cal_damage(points)
+        damage = cal_damage(points, false)
         let [rank_scale, rank] = cal_scale(damage)
         let xp = (10 + boss_level) * (1 + 0.05 * points[2]) * Math.pow(1.05, boss_level) * rank_scale
         xp = Math.ceil(xp * (1 + bonus_xp))
@@ -276,6 +287,8 @@
         if_limit_dmg_cost = Boolean(document.getElementById('if_limit_dmg_cost').checked)
         limit_dmg_cost = Number(document.getElementById('limit_dmg_cost').value)
 
+        debug = Boolean(document.getElementById('console_debug').checked)
+
         save()
     }
 
@@ -292,10 +305,15 @@
                 console.log('save', k, document.getElementById(k).value)
         }
 
-        let k = 'if_limit_dmg_cost'
-        if (debug)
-            console.log('save', k, document.getElementById(k).checked)
-        localStorage.setItem(k, document.getElementById(k).checked)
+        let checkboxes = [
+            "if_limit_dmg_cost", "console_debug"
+        ]
+
+        for (let k of checkboxes) {
+            if (debug)
+                console.log('save', k, document.getElementById(k).checked)
+            localStorage.setItem(k, document.getElementById(k).checked)
+        }
     }
 
     function load(){
@@ -314,13 +332,17 @@
             }
         }
 
-        let k = 'if_limit_dmg_cost'
-        if (debug)
-            console.log('load', k, localStorage.getItem(k))
-        let r = localStorage.getItem(k)
-        if (r != null) {
-            let checked = r == "true"
-            document.getElementById(k).checked = checked 
+        let checkboxes = [
+            "if_limit_dmg_cost", "console_debug"
+        ]
+        for (let k of checkboxes) {
+            if (debug)
+                console.log('load', k, localStorage.getItem(k))
+            let r = localStorage.getItem(k)
+            if (r != null) {
+                let checked = r == "true"
+                document.getElementById(k).checked = checked 
+            }
         }
     }
 
@@ -359,7 +381,7 @@
 
         for (let pair of enums) {
             let [ps, rest_gp] = pair
-            let damage = cal_damage(ps)
+            let damage = cal_damage(ps, debug)
             let [xp, gp, rank] = cal_reward(ps)
             let level_up = cal_levelup(my_xp + xp)
             let _xp = ""
@@ -460,7 +482,7 @@
         let results = []
         for (let pair of enums) {
             let [ps, gp] = pair
-            results.push([cal_damage(ps), limit_dmg_cost - gp, ps])
+            results.push([cal_damage(ps, false), limit_dmg_cost - gp, ps])
         }
         results.sort((a, b) => {
             if (a[0] != b[0])
@@ -520,7 +542,7 @@
             max_dmg = target_dmgs[target_dmgs.length - 1]
 
         let results = []
-        let dmg = cal_damage(points)
+        let dmg = cal_damage(points, false)
         if (max_dmg < dmg)
             return results
         for (let i of target_dmgs) {
@@ -560,7 +582,7 @@
             let index = dmg_index[i]
             let _points = JSON.parse(JSON.stringify(points))
             _points[index] += 1
-            let dmg_diff = cal_damage(_points) - cal_damage(points)
+            let dmg_diff = cal_damage(_points, false) - cal_damage(points, false)
             let dmg_cost = shop_cost(index, points[index])
             let dmg_eff = dmg_diff / dmg_cost
             results.push([dmg_type[i], dmg_diff, dmg_cost, dmg_eff])
