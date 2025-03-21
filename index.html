@@ -246,17 +246,32 @@
         bonus_gp = Number(document.getElementById('bonus_gp').value)
         bonus_xp = Number(document.getElementById('bonus_xp').value)
 
-        my_points = document.getElementById('my_points').value
-        my_points = my_points.match(/([0-9]+)/g)
+        let obj = null
+        obj = document.getElementById('my_points')
+        my_points = obj.value
+        my_points = my_points.match(/([0-9]+)/g) || []
         my_points = my_points.map(Number)
+        while (my_points.length > 5)
+            my_points.pop()
+        while (my_points.length < 5)
+            my_points.push(0)
+        obj.value = String(my_points)
 
-        rank_scores = document.getElementById('rank_scores').value
-        rank_scores = rank_scores.match(/([0-9]+)/g)
+        obj = document.getElementById('rank_scores')
+        rank_scores = obj.value
+        rank_scores = rank_scores.match(/([0-9]+)/g) || []
         rank_scores = rank_scores.map(Number)
+        while (rank_scores.length > 8)
+            rank_scores.pop()
+        while (rank_scores.length < 8)
+            rank_scores.push(0)
+        obj.value = String(rank_scores)
 
-        target_dmgs = document.getElementById('target_dmgs').value
+        obj = document.getElementById('target_dmgs')
+        target_dmgs = obj.value
         target_dmgs = target_dmgs.match(/([0-9]+)/g) || []
         target_dmgs = [...new Set(target_dmgs.map(Number))].sort((a, b) => a - b)
+        obj.value = String(target_dmgs)
 
         if_limit_dmg_cost = Boolean(document.getElementById('if_limit_dmg_cost').checked)
         limit_dmg_cost = Number(document.getElementById('limit_dmg_cost').value)
