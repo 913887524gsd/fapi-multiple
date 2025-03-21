@@ -193,7 +193,7 @@
         let num = 8 + points[4] + Math.floor(my_level / 25)
         let total = 0
         for (let i = 0; i < num; i++) {
-            let atk2 = Math.ceil((atk1 + i * (points[1] + 1)) * (1 + bonus_atk))
+            let atk2 = (atk1 + i * (points[1] + 1)) * (1 + bonus_atk)
             let atk3 = Math.ceil(atk2 * (1 + my_level / 100))
             total += atk3
         }
@@ -217,9 +217,9 @@
 
         damage = cal_damage(points)
         let [rank_scale, rank] = cal_scale(damage)
-        let xp = Math.ceil((10 + boss_level) * (1 + 0.05 * points[2]) * Math.pow(1.05, boss_level) * rank_scale)
+        let xp = (10 + boss_level) * (1 + 0.05 * points[2]) * Math.pow(1.05, boss_level) * rank_scale
         xp = Math.ceil(xp * (1 + bonus_xp))
-        let gp = Math.ceil((10 + boss_level) * (1 + 0.05 * points[3]) * Math.pow(1.05, boss_level) * rank_scale)
+        let gp = (10 + boss_level) * (1 + 0.05 * points[3]) * Math.pow(1.05, boss_level) * rank_scale
         gp = Math.ceil(gp * (1 + bonus_gp))
 
         return [xp, gp, rank]
