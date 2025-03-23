@@ -52,24 +52,41 @@
             border-bottom: 1px solid #ccc;
             width: 100%;
         }
+        
+        .option-btn {
+            padding: 5px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 5px;
+            user-select: none;
+        }
+
+        .option-btn.active {
+            background-color: #007bff;
+            color: white;
+        }
 
     </style>
 </head>
 
 <body>
-    <div style="display: inline-flex;">
+    <div id="special-container0">
         <div style="white-space: nowrap; align-content: center; margin-right: 5px;">可以用手机直接打开(suitable for mobile)</div>
-        <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="console_debug" type="checkbox">
-        <div style="white-space: nowrap; align-content: center; margin-right: 5px;">操纵台调试(console debug)</div>
+        <div style="display: inline-flex;">
+            <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="console_debug" type="checkbox">
+            <div style="white-space: nowrap; align-content: center; margin-right: 5px;">操纵台调试(console debug)</div>
+        </div>
     </div>
     <div>
-        <div>BOSS等级(boss level)</div>
+        <div>BOSS等级 在血条上方的Txxx里(boss level, is displayed at the above of boss hp in Txxx)</div>
         <input id="boss_level" type="number" value="21" />
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
         <div style="text-align: left; flex: 1;">你的等级 (my level)</div>
         <div style="text-align: left; flex: 1;">你的经验 (my exp)</div>
-        <div style="text-align: left; flex: 1;">你的土豆 (my gold potato)</div>
+        <div style="text-align: left; flex: 1;">你的金豆 (my gold potato)</div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
         <input id="my_level" type="number" value="14" />
@@ -77,11 +94,20 @@
         <input id="my_gp" type="number" value="150" />
     </div>
     <div>
-        <div>加点(my points)</div>
+        <div style="align-content: center;">加点(my points)</div>
         <input id="my_points" value="14,2,8,18,5" />
     </div>
-    <div style="display: inline-flex;">
-        <div style="white-space: nowrap; align-content: center; margin-right: 5px;">BUFF计算方式：点数/10000(buff formular: points/10000)</div>
+    <div id="special-container1">
+        <div style="align-content: center;">计算包含升级项(compute including upgrades)</div>
+        <div id="filter0" class="option-btn active" data-select="true" onclick="toggle(this)">基础伤害(atk+3)</div>
+        <div id="filter1" class="option-btn active" data-select="true" onclick="toggle(this)">连击(c atk)</div>
+        <div id="filter2" class="option-btn active" data-select="true" onclick="toggle(this)">经验(exp)</div>
+        <div id="filter3" class="option-btn active" data-select="true" onclick="toggle(this)">金豆(gp)</div>
+        <div id="filter4" class="option-btn active" data-select="true" onclick="toggle(this)">攻击次数(atk charge)</div>
+    </div>
+    <div id="special-container2">
+        <div style="white-space: nowrap; align-content: center;">BUFF计算方式：点数/10000</div>
+        <div style="white-space: nowrap; align-content: center; margin-right: 5px;"> (buff formular: points/10000) </div>
         <a href="https://docs.google.com/spreadsheets/d/1W1ubd2s2Y_wkTQDMhJKhg0MyXrHzUm1PoPU910E12_8/edit?gid=339576003#gid=339576003"
             target="_blank">
             BUFF历史(buff history)
@@ -90,7 +116,7 @@
     <div style="display: flex; justify-content: space-between; width: 100%;">
         <div style="text-align: left; flex: 1;">BUFF攻击(buff atk)</div>
         <div style="text-align: left; flex: 1;">BUFF经验(buff xp)</div>
-        <div style="text-align: left; flex: 1;">BUFF土豆(buff gp)</div>
+        <div style="text-align: left; flex: 1;">BUFF金豆(buff gp)</div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
         <input id="bonus_atk" type="number" value="0.67" />
@@ -113,7 +139,10 @@
     </div>
     <div style="display: inline-flex">
         <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="if_limit_dmg_cost" type="checkbox">
-        <label style="white-space: nowrap; align-content: center; margin-right: 5px;">限制伤害花费(limit damage cost)</label>
+        <label style="white-space: nowrap; vertical-align: middle; 
+            align-content: center; margin-right: 5px;">
+            限制伤害花费(limit damage cost)
+        </label>
         <input id="limit_dmg_cost" type="number" value="1919">
     </div>
     <div>
@@ -121,10 +150,10 @@
             style="width: 100%; height: 60px; font-size: 20px;">114,514</textarea>
     </div>
 
-    <div id="button-container">
-        <button onclick="cmd()">执行(do cmd)</button>
+    <div id="special-container3">
+        <button onclick="gp2points()">金豆可能加点(gp to points)</button>
         <button onclick="show_cost()">查看消耗(show cost)</button>
-        <button onclick="find_points()">伤害可能加点(find possible points)</button>
+        <button onclick="dmg2points()">伤害可能加点(dmg to points)</button>
     </div>
 
     <div>
@@ -138,24 +167,33 @@
 <script>
     function applyStyle() {
         const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-        const container = document.getElementById("button-container");
-
-        if (isMobile) {
-            container.style.display = "block";
-        } else {
-            container.style.display = "flex";
-            container.style.gap = "10px";
+        for (let i = 0; i < 4; i++) {
+            let name = "special-container" + i;
+            let container = document.getElementById(name);
+            if (isMobile) {
+                container.style.display = "block";
+            } else {
+                container.style.display = "flex";
+                container.style.gap = "5px";
+            }
         }
     }
 
     applyStyle();
     window.addEventListener("resize", applyStyle);
 
+    function toggle(obj) {
+        let selected = obj.getAttribute("data-select") == "true";
+        obj.setAttribute("data-select", !selected);
+        obj.classList.toggle("active");
+    }
+
     var debug = false
     var my_level = 0
     var my_gp = 0
     var my_xp = 0
     var my_points = 0
+    var filters = []
     var boss_level = 0
     var bonus_atk = 0
     var bonus_gp = 0
@@ -274,6 +312,12 @@
             my_points.push(0)
         obj.value = String(my_points)
 
+        filters = []
+        for (let i = 0; i < 5; i++) {
+            obj = document.getElementById('filter' + i)
+            filters.push(obj.getAttribute('data-select') == "true")
+        }
+
         obj = document.getElementById('rank_scores')
         rank_scores = obj.value
         rank_scores = rank_scores.match(/([0-9]+)/g) || []
@@ -320,6 +364,16 @@
                 console.log('save', k, document.getElementById(k).checked)
             localStorage.setItem(k, document.getElementById(k).checked)
         }
+
+        let buttons = [
+            "filter0", "filter1", "filter2", "filter3", "filter4"
+        ]
+        
+        for (let k of buttons) {
+            if (debug)
+                console.log('save', k, document.getElementById(k).getAttribute('data-select'))
+            localStorage.setItem(k, document.getElementById(k).getAttribute('data-select'))
+        }
     }
 
     function load(){
@@ -341,14 +395,30 @@
         let checkboxes = [
             "if_limit_dmg_cost", "console_debug"
         ]
+
         for (let k of checkboxes) {
             if (debug)
                 console.log('load', k, localStorage.getItem(k))
             let r = localStorage.getItem(k)
-            if (r != null) {
-                let checked = r == "true"
-                document.getElementById(k).checked = checked 
-            }
+            if (!r)
+                continue
+            let checked = r == "true"
+            document.getElementById(k).checked = checked 
+        }
+
+        let buttons = [
+            "filter0", "filter1", "filter2", "filter3", "filter4"
+        ]
+
+        for (let k of buttons) {
+            if (debug)
+                console.log('load', k, localStorage.getItem(k))
+            let r = localStorage.getItem(k)
+            if (!r)
+                continue
+            let activated = r == "true"
+            if (!activated)
+                toggle(document.getElementById(k))
         }
     }
 
@@ -379,7 +449,7 @@
         return empty_div;
     }
 
-    function cmd() {
+    function gp2points() {
         init_value()
         let enums = enum_gp(my_points, my_gp, 0)
 
@@ -407,7 +477,7 @@
 
         let objlist = []
 
-        objlist = ["伤害", "得土豆", "得经验", "剩土豆", "排名", "加点"]
+        objlist = ["伤害", "得金豆", "得经验", "剩金豆", "排名", "加点"]
         result_dom.appendChild(gen_line(objlist));
         
         objlist = ["damage", "get gp", "get xp", "rest gp", "rank", "points"]
@@ -460,7 +530,7 @@
         objlist = ["未来加点/经验需求", "future points/exp cost"]
         result_dom.appendChild(gen_line(objlist));
 
-        objlist = ["等级提升", "基础攻击", "连击", "加经验", "加土豆", "攻击次数"]
+        objlist = ["等级提升", "基础攻击", "连击", "加经验", "加金豆", "攻击次数"]
         result_dom.appendChild(gen_line(objlist));
 
         objlist = ["levelup", "atk+3", "c atk", "add xp", "add gp", "atk charge"]
@@ -481,7 +551,7 @@
         }
     }
 
-    function find_points() {
+    function dmg2points() {
         init_value()
         let enums = enum_dmg([0, 0, 0, 0, 0], limit_dmg_cost, 0)
 
@@ -517,7 +587,7 @@
         let enough = []
 
         for (let i = index; i < 5; i++) {
-            if (gp >= shop_cost(i, points[i])) {
+            if (gp >= shop_cost(i, points[i]) && filters[i]) {
                 enough.push(i)
             }
         }
@@ -527,7 +597,6 @@
                 console.log('gp', points, gp)
             return [[points, gp]]
         }
-
 
         let results = []
         for (let i of enough) {
