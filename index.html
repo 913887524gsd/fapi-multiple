@@ -93,9 +93,16 @@
         <input id="my_xp" type="number" value="15" />
         <input id="my_gp" type="number" value="150" />
     </div>
-    <div>
-        <div style="align-content: center;">加点(my points)</div>
+    <div style="display: flex;">
+        <div style="width: 50%;">加点(my points)</div>
+        <div style="display: inline-flex; margin-left: auto; width: 50%;">
+            <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="if_build_comparison" type="checkbox">
+            <div>加点比拼(build comparison)</div>
+        </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; width: 100%;">
         <input id="my_points" value="14,2,8,18,5" />
+        <input id="op_points" value="0,0,0,0,0" />
     </div>
     <div id="special-container1">
         <div style="align-content: center;">计算包含升级项(compute including upgrades)</div>
@@ -106,7 +113,7 @@
         <div id="filter4" class="option-btn active" data-select="true" onclick="toggle(this)">攻击次数(atk charge)</div>
     </div>
     <div id="special-container2">
-        <div style="white-space: nowrap; align-content: center;">BUFF计算方式：点数/10000</div>
+        <div style="white-space: nowrap; align-content: center;">BUFF计算方式:点数/10000</div>
         <div style="white-space: nowrap; align-content: center; margin-right: 5px;"> (buff formular: points/10000) </div>
         <a href="https://docs.google.com/spreadsheets/d/1W1ubd2s2Y_wkTQDMhJKhg0MyXrHzUm1PoPU910E12_8/edit?gid=339576003#gid=339576003"
             target="_blank">
@@ -192,15 +199,17 @@
     var my_level = 0
     var my_gp = 0
     var my_xp = 0
-    var my_points = 0
+    var my_points = []
+    var if_build_comparison = false
+    var op_points = []
     var filters = []
     var boss_level = 0
     var bonus_atk = 0
     var bonus_gp = 0
     var bonus_xp = 0
-    var rank_scores = 0
-    var target_dmgs = 0
-    var if_limit_dmg_cost = 0
+    var rank_scores = []
+    var target_dmgs = []
+    var if_limit_dmg_cost = false
     var limit_dmg_cost = 0
 
     function shop_cost(which, level) {
@@ -282,14 +291,22 @@
 
     function cal_levelup(xp) {
         let level_up = 0
+        let rest_xp = xp
         while (true) {
             let need_xp = level_exp(my_level + level_up);
-            if (need_xp > xp)
+            if (need_xp > rest_xp)
                 break
-            xp -= need_xp
+            rest_xp -= need_xp
             level_up++
         }
-        return level_up
+        return [level_up, rest_xp]
+    }
+
+    function truncate_list(list = [], length = 0, _default = 0) {
+        while (list.length > length)
+            list.pop()
+        while (list.length < length)
+            list.push(_default)
     }
 
     function init_value(){
@@ -303,14 +320,15 @@
 
         let obj = null
         obj = document.getElementById('my_points')
-        my_points = obj.value
-        my_points = my_points.match(/([0-9]+)/g) || []
-        my_points = my_points.map(Number)
-        while (my_points.length > 5)
-            my_points.pop()
-        while (my_points.length < 5)
-            my_points.push(0)
+        my_points = (obj.value.match(/([0-9]+)/g) || []).map(Number)
+        truncate_list(my_points, 5, 0)
         obj.value = String(my_points)
+
+        if_build_comparison = Boolean(document.getElementById('if_build_comparison').checked)
+        obj = document.getElementById('op_points')
+        op_points = (obj.value.match(/([0-9]+)/g) || []).map(Number)
+        truncate_list(op_points, 5, 0)
+        obj.value = String(op_points)
 
         filters = []
         for (let i = 0; i < 5; i++) {
@@ -319,19 +337,13 @@
         }
 
         obj = document.getElementById('rank_scores')
-        rank_scores = obj.value
-        rank_scores = rank_scores.match(/([0-9]+)/g) || []
-        rank_scores = rank_scores.map(Number)
-        while (rank_scores.length > 7)
-            rank_scores.pop()
-        while (rank_scores.length < 7)
-            rank_scores.push(0)
+        rank_scores = (obj.value.match(/([0-9]+)/g) || []).map(Number)
+        truncate_list(rank_scores, 7, 0)
         obj.value = String(rank_scores)
 
         obj = document.getElementById('target_dmgs')
-        target_dmgs = obj.value
-        target_dmgs = target_dmgs.match(/([0-9]+)/g) || []
-        target_dmgs = [...new Set(target_dmgs.map(Number))].sort((a, b) => a - b)
+        target_dmgs = (obj.value.match(/([0-9]+)/g) || []).map(Number)
+        target_dmgs = [...new Set(target_dmgs)].sort((a, b) => a - b)
         obj.value = String(target_dmgs)
 
         if_limit_dmg_cost = Boolean(document.getElementById('if_limit_dmg_cost').checked)
@@ -342,22 +354,30 @@
         save()
     }
 
-    function save(){
-        let ids = ["my_level", "my_gp", "my_xp",
-            "bonus_atk", "bonus_gp", "bonus_xp",
-            "my_points", "boss_level", "rank_scores",
-            "target_dmgs", "limit_dmg_cost"
-        ]
+    const ids = [
+        "my_level", "my_gp", "my_xp",
+        "bonus_atk", "bonus_gp", "bonus_xp",
+        "my_points", "op_points",
+        "boss_level", "rank_scores",
+        "target_dmgs", "limit_dmg_cost"
+    ]
 
+    const checkboxes = [
+        "if_build_comparison",
+        "if_limit_dmg_cost",
+        "console_debug"
+    ]
+
+    const buttons = [
+        "filter0", "filter1", "filter2", "filter3", "filter4"
+    ]
+
+    function save(){
         for(let k of ids){
             localStorage.setItem(k, document.getElementById(k).value)
             if (debug)
                 console.log('save', k, document.getElementById(k).value)
         }
-
-        let checkboxes = [
-            "if_limit_dmg_cost", "console_debug"
-        ]
 
         for (let k of checkboxes) {
             if (debug)
@@ -365,10 +385,6 @@
             localStorage.setItem(k, document.getElementById(k).checked)
         }
 
-        let buttons = [
-            "filter0", "filter1", "filter2", "filter3", "filter4"
-        ]
-        
         for (let k of buttons) {
             if (debug)
                 console.log('save', k, document.getElementById(k).getAttribute('data-select'))
@@ -377,24 +393,14 @@
     }
 
     function load(){
-        let ids = ["my_level", "my_gp", "my_xp",
-            "bonus_atk", "bonus_gp", "bonus_xp",
-            "my_points", "boss_level", "rank_scores",
-            "target_dmgs", "limit_dmg_cost"
-        ]
-
         for(let k of ids){
             if (debug)
                 console.log('load', k, localStorage.getItem(k))
             let r = localStorage.getItem(k)
-            if(r != null){
-                document.getElementById(k).value = r
-            }
+            if (!r)
+                continue
+            document.getElementById(k).value = r
         }
-
-        let checkboxes = [
-            "if_limit_dmg_cost", "console_debug"
-        ]
 
         for (let k of checkboxes) {
             if (debug)
@@ -405,10 +411,6 @@
             let checked = r == "true"
             document.getElementById(k).checked = checked 
         }
-
-        let buttons = [
-            "filter0", "filter1", "filter2", "filter3", "filter4"
-        ]
 
         for (let k of buttons) {
             if (debug)
@@ -449,6 +451,13 @@
         return empty_div;
     }
 
+    function stringify_number(num) {
+        if (num > 0)
+            return "+" + num
+        else
+            return String(num)
+    }
+
     function gp2points() {
         init_value()
         let enums = enum_gp(my_points, my_gp, 0)
@@ -459,18 +468,14 @@
             let [ps, rest_gp] = pair
             let damage = cal_damage(ps, debug)
             let [xp, gp, rank] = cal_reward(ps)
-            let level_up = cal_levelup(my_xp + xp)
-            let _xp = ""
-            if (level_up > 0) {
-                _xp = xp + "(+" + level_up + ")"
-            } else {
-                _xp = xp
-            }
             rank = ["1", "3", "10", "50", "250", "1000", "2500", "2500+"][rank]
-            results.push([damage, gp, _xp, rest_gp, rank, ps])
+            results.push([damage, gp, xp, rest_gp, rank, ps])
         }
 
         results.sort((a, b) => { return b[0] - a[0] })
+
+        let op_damage = cal_damage(op_points, false)
+        let [op_xp, op_gp] = cal_reward(op_points)
 
         let result_dom = document.getElementById('result')
         result_dom.innerHTML = ""
@@ -484,7 +489,23 @@
         result_dom.appendChild(gen_line(objlist));
 
         for (let r of results) {
-            result_dom.appendChild(gen_line(r));
+            let [damage, gp, xp, rest_gp, rank, ps] = r;
+            if (if_build_comparison) {
+                let diff_damage = stringify_number(damage - op_damage);
+                let diff_gp = stringify_number(gp - op_gp);
+                let diff_xp = stringify_number(xp - op_xp);
+                objlist = [diff_damage, diff_gp, diff_xp, rest_gp, rank, ps]
+            } else {
+                let [level_up, rest_xp] = cal_levelup(my_xp + xp)
+                let _xp = ""
+                if (level_up > 0) {
+                    _xp = xp + "(+" + level_up + "/" + rest_xp + ")"
+                } else {
+                    _xp = xp
+                }
+                objlist = [damage, gp, _xp, rest_gp, rank, ps]
+            }
+            result_dom.appendChild(gen_line(objlist));
         }
 
     }
