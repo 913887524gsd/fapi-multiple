@@ -511,7 +511,8 @@
                 } else {
                     _xp = xp
                 }
-                objlist = [damage, gp, _xp, rest_gp, rank, ps]
+                let _gp = gp + " (" + (gp + rest_gp) + ")"
+                objlist = [damage, _gp, _xp, rest_gp, rank, ps]
             }
             result_dom.appendChild(gen_line(objlist));
         }
