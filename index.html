@@ -571,9 +571,11 @@
             for(let i=0;i<6;i++){
                 let r = 0
                 if (i == 0){
-                    r = level_exp(my_level + n)
+                    let lvl = my_level + n
+                    r = level_exp(lvl) + " (" + lvl + ")"
                 } else {
-                    r = shop_cost(i-1, my_points[i-1]+n)
+                    let lvl = my_points[i - 1] + n
+                    r = shop_cost(i - 1, lvl) + " (" + lvl + ")"
                 }
                 objlist.push(r)
             }
