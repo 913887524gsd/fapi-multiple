@@ -79,6 +79,11 @@
             <div style="white-space: nowrap; align-content: center; margin-right: 5px;">操纵台调试(console debugging)</div>
         </div>
     </div>
+    <div style="display: flex; gap: 5px;">
+        <button onclick="json_save()" style="width: 75px;">导出(export)</button>
+        <button onclick="json_load()" style="width: 75px;">导入(import)</button>
+        <textarea id="json_string" type="text"></textarea>
+    </div>
     <div>
         <div>BOSS等级 在血条上方的Txxx里(boss level, is displayed above the boss HP in Txxx)</div>
         <input id="boss_level" type="number" value="21" />
@@ -297,7 +302,7 @@
         return [level_up, rest_xp]
     }
 
-    function cal_equal_points_cost(cur_ps, tar_ps, filter) {
+    function cal_catching_up_cost(cur_ps, tar_ps, filter) {
         let cost = 0
         for (let i = 0; i < 5; i++) {
             if (!filter[i])
@@ -359,7 +364,7 @@
 
         debug = Boolean(document.getElementById('console_debug').checked)
 
-        save()
+        local_save()
     }
 
     const ids = [
@@ -380,59 +385,108 @@
         "filter0", "filter1", "filter2", "filter3", "filter4"
     ]
 
-    function save(){
+    function load(get_value, user_data) {
+        do {
+            let k = 'console_debug'
+            let r = get_value(k, user_data)
+            debug = r == "true"
+        } while (false)
         for(let k of ids){
-            localStorage.setItem(k, document.getElementById(k).value)
+            let r = get_value(k, user_data)
             if (debug)
-                console.log('save', k, document.getElementById(k).value)
-        }
-
-        for (let k of checkboxes) {
-            if (debug)
-                console.log('save', k, document.getElementById(k).checked)
-            localStorage.setItem(k, document.getElementById(k).checked)
-        }
-
-        for (let k of buttons) {
-            if (debug)
-                console.log('save', k, document.getElementById(k).getAttribute('data-select'))
-            localStorage.setItem(k, document.getElementById(k).getAttribute('data-select'))
-        }
-    }
-
-    function load(){
-        for(let k of ids){
-            if (debug)
-                console.log('load', k, localStorage.getItem(k))
-            let r = localStorage.getItem(k)
+                console.log('load', k, r)
             if (!r)
                 continue
             document.getElementById(k).value = r
         }
-
         for (let k of checkboxes) {
+            let r = get_value(k, user_data)
             if (debug)
-                console.log('load', k, localStorage.getItem(k))
-            let r = localStorage.getItem(k)
+                console.log('load', k, r)
             if (!r)
                 continue
             let checked = r == "true"
             document.getElementById(k).checked = checked 
         }
-
         for (let k of buttons) {
+            let r = get_value(k, user_data)
             if (debug)
-                console.log('load', k, localStorage.getItem(k))
-            let r = localStorage.getItem(k)
+                console.log('load', k, r)
             if (!r)
                 continue
-            let activated = r == "true"
-            if (!activated)
-                toggle(document.getElementById(k))
+            let obj = document.getElementById(k)
+            let now_statu = obj.getAttribute("data-select") == "true";
+            let req_statu = r == "true"
+            if (now_statu ^ req_statu)
+                toggle(obj)
         }
     }
 
-    load()
+    function save(put_value, user_data) {
+        for(let k of ids){
+            let r = document.getElementById(k).value
+            if (debug)
+                console.log('save', k, r)
+            put_value(k, r, user_data)
+        }
+
+        for (let k of checkboxes) {
+            let r = document.getElementById(k).checked
+            if (debug)
+                console.log('save', k, r)
+            put_value(k, r, user_data)
+        }
+
+        for (let k of buttons) {
+            let r = document.getElementById(k).getAttribute('data-select')
+            if (debug)
+                console.log('save', k, r)
+            put_value(k, r, user_data)
+        }
+    }
+
+    function json_get_value(k, dic) {
+        return dic[k]
+    }
+
+    function json_put_value(k, v, dic) {
+        dic[k] = String(v)
+    }
+
+    function json_load() {
+        let dic = {}
+        try {
+            dic = JSON.parse(document.getElementById('json_string').value)
+        } catch (error) {
+            return
+        }
+        load(json_get_value, dic)
+        local_save()
+    }
+
+    function json_save() {
+        let dic = {}
+        save(json_put_value, dic)
+        document.getElementById('json_string').value = JSON.stringify(dic)
+    }
+
+    function local_get_value(k, dummy) {
+        return localStorage.getItem(k)
+    }
+
+    function local_put_value(k, v, dummy) {
+        localStorage.setItem(k, v)
+    }
+
+    function local_save() {
+        save(local_put_value, null)
+    }
+
+    function local_load() {
+        load(local_get_value, null)
+    }
+
+    local_load()
 
     function get_ws(index, total) {
         let step = Math.floor(100 / total)
@@ -595,7 +649,7 @@
                 cal_damage(ps, false),
                 limit_dmg_cost - gp,
                 ps,
-                cal_equal_points_cost(my_points, ps, [1, 1, 0, 0, 1])
+                cal_catching_up_cost(my_points, ps, [1, 1, 0, 0, 1])
             ])
         }
         results.sort((a, b) => {
@@ -609,10 +663,10 @@
 
         let objlist = []
         
-        objlist = ["伤害", "攻击花费", "加点", "相同加点花费"]
+        objlist = ["伤害", "攻击花费", "加点", "追赶花费"]
         result_dom.appendChild(gen_line(objlist));
 
-        objlist = ["damage", "atk cost", "points", "equal points cost"]
+        objlist = ["damage", "atk cost", "points", "catching up cost"]
         result_dom.appendChild(gen_line(objlist));
 
         for (let r of results) {
