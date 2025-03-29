@@ -73,30 +73,29 @@
 
 <body>
     <div id="special-container0">
-        <div style="white-space: nowrap; align-content: center; margin-right: 5px;">可以用手机直接打开(suitable for mobile)</div>
-        <div style="display: inline-flex;">
-            <a href="manuals/man-zh.html" target="_blank">说明书</a>
-            &nbsp;&nbsp;
-            <a href="manuals/man-en.html" target="_blank">manual </a>
+        <div id="txt_guideline" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
+        <div style="vertical-align: middle;">
+            <a id="txt_manual" target="_blank"></a>
         </div>
+        <button id="txt_language" onclick="toggle_language()" style="width: auto; padding: 5px 10px;"></button>
         <div style="display: inline-flex;">
             <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="console_debug" type="checkbox">
-            <div style="white-space: nowrap; align-content: center; margin-right: 5px;">操纵台调试(console debugging)</div>
+            <div id="txt_console_debug" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
         </div>
     </div>
     <div style="display: flex; gap: 5px;">
-        <button onclick="json_save()" style="width: 75px;">导出(export)</button>
-        <button onclick="json_load()" style="width: 75px;">导入(import)</button>
+        <button id="txt_export" onclick="json_save()" style="width: 75px;"></button>
+        <button id="txt_import" onclick="json_load()" style="width: 75px;"></button>
         <textarea id="json_string" type="text"></textarea>
     </div>
     <div>
-        <div>BOSS等级 在血条上方的Txxx里(boss level, is displayed above the boss HP in Txxx)</div>
+        <div id="txt_boss_tier"></div>
         <input id="boss_level" type="number" value="21" />
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
-        <div style="text-align: left; flex: 1;">你的等级 (my level)</div>
-        <div style="text-align: left; flex: 1;">你的经验 (my exp)</div>
-        <div style="text-align: left; flex: 1;">你的金豆 (my gold potato)</div>
+        <div id="txt_my_level" style="text-align: left; flex: 1;"></div>
+        <div id="txt_my_exp" style="text-align: left; flex: 1;"></div>
+        <div id="txt_my_gp" style="text-align: left; flex: 1;"></div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
         <input id="my_level" type="number" value="14" />
@@ -104,10 +103,10 @@
         <input id="my_gp" type="number" value="150" />
     </div>
     <div style="display: flex;">
-        <div style="width: 50%;">加点(my points)</div>
+        <div id="txt_my_points" style="width: 50%;"></div>
         <div style="display: inline-flex; margin-left: auto; width: 50%;">
             <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="if_build_comparison" type="checkbox">
-            <div>比较加点(build comparison)</div>
+            <div id="txt_build_comparison"></div>
         </div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
@@ -115,25 +114,23 @@
         <input id="op_points" value="0,0,0,0,0" />
     </div>
     <div id="special-container1">
-        <div style="align-content: center;">计算包含升级项(compute including upgrades)</div>
-        <div id="filter0" class="option-btn active" data-select="true" onclick="toggle(this)">基础伤害(atk+3)</div>
-        <div id="filter1" class="option-btn active" data-select="true" onclick="toggle(this)">连击(c atk)</div>
-        <div id="filter2" class="option-btn active" data-select="true" onclick="toggle(this)">经验(exp)</div>
-        <div id="filter3" class="option-btn active" data-select="true" onclick="toggle(this)">金豆(gp)</div>
-        <div id="filter4" class="option-btn active" data-select="true" onclick="toggle(this)">攻击次数(atk charge)</div>
+        <div id="txt_compute_including_upgrades" style="align-content: center;"></div>
+        <div id="filter0" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
+        <div id="filter1" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
+        <div id="filter2" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
+        <div id="filter3" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
+        <div id="filter4" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
     </div>
     <div id="special-container2">
-        <div style="white-space: nowrap; align-content: center;">BUFF计算方式:金魂/10000</div>
-        <div style="white-space: nowrap; align-content: center; margin-right: 5px;"> (buff formula: gold souls/10000)</div>
+        <div id="txt_buff_formula" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
         <a href="https://docs.google.com/spreadsheets/d/1W1ubd2s2Y_wkTQDMhJKhg0MyXrHzUm1PoPU910E12_8/edit?gid=339576003#gid=339576003"
-            target="_blank">
-            BUFF历史(buff history)
+            target="_blank" id="txt_buff_history">
         </a>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
-        <div style="text-align: left; flex: 1;">BUFF攻击(buff atk)</div>
-        <div style="text-align: left; flex: 1;">BUFF经验(buff xp)</div>
-        <div style="text-align: left; flex: 1;">BUFF金豆(buff gp)</div>
+        <div id="txt_buff_atk" style="text-align: left; flex: 1;"></div>
+        <div id="txt_buff_exp" style="text-align: left; flex: 1;"></div>
+        <div id="txt_buff_gp" style="text-align: left; flex: 1;"></div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
         <input id="bonus_atk" type="number" value="0.67" />
@@ -141,24 +138,19 @@
         <input id="bonus_gp" type="number" value="0.15" />
     </div>
     <div>
-        <div>排名伤害, 填写第1、3、10、50、250、1000、2500名的伤害</div>
-        <div>排名2500的伤害只能猜,除非你有2500名的朋友(分隔符只要非数字就可以)</div>
-        <div>enter damage values for ranks 1, 3, 10, 50, 250, 1000, and 2500, separated by non-digit characters</div>
-        <div>you can only guess the damage made by rank 2500 player unless you have a friend</div>
+        <div id="txt_rank_score1"></div>
+        <div id="txt_rank_score2"></div>
         <textarea id="rank_scores" type="text"
             style="width: 100%; height: 60px; font-size: 20px;">3000,2800,2700,2600,2100,2000,1800</textarea>
     </div>
     <div>
-        <div>寻找伤害可能的加点方式，经验等级由‘你的等级’固定</div>
-        <div>支持对多个伤害查找，伤害之间用非数字分隔符隔开</div>
-        <div>find points matching the input damage, exp level is fixed by 'my level'</div>
-        <div>support finding multiple damages, separated by non-digit characters</div>
+        <div id="txt_find_damage1"></div>
+        <div id="txt_find_damage2"></div>
     </div>
     <div style="display: inline-flex">
         <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="if_limit_dmg_cost" type="checkbox">
-        <label style="white-space: nowrap; vertical-align: middle; 
+        <label id="txt_limit_damage_cost" style="white-space: nowrap; vertical-align: middle; 
             align-content: center; margin-right: 5px;">
-            限制伤害花费(limit damage cost)
         </label>
         <input id="limit_dmg_cost" type="number" value="1919">
     </div>
@@ -167,9 +159,9 @@
             style="width: 100%; height: 60px; font-size: 20px;">114,514</textarea>
     </div>
     <div id="special-container3">
-        <button onclick="gp2points()">金豆可能加点(gp to points)</button>
-        <button onclick="show_cost()">查看消耗(show cost)</button>
-        <button onclick="dmg2points()">伤害可能加点(damage to points)</button>
+        <button id="txt_gp_to_points" onclick="gp2points()"></button>
+        <button id="txt_show_cost" onclick="show_cost()"></button>
+        <button id="txt_damage_to_points" onclick="dmg2points()"></button>
     </div>
     <div>
         <div id="result"></div>
@@ -177,6 +169,129 @@
 </body>
 
 <script>
+    const text_area = [
+        "txt_guideline", "txt_manual", "txt_language", "txt_console_debug",
+        "txt_export", "txt_import",
+        "txt_boss_tier",
+        "txt_my_level", "txt_my_exp", "txt_my_gp",
+        "txt_my_points", "txt_build_comparison",
+        "txt_compute_including_upgrades",
+        "filter0", "filter1", "filter2", "filter3", "filter4",
+        "txt_buff_formula", "txt_buff_history",
+        "txt_buff_atk", "txt_buff_exp", "txt_buff_gp",
+        "txt_rank_score1", "txt_rank_score2",
+        "txt_find_damage1", "txt_find_damage2", "txt_limit_damage_cost",
+        "txt_gp_to_points", "txt_show_cost", "txt_damage_to_points"
+    ];
+
+    const zh_text = {
+        "txt_guideline": "可以用手机直接打开",
+        "txt_manual": "说明书",
+        "txt_language": "English",
+        "txt_console_debug": "操纵台调试",
+        "txt_export": "导出",
+        "txt_import": "导入",
+        "txt_boss_tier": "BOSS等级",
+        "txt_my_level": "你的等级",
+        "txt_my_exp": "你的经验",
+        "txt_my_gp": "你的金豆",
+        "txt_my_points": "加点",
+        "txt_build_comparison": "比较加点",
+        "txt_compute_including_upgrades": "计算包含升级项",
+        "filter0": "基础伤害",
+        "filter1": "连击",
+        "filter2": "经验",
+        "filter3": "金豆",
+        "filter4": "攻击次数",
+        "txt_buff_formula": "BUFF计算方式:金魂/10000",
+        "txt_buff_history": "BUFF历史",
+        "txt_buff_atk": "BUFF攻击",
+        "txt_buff_exp": "BUFF经验",
+        "txt_buff_gp": "BUFF金豆",
+        "txt_rank_score1": "排名伤害, 填写第1、3、10、50、250、1000、2500名的伤害",
+        "txt_rank_score2": "排名2500的伤害只能猜,除非你有2500名的朋友(分隔符只要非数字就可以)",
+        "txt_find_damage1": "寻找伤害可能的加点方式，经验等级由‘你的等级’固定",
+        "txt_find_damage2": "支持对多个伤害查找，伤害之间用非数字分隔符隔开",
+        "txt_limit_damage_cost": "限制伤害花费",
+        "txt_gp_to_points": "金豆可能加点",
+        "txt_show_cost": "查看消耗",
+        "txt_damage_to_points": "伤害可能加点",
+    };
+
+    const en_text = {
+        "txt_guideline": "suitable for mobile",
+        "txt_manual": "manual",
+        "txt_language": "简体中文",
+        "txt_console_debug": "console debug",
+        "txt_export": "export",
+        "txt_import": "import",
+        "txt_boss_tier": "boss tier",
+        "txt_my_level": "my level",
+        "txt_my_exp": "my exp",
+        "txt_my_gp": "my gold potatoes",
+        "txt_my_points": "my points",
+        "txt_build_comparison": "build comparison",
+        "txt_compute_including_upgrades": "compute including upgrades",
+        "filter0": "atk+3",
+        "filter1": "combo atk",
+        "filter2": "exp",
+        "filter3": "gp",
+        "filter4": "atk charge",
+        "txt_buff_formula": "buff formula: gold souls/10000",
+        "txt_buff_history": "buff history",
+        "txt_buff_atk": "buff atk",
+        "txt_buff_exp": "buff exp",
+        "txt_buff_gp": "buff gp",
+        "txt_rank_score1": "enter damage values for ranks 1, 3, 10, 50, 250, 1000, and 2500, separated by non-digit characters",
+        "txt_rank_score2": "you can only guess the damage made by rank 2500 player unless you have a friend",
+        "txt_find_damage1": "find points matching the input damage, exp level is fixed by 'my level'",
+        "txt_find_damage2": "support finding multiple damages, separated by non-digit characters",
+        "txt_limit_damage_cost": "limit damage cost",
+        "txt_gp_to_points": "gp to points",
+        "txt_show_cost": "show cost",
+        "txt_damage_to_points": "damage to points",
+    };
+
+    function change_language(lang) {
+        let text = null
+        if (lang == "zh") {
+            text = zh_text
+            document.getElementById('txt_manual').href="manuals/man-zh.html"
+        } else {
+            text = en_text
+            document.getElementById('txt_manual').href="manuals/man-en.html"
+        }
+        for (let i in text_area) {
+            let k = text_area[i];
+            let _text = text[k];
+            let _obj = document.getElementById(k);
+            if (text[k] == null || _obj == null) {
+                console.log("error loading text" + k);
+                continue
+            }
+            _obj.innerText = _text
+        }
+    }
+
+    var lang=""
+
+    function init_language() {
+        lang=localStorage.getItem("lang") || navigator.language.split('-')[0];
+        change_language(lang)
+    }
+
+    function toggle_language() {
+        if (lang == "zh") {
+            lang = "en"
+        } else {
+            lang = "zh"
+        }
+        change_language(lang)
+        localStorage.setItem("lang", lang)
+    }
+
+    init_language()
+
     function applyStyle() {
         const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
         for (let i = 0; i < 4; i++) {
@@ -549,10 +664,11 @@
 
         let objlist = []
 
-        objlist = ["伤害", "得金豆", "得经验", "剩金豆", "排名", "加点"]
-        result_dom.appendChild(gen_line(objlist));
-        
-        objlist = ["damage", "get gp", "get xp", "rest gp", "rank", "points"]
+        if (lang == "zh") {
+            objlist = ["伤害", "得金豆", "得经验", "剩金豆", "排名", "加点"]
+        } else {
+            objlist = ["damage", "get gp", "get xp", "rest gp", "rank", "points"]
+        }
         result_dom.appendChild(gen_line(objlist));
 
         for (let r of results) {
@@ -584,10 +700,12 @@
         result_dom.innerHTML = ""
     
         let objlist = []
-        objlist = ["加点", "加点花费", "伤害花费", "经济花费"]
-        result_dom.appendChild(gen_line(objlist));
 
-        objlist = ["points", "points cost", "atk cost", "eco cost"]
+        if (lang == "zh") {
+            objlist = ["加点", "加点花费", "伤害花费", "经济花费"]
+        } else {
+            objlist = ["points", "points cost", "atk cost", "eco cost"]
+        }
         result_dom.appendChild(gen_line(objlist));
 
         objlist = [
@@ -600,13 +718,18 @@
 
         result_dom.appendChild(gen_empty_line());
 
-        objlist = ["点攻击性价比", "atk cost efficiency"]
+        if (lang == "zh") {
+            objlist = ["点攻击性价比"]
+        } else {
+            objlist = ["atk cost efficiency"]
+        }
         result_dom.appendChild(gen_line(objlist));
 
-        objlist = ["攻击类型", "提升攻击", "攻击花费", "攻击性价比"]
-        result_dom.appendChild(gen_line(objlist));
-
-        objlist = ["atk type", "atk boost", "atk cost", "atk effeciency"]
+        if (lang == "zh") {
+            objlist = ["攻击类型", "提升攻击", "攻击花费", "攻击性价比"]
+        } else {
+            objlist = ["atk type", "atk boost", "atk cost", "atk effeciency"]
+        }
         result_dom.appendChild(gen_line(objlist));
         
         let results = enum_atk_eff(my_points)
@@ -616,13 +739,18 @@
 
         result_dom.appendChild(gen_empty_line());
 
-        objlist = ["未来加点/经验需求", "future points/exp cost"]
+        if (lang == "zh") {
+            objlist = ["未来加点/经验需求"]
+        } else {
+            objlist = ["future points/exp cost"]
+        }
         result_dom.appendChild(gen_line(objlist));
 
-        objlist = ["等级提升", "基础攻击", "连击", "加经验", "加金豆", "攻击次数"]
-        result_dom.appendChild(gen_line(objlist));
-
-        objlist = ["levelup", "atk+3", "c atk", "add xp", "add gp", "atk charge"]
+        if (lang == "zh") {
+            objlist = ["等级提升", "基础攻击", "连击", "加经验", "加金豆", "攻击次数"]
+        } else {
+            objlist = ["levelup", "atk+3", "c atk", "add xp", "add gp", "atk charge"]
+        }
         result_dom.appendChild(gen_line(objlist));
 
         for (let n = 0; n < 10; n++){ 
@@ -667,11 +795,12 @@
         result_dom.innerHTML = ""
 
         let objlist = []
-        
-        objlist = ["伤害", "攻击花费", "加点", "追赶花费"]
-        result_dom.appendChild(gen_line(objlist));
 
-        objlist = ["damage", "atk cost", "points", "catching up cost"]
+        if (lang == "zh") {
+            objlist = ["伤害", "攻击花费", "加点", "追赶花费"]
+        } else {
+            objlist = ["damage", "atk cost", "points", "catching up cost"]
+        }
         result_dom.appendChild(gen_line(objlist));
 
         for (let r of results) {
@@ -748,7 +877,12 @@
     function enum_atk_eff(points) {
         let results = []
         let dmg_index = [0, 1, 4]
-        let dmg_type = ["基础攻击 atk+3", "连击 c atk", "攻击次数 atk charge"]
+        let dmg_type = []
+        if (lang == "zh") {
+            dmg_type = ["基础攻击", "连击", "攻击次数"]
+        } else {
+            dmg_type = ["atk+3", "combo atk", "atk charge"]
+        }
 
         for (let i = 0; i < dmg_index.length; i++) {
             let index = dmg_index[i]
