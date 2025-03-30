@@ -228,7 +228,7 @@
         "txt_boss_tier": "boss tier",
         "txt_my_level": "my level",
         "txt_my_exp": "my exp",
-        "txt_my_gp": "my gold potatoes",
+        "txt_my_gp": "my gp",
         "txt_my_points": "my points",
         "txt_build_comparison": "build comparison",
         "txt_compute_including_upgrades": "compute including upgrades",
@@ -694,6 +694,15 @@
 
     }
 
+    function get_points_cost(ps) {
+        return [
+            ps,
+            cal_cost(ps),
+            cal_cost([ps[0], ps[1], 0, 0, ps[4]]),
+            cal_cost([0, 0, ps[2], ps[3], 0])
+        ]
+    }
+
     function show_cost() {
         init_value()
         let result_dom = document.getElementById('result')
@@ -708,14 +717,22 @@
         }
         result_dom.appendChild(gen_line(objlist));
 
-        objlist = [
-            my_points,
-            cal_cost(my_points),
-            cal_cost([my_points[0], my_points[1], 0, 0, my_points[4]]),
-            cal_cost([0, 0, my_points[2], my_points[3], 0])
-        ]
-        result_dom.appendChild(gen_line(objlist));
+        let my_ps_cost = get_points_cost(my_points)
+        result_dom.appendChild(gen_line(my_ps_cost));
 
+        if (if_build_comparison) {
+            let op_ps_cost = get_points_cost(op_points)
+            result_dom.appendChild(gen_line(op_ps_cost));
+            
+            let ps_diff_cost = [
+                "",
+                stringify_number(my_ps_cost[1] - op_ps_cost[1]),
+                stringify_number(my_ps_cost[2] - op_ps_cost[2]),
+                stringify_number(my_ps_cost[3] - op_ps_cost[3])
+            ];
+            result_dom.appendChild(gen_line(ps_diff_cost));
+        }
+        
         result_dom.appendChild(gen_empty_line());
 
         if (lang == "zh") {
