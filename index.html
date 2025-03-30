@@ -88,9 +88,10 @@
         <button id="txt_import" onclick="json_load()" style="width: 75px;"></button>
         <textarea id="json_string" type="text"></textarea>
     </div>
+    <div id="txt_support_expression"></div>
     <div>
         <div id="txt_boss_tier"></div>
-        <input id="boss_level" type="number" value="21" />
+        <input id="boss_level" type="text" value="21" />
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
         <div id="txt_my_level" style="text-align: left; flex: 1;"></div>
@@ -98,9 +99,9 @@
         <div id="txt_my_gp" style="text-align: left; flex: 1;"></div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
-        <input id="my_level" type="number" value="14" />
-        <input id="my_xp" type="number" value="15" />
-        <input id="my_gp" type="number" value="150" />
+        <input id="my_level" type="text" value="14" />
+        <input id="my_xp" type="text" value="15" />
+        <input id="my_gp" type="text" value="150" />
     </div>
     <div style="display: flex;">
         <div id="txt_my_points" style="width: 50%;"></div>
@@ -180,7 +181,7 @@
     const text_area = [
         "txt_guideline", "txt_manual", "txt_language", "txt_console_debug",
         "txt_export", "txt_import",
-        "txt_boss_tier",
+        "txt_support_expression", "txt_boss_tier",
         "txt_my_level", "txt_my_exp", "txt_my_gp",
         "txt_my_points", "txt_build_comparison",
         "txt_compute_including_upgrades",
@@ -199,6 +200,7 @@
         "txt_console_debug": "操纵台调试",
         "txt_export": "导出",
         "txt_import": "导入",
+        "txt_support_expression": "BOSS等级、你的等级、你的经验、你的金豆支持输入表达式比如：a+b",
         "txt_boss_tier": "BOSS等级",
         "txt_my_level": "你的等级",
         "txt_my_exp": "你的经验",
@@ -234,6 +236,7 @@
         "txt_console_debug": "console debug",
         "txt_export": "export",
         "txt_import": "import",
+        "txt_support_expression": "boss tier, my level, my exp and my gp support input expression like a+b",
         "txt_boss_tier": "boss tier",
         "txt_my_level": "my level",
         "txt_my_exp": "my exp",
@@ -468,6 +471,16 @@
         return Number(obj.value)
     }
 
+    function map_expr_int(obj, userdata) {
+        try {
+            return Math.floor(Number(
+                Function("return " + obj.value)()
+            ))
+        } catch (error) {
+            return null
+        }
+    }
+
     function map_list(obj, userdata) {
         let [len, _default] = userdata
         let value = (obj.value.match(/([0-9]+)/g) || []).map(Number)
@@ -497,10 +510,10 @@
     function init_value(){
         debug = read_value('console_debug', map_checkbox, false, null, null)
 
-        my_level = read_value('my_level', map_int, 0, callback_normal, null)
-        my_gp = read_value('my_gp', map_int, 0, callback_normal, null)
-        my_xp = read_value('my_xp', map_int, 0, callback_normal, null)
-        boss_level = read_value('boss_level', map_int, 0, callback_normal, null)
+        my_level = read_value('my_level', map_expr_int, 0, callback_normal, null)
+        my_gp = read_value('my_gp', map_expr_int, 0, callback_normal, null)
+        my_xp = read_value('my_xp', map_expr_int, 0, callback_normal, null)
+        boss_level = read_value('boss_level', map_expr_int, 0, callback_normal, null)
         bonus_atk = read_value('bonus_atk', map_float, 0, callback_normal, null)
         bonus_gp = read_value('bonus_gp', map_float, 0, callback_normal, null)
         bonus_xp = read_value('bonus_xp', map_float, 0, callback_normal, null)
