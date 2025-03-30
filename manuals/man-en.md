@@ -91,19 +91,21 @@ This function allows you to compare all your point allocations against a target 
 
 This feature allows you to view the cost of your current point allocation, the cost-effectiveness of attack upgrades, and future point allocation needs.
 
+If you have clicked `build comparison` checkbox, the system will compare the cost between these two points.
+
 # Damage to Points
 
 ### Input
 
-![](./images/dmgtopoints1.png)
+![](./images/dmgtopoints1-en.png)
 
 Based on the current game state, you can infer a player's point allocation by entering multiple damage values separated by non-numeric characters. You can also set a spending limit to reduce search space and improve calculation efficiency.
 
-Since level affects damage, the inferred points are based on the `My Level` input.
+Since level affects damage, you need to input levels you want to look up in the `level range` area.
 
 ### Calculation
 
-![](./images/dmgtopoints2.png)
+![](./images/dmgtopoints2-en.png)
 
 The calculation will infer the player's point allocation and determine the amount of gold potatoes needed to catch up based on your current allocation.
 
