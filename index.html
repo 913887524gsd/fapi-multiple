@@ -122,12 +122,11 @@
         <div id="filter3" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
         <div id="filter4" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
     </div>
-    <div id="special-container2">
-        <div id="txt_buff_formula" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
-        <a href="https://docs.google.com/spreadsheets/d/1W1ubd2s2Y_wkTQDMhJKhg0MyXrHzUm1PoPU910E12_8/edit?gid=339576003#gid=339576003"
-            target="_blank" id="txt_buff_history">
-        </a>
-    </div>
+    <a href="https://docs.google.com/spreadsheets/d/1W1ubd2s2Y_wkTQDMhJKhg0MyXrHzUm1PoPU910E12_8/edit?gid=339576003#gid=339576003"
+        target="_blank" id="txt_buff_history">
+    </a>
+    <div id="txt_buff_formula1"></div>
+    <div id="txt_buff_formula2"></div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
         <div id="txt_buff_atk" style="text-align: left; flex: 1;"></div>
         <div id="txt_buff_exp" style="text-align: left; flex: 1;"></div>
@@ -167,7 +166,7 @@
         <textarea id="target_dmgs" type="text"
             style="width: 100%; height: 60px; font-size: 20px;">114,514</textarea>
     </div>
-    <div id="special-container3">
+    <div id="special-container2">
         <button id="txt_gp_to_points" onclick="gp2points()"></button>
         <button id="txt_show_cost" onclick="show_cost()"></button>
         <button id="txt_damage_to_points" onclick="dmg2points()"></button>
@@ -186,7 +185,7 @@
         "txt_my_points", "txt_build_comparison",
         "txt_compute_including_upgrades",
         "filter0", "filter1", "filter2", "filter3", "filter4",
-        "txt_buff_formula", "txt_buff_history",
+        "txt_buff_formula1", "txt_buff_formula2", "txt_buff_history",
         "txt_buff_atk", "txt_buff_exp", "txt_buff_gp",
         "txt_rank_score1", "txt_rank_score2",
         "txt_find_damage1", "txt_find_damage2", "txt_level_range", "txt_limit_damage_cost",
@@ -213,7 +212,8 @@
         "filter2": "经验",
         "filter3": "金豆",
         "filter4": "攻击次数",
-        "txt_buff_formula": "BUFF计算方式:金魂/10000",
+        "txt_buff_formula1": "BUFF计算方式:金魂/10000",
+        "txt_buff_formula2": "计算经验和金豆buff时会截断百位数后的部分（5950→5900/10000）",
         "txt_buff_history": "BUFF历史（由Tragon维护）",
         "txt_buff_atk": "BUFF攻击",
         "txt_buff_exp": "BUFF经验",
@@ -249,7 +249,8 @@
         "filter2": "exp",
         "filter3": "gp",
         "filter4": "atk charge",
-        "txt_buff_formula": "buff formula: gold souls/10000",
+        "txt_buff_formula1": "buff formula: gold souls/10000",
+        "txt_buff_formula2": "for exp and gp buff, gold souls should be truncated at the hundred’s place(5950→5900/10000)",
         "txt_buff_history": "buff history(maintained by Tragon)",
         "txt_buff_atk": "buff atk",
         "txt_buff_exp": "buff exp",
@@ -307,7 +308,7 @@
 
     function applyStyle() {
         const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 3; i++) {
             let name = "special-container" + i;
             let container = document.getElementById(name);
             if (isMobile) {
