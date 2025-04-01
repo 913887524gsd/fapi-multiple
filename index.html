@@ -306,8 +306,8 @@
 
     init_language()
 
+    const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
     function applyStyle() {
-        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
         for (let i = 0; i < 3; i++) {
             let name = "special-container" + i;
             let container = document.getElementById(name);
@@ -673,13 +673,18 @@
             return 100 - step * (total - 1)
     }
 
-    function gen_line(objlist) {
+    function gen_line(objlist, width = []) {
         let objlen = objlist.length
         let new_div = document.createElement("div");
         new_div.style = "display:flex; width=100%;"
         new_div.innerHTML = ""
         for(let i = 0; i < objlen; i++){
-            new_div.innerHTML += "<div style='width: "+ get_ws(i, objlen) +"%;'>"+ objlist[i] +"</div>"
+            let _width = 0
+            if (width.length != objlist.length)
+                _width = get_ws(i, objlen)
+            else
+                _width = width[i]
+            new_div.innerHTML += "<div style='width: " + _width + "%;'>"+ objlist[i] +"</div>"
         }
         return new_div
     }
@@ -741,7 +746,7 @@
                 if (level_up > 0) {
                     _xp = xp + " (+" + level_up + "/" + rest_xp + ")"
                 } else {
-                    _xp = xp
+                    _xp = xp + " (" + rest_xp + ")"
                 }
                 let _gp = gp + " (" + (gp + rest_gp) + ")"
                 objlist = [damage, _gp, _xp, rest_gp, rank, ps]
@@ -877,16 +882,19 @@
         result_dom.innerHTML = ""
 
         let objlist = []
+        let width = []
+        if (isMobile)
+            width = [20, 20, 10, 30, 20]
 
         if (lang == "zh") {
             objlist = ["伤害", "攻击花费", "等级", "加点", "追赶花费"]
         } else {
-            objlist = ["damage", "atk cost", "level", "points", "catching up cost"]
+            objlist = ["damage", "atk cost", "level", "points", "catch up cost"]
         }
-        result_dom.appendChild(gen_line(objlist));
+        result_dom.appendChild(gen_line(objlist, width));
 
         for (let r of results) {
-            result_dom.appendChild(gen_line(r));
+            result_dom.appendChild(gen_line(r, width));
         }
     }
 
@@ -963,7 +971,7 @@
         if (lang == "zh") {
             dmg_type = ["基础攻击", "连击", "攻击次数"]
         } else {
-            dmg_type = ["atk+3", "combo atk", "atk charge"]
+            dmg_type = ["atk+3", "consecutive atk", "atk charge"]
         }
 
         for (let i = 0; i < dmg_index.length; i++) {
