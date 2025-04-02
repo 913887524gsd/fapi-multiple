@@ -275,8 +275,7 @@
             text = en_text
             document.getElementById('txt_manual').href="manuals/man-en.html"
         }
-        for (let i in text_area) {
-            let k = text_area[i];
+        for (let k of text_area) {
             let _text = text[k];
             let _obj = document.getElementById(k);
             if (text[k] == null || _obj == null) {
@@ -695,6 +694,32 @@
         return empty_div;
     }
 
+    function gen_omit_view_message(func) {
+        let warning = "", expand = ""
+        if (lang == "zh") {
+            warning = "搜索出来的结果太多了，仅保留前1000条"
+            expand = "显示所有"
+        } else {
+            warning = "there are too many results. keeping the first 1000 results"
+            expand = "expand all"
+        }
+        let new_div = document.createElement("div");
+        new_div.style.display = "inline";
+
+        let warningText = document.createTextNode(warning + " ");
+        let expandLink = document.createElement("span");
+        expandLink.innerText = expand;
+        expandLink.style.cursor = "pointer";
+        expandLink.style.textDecoration = "underline";
+        expandLink.style.marginLeft = "4px";
+        expandLink.style.color = "blue";
+        expandLink.onclick = func;
+
+        new_div.appendChild(warningText);
+        new_div.appendChild(expandLink);
+        return new_div
+    }
+
     function stringify_number(num) {
         if (num > 0)
             return "+" + num
@@ -702,27 +727,20 @@
             return String(num)
     }
 
-    function gp2points() {
-        init_value()
-        let enums = enum_gp(my_points, my_gp, 0)
+    let valid_index = []
+    let valid_enums = []
+    let damage_upperbound = 0
+    let gp_upperbound = 0
 
-        let results = []
-
-        for (let pair of enums) {
-            let [ps, rest_gp] = pair
-            let damage = cal_damage(ps, my_level, debug)
-            let [xp, gp, rank] = cal_reward(ps)
-            rank = ["1", "3", "10", "50", "250", "1000", "2500", "2500+"][rank]
-            results.push([damage, gp, xp, rest_gp, rank, ps])
-        }
-
-        results.sort((a, b) => { return b[0] - a[0] })
-
+    function gp2points_render(results, use_omit_view) {
         let op_damage = cal_damage(op_points, my_level, false)
         let [op_xp, op_gp] = cal_reward(op_points)
 
         let result_dom = document.getElementById('result')
         result_dom.innerHTML = ""
+
+        if (use_omit_view)
+            result_dom.appendChild(gen_omit_view_message(gp2points_expandall));
 
         let objlist = []
 
@@ -753,7 +771,44 @@
             }
             result_dom.appendChild(gen_line(objlist));
         }
+    }
 
+    function gp2points_getresults() {
+        let results = []
+
+        for (let pair of valid_enums) {
+            let [ps, rest_gp] = pair
+            let damage = cal_damage(ps, my_level, debug)
+            let [xp, gp, rank] = cal_reward(ps)
+            rank = ["1", "3", "10", "50", "250", "1000", "2500", "2500+"][rank]
+            results.push([damage, gp, xp, rest_gp, rank, ps])
+        }
+
+        results.sort((a, b) => { return b[0] - a[0] })
+        return results
+    }
+
+    function gp2points() {
+        init_value()
+
+        valid_index = []
+        valid_enums = []
+        for (let i = 0; i < 5; i++)
+            if (filters[i])
+                valid_index.push(i)
+        let _points = JSON.parse(JSON.stringify(my_points))
+        enum_gp(_points, my_gp, 0)
+
+        let results = gp2points_getresults()
+        let use_omit_view = results.length > 1000
+        if (use_omit_view)
+            truncate_list(results, 1000, null)
+        gp2points_render(results, use_omit_view)
+    }
+    
+    function gp2points_expandall() {
+        let results = gp2points_getresults()
+        gp2points_render(results, false)
     }
 
     function get_points_cost(ps) {
@@ -849,37 +904,12 @@
         }
     }
 
-    function dmg2points() {
-        init_value()
-
-        let results = []
-        for (let lvl = level_range_low; lvl <= level_range_high; lvl++) {
-            let gp_limit = 0
-            if (if_limit_dmg_cost)
-                gp_limit = limit_dmg_cost
-            let enums = enum_dmg([0, 0, 0, 0, 0], lvl, gp_limit, 0)
-            for (let pair of enums) {
-                let [ps, gp] = pair
-                results.push([
-                    cal_damage(ps, lvl, false),
-                    gp_limit - gp,
-                    lvl,
-                    ps,
-                    cal_catching_up_cost(my_points, ps, [1, 1, 0, 0, 1])
-                ])
-            }
-        }
-
-        results.sort((a, b) => {
-            if (a[0] != b[0])
-                return a[0] - b[0]
-            if (a[1] != b[1])
-                return a[1] - b[1]
-            return a[2] - b[2]
-        })
-
+    function dmg2points_render(results, use_omit_view) {
         let result_dom = document.getElementById('result')
         result_dom.innerHTML = ""
+
+        if (use_omit_view)
+            result_dom.appendChild(gen_omit_view_message(dmg2points_expandall))
 
         let objlist = []
         let width = []
@@ -898,70 +928,117 @@
         }
     }
 
-    function enum_gp(points, gp, index = 0) {
-
-        let enough = []
-
-        for (let i = index; i < 5; i++) {
-            if (gp >= shop_cost(i, points[i]) && filters[i]) {
-                enough.push(i)
-            }
-        }
-
-        if (enough.length == 0) {
-            if (debug)
-                console.log('gp', points, gp)
-            return [[points, gp]]
-        }
-
+    function dmg2points_getresults() {
         let results = []
-        for (let i of enough) {
-            let _points = JSON.parse(JSON.stringify(points));
-            let cost = shop_cost(i, _points[i])
-            let _gp = gp - cost
-            _points[i] += 1;
-            results = results.concat(enum_gp(_points, _gp, i));
+        for (let pair of valid_enums) {
+            let [ps, gp, lvl] = pair
+            results.push([
+                cal_damage(ps, lvl, false),
+                gp, lvl, ps,
+                cal_catching_up_cost(my_points, ps, [1, 1, 0, 0, 1])
+            ])
         }
-
+        results.sort((a, b) => {
+            if (a[0] != b[0])
+                return a[0] - b[0]
+            if (a[1] != b[1])
+                return a[1] - b[1]
+            return a[2] - b[2]
+        })
         return results
     }
 
-    function enum_dmg(points, level, gp, index = 0) {
-        let dmg_index = [0, 1, 4]
-        let max_dmg = 0
-        if (target_dmgs.length > 0)
-            max_dmg = target_dmgs[target_dmgs.length - 1]
+    function dmg2points() {
+        init_value()
 
-        let results = []
+        valid_index = [0, 1, 4]
+        valid_enums = []
+        if (target_dmgs.length > 0) {
+            damage_upperbound = target_dmgs[target_dmgs.length - 1]
+            if (if_limit_dmg_cost)
+                gp_upperbound = limit_dmg_cost
+            else
+                gp_upperbound = Number.MAX_VALUE
+            for (let lvl = level_range_low; lvl <= level_range_high; lvl++)
+                enum_dmg([0, 0, 0, 0, 0], lvl, 0, 0, true)
+        }
+        
+        let results = dmg2points_getresults()
+        let use_omit_view = results.length > 1000
+        if (use_omit_view)
+            truncate_list(results, 1000, null)
+        dmg2points_render(results, use_omit_view)
+    }
+
+    function dmg2points_expandall() {
+        let results = dmg2points_getresults()
+        dmg2points_render(results, false)
+    }
+
+    function enum_gp(points, gp, index = 0) {
+        if (index >= valid_index.length) {
+            let _points = JSON.parse(JSON.stringify(points))
+            valid_enums.push([_points, gp])
+            return
+        } else if (index + 1 >= valid_index.length) {
+            let _points = JSON.parse(JSON.stringify(points))
+            let shop_index = valid_index[index];
+            while (true) {
+                let cost = shop_cost(shop_index, _points[shop_index])
+                if (cost > gp)
+                    break
+                _points[shop_index]++
+                gp -= cost
+            }
+            valid_enums.push([_points, gp])
+            return
+        }
+
+        let shop_index = valid_index[index];
+        let ori_level = points[shop_index];
+        enum_gp(points, gp, index + 1)
+        while (true) {
+            let cost = shop_cost(shop_index, points[shop_index])
+            if (cost > gp)
+                break
+            points[shop_index]++
+            gp -= cost
+            enum_gp(points, gp, index + 1)
+        }
+        points[shop_index] = ori_level
+    }
+
+    function enum_dmg(points, level, gp, index, is_new) {
+        let shop_index = valid_index[index]
+        let ori_level = points[shop_index]
         let dmg = cal_damage(points, level, false)
-        if (max_dmg < dmg)
-            return results
-        for (let i of target_dmgs) {
-            if (i == dmg) {
-                if (debug)
-                    console.log('dmg', points, gp)
-                results = results.concat([[points, gp]])
+
+        if (gp > gp_upperbound || gp < 0)
+            return false
+        if (dmg > damage_upperbound)
+            return false
+        if (is_new) {
+            for (let _dmg of target_dmgs) {
+                if (dmg == _dmg) {
+                    let _points = JSON.parse(JSON.stringify(points))
+                    valid_enums.push([_points, gp, level])
+                }
             }
         }
-
-        let enough = []
-
-        for (let i = index; i < 3; i++) {
-            let _index = dmg_index[i]
-            if (if_limit_dmg_cost && shop_cost(_index, points[_index]) > gp)
-                continue
-            enough.push(i)
+        if (index >= valid_index.length)
+            return true
+        if (!enum_dmg(points, level, gp, index + 1, false))
+            return true
+        while (true) {
+            let cost = shop_cost(shop_index, points[shop_index])
+            points[shop_index]++
+            gp += cost
+            if (!enum_dmg(points, level, gp, index + 1, true))
+                break
         }
+        points[shop_index] = ori_level
 
-        for (let i of enough) {
-            let _points = JSON.parse(JSON.stringify(points))
-            let _index = dmg_index[i]
-            let cost = shop_cost(_index, _points[_index])
-            let _gp = gp - cost
-            _points[_index] += 1
-            results = results.concat(enum_dmg(_points, level, _gp, i));
-        }
-        return results
+        return true
     }
 
     function enum_atk_eff(points) {
