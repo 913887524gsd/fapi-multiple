@@ -820,6 +820,46 @@
         ]
     }
 
+    var show_cost_num
+
+    function gen_show_cost_continue() {
+        let continue_text
+        if (lang == "zh") {
+            continue_text = "继续"
+        } else {
+            continue_text = "continue"
+        }
+        let new_div = document.createElement("div");
+        new_div.style.display = "inline";
+
+        let continueLink = document.createElement("span");
+        continueLink.innerText = continue_text;
+        continueLink.style.cursor = "pointer";
+        continueLink.style.textDecoration = "underline";
+        continueLink.style.marginLeft = "4px";
+        continueLink.style.color = "blue";
+        continueLink.onclick = show_cost_continue;
+
+        new_div.appendChild(continueLink);
+        return new_div
+    }
+
+    function gen_show_cost(n) {
+        objlist = []
+        for(let i = 0; i < 6; i++){
+            let r = 0
+            if (i == 0){
+                let lvl = my_level + n
+                r = level_exp(lvl) + " (" + lvl + ")"
+            } else {
+                let lvl = my_points[i - 1] + n
+                r = shop_cost(i - 1, lvl) + " (" + lvl + ")"
+            }
+            objlist.push(r)
+        }
+        return gen_line(objlist)
+    }
+
     function show_cost() {
         init_value()
         let result_dom = document.getElementById('result')
@@ -887,21 +927,23 @@
         }
         result_dom.appendChild(gen_line(objlist));
 
-        for (let n = 0; n < 10; n++){ 
-            objlist = []
-            for(let i=0;i<6;i++){
-                let r = 0
-                if (i == 0){
-                    let lvl = my_level + n
-                    r = level_exp(lvl) + " (" + lvl + ")"
-                } else {
-                    let lvl = my_points[i - 1] + n
-                    r = shop_cost(i - 1, lvl) + " (" + lvl + ")"
-                }
-                objlist.push(r)
-            }
-            result_dom.appendChild(gen_line(objlist));
+        show_cost_num = 10
+        for (let n = 0; n < show_cost_num; n++){ 
+            result_dom.appendChild(gen_show_cost(n));
         }
+        result_dom.appendChild(gen_show_cost_continue())
+    }
+
+    function show_cost_continue() {
+        let result_dom = document.getElementById('result')
+        result_dom.removeChild(result_dom.lastChild)
+        
+        let new_show_cost_num = show_cost_num * 2
+        for (let n = show_cost_num; n < new_show_cost_num; n++) {
+            result_dom.appendChild(gen_show_cost(n));
+        }
+        result_dom.appendChild(gen_show_cost_continue())
+        show_cost_num = new_show_cost_num
     }
 
     function dmg2points_render(results, use_omit_view) {
