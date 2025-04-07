@@ -192,6 +192,20 @@
         "txt_gp_to_points", "txt_show_cost", "txt_damage_to_points"
     ];
 
+    const result_text_area = [
+        "txt_omit_view_warning",
+        "txt_omit_view_expand",
+        "txt_gp2points",
+        "txt_show_cost_points_cost",
+        "txt_show_cost_atk_effeciency1", 
+        "txt_show_cost_atk_effeciency2",
+        "txt_show_cost_atk_effeciency3",
+        "txt_show_cost_future_cost1",
+        "txt_show_cost_future_cost2",
+        "txt_show_cost_continue",
+        "txt_dmg2points",
+    ]
+
     const zh_text = {
         "txt_guideline": "可以用手机直接打开",
         "txt_manual": "说明书",
@@ -227,6 +241,18 @@
         "txt_gp_to_points": "金豆可能加点",
         "txt_show_cost": "查看消耗",
         "txt_damage_to_points": "伤害可能加点",
+        //
+        "txt_omit_view_warning": "搜索出来的结果太多了，仅保留前1000条",
+        "txt_omit_view_expand": "显示所有",
+        "txt_gp2points": ["伤害", "得金豆", "得经验", "剩金豆", "排名", "加点"],
+        "txt_show_cost_points_cost": ["加点", "加点花费", "伤害花费", "经济花费"],
+        "txt_show_cost_atk_effeciency1": ["点攻击性价比"], 
+        "txt_show_cost_atk_effeciency2": ["攻击类型", "提升攻击", "攻击花费", "攻击性价比"],
+        "txt_show_cost_atk_effeciency3": ["基础攻击", "连击", "攻击次数"],
+        "txt_show_cost_future_cost1": ["未来加点/经验需求"],
+        "txt_show_cost_future_cost2": ["等级提升", "基础攻击", "连击", "加经验", "加金豆", "攻击次数"],
+        "txt_show_cost_continue": "继续",
+        "txt_dmg2points": ["伤害", "攻击花费", "等级", "加点", "追赶花费"],
     };
 
     const en_text = {
@@ -264,21 +290,37 @@
         "txt_gp_to_points": "gp to points",
         "txt_show_cost": "show cost",
         "txt_damage_to_points": "damage to points",
+        //
+        "txt_omit_view_warning": "there are too many results. keeping the first 1000 results",
+        "txt_omit_view_expand": "expand all",
+        "txt_gp2points": ["damage", "get gp", "get xp", "rest gp", "rank", "points"],
+        "txt_show_cost_points_cost": ["points", "points cost", "atk cost", "eco cost"],
+        "txt_show_cost_atk_effeciency1": ["atk cost efficiency"],
+        "txt_show_cost_atk_effeciency2": ["atk type", "atk boost", "atk cost", "atk effeciency"],
+        "txt_show_cost_atk_effeciency3": ["atk+3", "consecutive atk", "atk charge"],
+        "txt_show_cost_future_cost1": ["future points/exp cost"],
+        "txt_show_cost_future_cost2": ["levelup", "atk+3", "c atk", "add xp", "add gp", "atk charge"],
+        "txt_show_cost_continue": "continue",
+        "txt_dmg2points": ["damage", "atk cost", "level", "points", "catch up cost"],
     };
 
+    function get_locale_text(key) {
+        if (lang == "zh")
+            return zh_text[key]
+        else
+            return en_text[key]
+    }
+
     function change_language(lang) {
-        let text = null
         if (lang == "zh") {
-            text = zh_text
             document.getElementById('txt_manual').href="manuals/man-zh.html"
         } else {
-            text = en_text
             document.getElementById('txt_manual').href="manuals/man-en.html"
         }
         for (let k of text_area) {
-            let _text = text[k];
+            let _text = get_locale_text(k);
             let _obj = document.getElementById(k);
-            if (text[k] == null || _obj == null) {
+            if (_text == null || _obj == null) {
                 console.log("error loading text" + k);
                 continue
             }
@@ -679,11 +721,14 @@
         new_div.innerHTML = ""
         for(let i = 0; i < objlen; i++){
             let _width = 0
+            let _wrap = ""
             if (width.length != objlist.length)
                 _width = get_ws(i, objlen)
             else
                 _width = width[i]
-            new_div.innerHTML += "<div style='width: " + _width + "%;'>"+ objlist[i] +"</div>"
+            if (i + 1 < objlen)
+                _wrap = "word-break: break-word; overflow-wrap: break-word;"
+            new_div.innerHTML += "<div style='width: " + _width + "%;" + _wrap +  " '>"+ objlist[i] +"</div>"
         }
         return new_div
     }
@@ -694,26 +739,25 @@
         return empty_div;
     }
 
+    function gen_span_link(text, func) {
+        let link = document.createElement("span");
+        link.innerText = text;
+        link.style.cursor = "pointer";
+        link.style.textDecoration = "underline";
+        link.style.marginLeft = "4px";
+        link.style.color = "blue";
+        link.onclick = func;
+        return link
+    }
+
     function gen_omit_view_message(func) {
-        let warning = "", expand = ""
-        if (lang == "zh") {
-            warning = "搜索出来的结果太多了，仅保留前1000条"
-            expand = "显示所有"
-        } else {
-            warning = "there are too many results. keeping the first 1000 results"
-            expand = "expand all"
-        }
+        let warning = get_locale_text("txt_omit_view_warning")
+        let expand = get_locale_text("txt_omit_view_expand")
         let new_div = document.createElement("div");
         new_div.style.display = "inline";
 
         let warningText = document.createTextNode(warning + " ");
-        let expandLink = document.createElement("span");
-        expandLink.innerText = expand;
-        expandLink.style.cursor = "pointer";
-        expandLink.style.textDecoration = "underline";
-        expandLink.style.marginLeft = "4px";
-        expandLink.style.color = "blue";
-        expandLink.onclick = func;
+        let expandLink = gen_span_link(expand, func);
 
         new_div.appendChild(warningText);
         new_div.appendChild(expandLink);
@@ -744,11 +788,7 @@
 
         let objlist = []
 
-        if (lang == "zh") {
-            objlist = ["伤害", "得金豆", "得经验", "剩金豆", "排名", "加点"]
-        } else {
-            objlist = ["damage", "get gp", "get xp", "rest gp", "rank", "points"]
-        }
+        objlist = get_locale_text("txt_gp2points")
         result_dom.appendChild(gen_line(objlist));
 
         for (let r of results) {
@@ -823,23 +863,11 @@
     var show_cost_num
 
     function gen_show_cost_continue() {
-        let continue_text
-        if (lang == "zh") {
-            continue_text = "继续"
-        } else {
-            continue_text = "continue"
-        }
+        let text = get_locale_text("txt_show_cost_continue")
         let new_div = document.createElement("div");
         new_div.style.display = "inline";
 
-        let continueLink = document.createElement("span");
-        continueLink.innerText = continue_text;
-        continueLink.style.cursor = "pointer";
-        continueLink.style.textDecoration = "underline";
-        continueLink.style.marginLeft = "4px";
-        continueLink.style.color = "blue";
-        continueLink.onclick = show_cost_continue;
-
+        let continueLink = gen_span_link(text, show_cost_continue)
         new_div.appendChild(continueLink);
         return new_div
     }
@@ -867,11 +895,7 @@
     
         let objlist = []
 
-        if (lang == "zh") {
-            objlist = ["加点", "加点花费", "伤害花费", "经济花费"]
-        } else {
-            objlist = ["points", "points cost", "atk cost", "eco cost"]
-        }
+        objlist = get_locale_text("txt_show_cost_points_cost")
         result_dom.appendChild(gen_line(objlist));
 
         let my_ps_cost = get_points_cost(my_points)
@@ -892,18 +916,10 @@
         
         result_dom.appendChild(gen_empty_line());
 
-        if (lang == "zh") {
-            objlist = ["点攻击性价比"]
-        } else {
-            objlist = ["atk cost efficiency"]
-        }
+        objlist = get_locale_text("txt_show_cost_atk_effeciency1")
         result_dom.appendChild(gen_line(objlist));
 
-        if (lang == "zh") {
-            objlist = ["攻击类型", "提升攻击", "攻击花费", "攻击性价比"]
-        } else {
-            objlist = ["atk type", "atk boost", "atk cost", "atk effeciency"]
-        }
+        objlist = get_locale_text("txt_show_cost_atk_effeciency2")
         result_dom.appendChild(gen_line(objlist));
         
         let results = enum_atk_eff(my_points)
@@ -913,18 +929,10 @@
 
         result_dom.appendChild(gen_empty_line());
 
-        if (lang == "zh") {
-            objlist = ["未来加点/经验需求"]
-        } else {
-            objlist = ["future points/exp cost"]
-        }
+        objlist = get_locale_text("txt_show_cost_future_cost1")
         result_dom.appendChild(gen_line(objlist));
 
-        if (lang == "zh") {
-            objlist = ["等级提升", "基础攻击", "连击", "加经验", "加金豆", "攻击次数"]
-        } else {
-            objlist = ["levelup", "atk+3", "c atk", "add xp", "add gp", "atk charge"]
-        }
+        objlist = get_locale_text("txt_show_cost_future_cost2")
         result_dom.appendChild(gen_line(objlist));
 
         show_cost_num = 10
@@ -958,11 +966,7 @@
         if (isMobile)
             width = [20, 20, 10, 30, 20]
 
-        if (lang == "zh") {
-            objlist = ["伤害", "攻击花费", "等级", "加点", "追赶花费"]
-        } else {
-            objlist = ["damage", "atk cost", "level", "points", "catch up cost"]
-        }
+        objlist = get_locale_text("txt_dmg2points")
         result_dom.appendChild(gen_line(objlist, width));
 
         for (let r of results) {
@@ -1086,12 +1090,7 @@
     function enum_atk_eff(points) {
         let results = []
         let dmg_index = [0, 1, 4]
-        let dmg_type = []
-        if (lang == "zh") {
-            dmg_type = ["基础攻击", "连击", "攻击次数"]
-        } else {
-            dmg_type = ["atk+3", "consecutive atk", "atk charge"]
-        }
+        let dmg_type = get_locale_text("txt_show_cost_atk_effeciency3")
 
         for (let i = 0; i < dmg_index.length; i++) {
             let index = dmg_index[i]
