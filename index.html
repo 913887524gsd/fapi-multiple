@@ -252,7 +252,7 @@
         "txt_show_cost_future_cost1": ["未来加点/经验需求"],
         "txt_show_cost_future_cost2": ["等级提升", "基础攻击", "连击", "加经验", "加金豆", "攻击次数"],
         "txt_show_cost_continue": "继续",
-        "txt_dmg2points": ["伤害", "攻击花费", "等级", "加点", "追赶花费"],
+        "txt_dmg2points": ["伤害", "攻击花费", "追赶花费", "等级", "加点"],
     };
 
     const en_text = {
@@ -301,7 +301,7 @@
         "txt_show_cost_future_cost1": ["future points/exp cost"],
         "txt_show_cost_future_cost2": ["levelup", "atk+3", "c atk", "add xp", "add gp", "atk charge"],
         "txt_show_cost_continue": "continue",
-        "txt_dmg2points": ["damage", "atk cost", "level", "points", "catch up cost"],
+        "txt_dmg2points": ["damage", "atk cost", "catch up cost", "level", "points"],
     };
 
     function get_locale_text(key) {
@@ -958,13 +958,16 @@
         let result_dom = document.getElementById('result')
         result_dom.innerHTML = ""
 
-        if (use_omit_view)
-            result_dom.appendChild(gen_omit_view_message(dmg2points_expandall))
+        if (use_omit_view) {
+            result_dom.appendChild(
+                gen_omit_view_message(dmg2points_expandall)
+            )
+        }
 
         let objlist = []
         let width = []
         if (isMobile)
-            width = [20, 20, 10, 30, 20]
+            width = [20, 20, 20, 10, 30]
 
         objlist = get_locale_text("txt_dmg2points")
         result_dom.appendChild(gen_line(objlist, width));
@@ -980,8 +983,8 @@
             let [ps, gp, lvl] = pair
             results.push([
                 cal_damage(ps, lvl, false),
-                gp, lvl, ps,
-                cal_catching_up_cost(my_points, ps, [1, 1, 0, 0, 1])
+                gp, cal_catching_up_cost(my_points, ps, [1, 1, 0, 0, 1]),
+                lvl, ps
             ])
         }
         results.sort((a, b) => {
