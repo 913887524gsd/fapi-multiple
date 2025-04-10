@@ -73,12 +73,12 @@
 
 <body>
     <div id="special-container0">
-        <div id="txt_guideline" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
-        <div style="vertical-align: middle;">
+        <div style="display: inline-flex; vertical-align: middle;">
+            <div id="txt_guideline" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
             <a id="txt_manual" target="_blank"></a>
         </div>
-        <button id="txt_language" onclick="toggle_language()" style="width: auto; padding: 5px 10px;"></button>
         <div style="display: inline-flex;">
+            <button id="txt_language" onclick="toggle_language()" style="width: auto; padding: 5px 10px;"></button>
             <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="console_debug" type="checkbox">
             <div id="txt_console_debug" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
         </div>
@@ -196,7 +196,13 @@
         "txt_omit_view_warning",
         "txt_omit_view_expand",
         "txt_gp2points",
+        "txt_show_cost_points",
+        "txt_show_cost_difference",
+        "txt_show_cost_damage",
+        "txt_show_cost_exp",
         "txt_show_cost_points_cost",
+        "txt_show_cost_damage_cost",
+        "txt_show_cost_eco_cost",
         "txt_show_cost_atk_effeciency1", 
         "txt_show_cost_atk_effeciency2",
         "txt_show_cost_atk_effeciency3",
@@ -219,7 +225,7 @@
         "txt_my_exp": "你的经验",
         "txt_my_gp": "你的金豆",
         "txt_my_points": "加点",
-        "txt_build_comparison": "比较加点",
+        "txt_build_comparison": "比较加点，支持指定对手等级：1,1,4,5,1(4)",
         "txt_compute_including_upgrades": "计算包含升级项",
         "filter0": "基础伤害",
         "filter1": "连击",
@@ -245,7 +251,13 @@
         "txt_omit_view_warning": "搜索出来的结果太多了，仅保留前1000条",
         "txt_omit_view_expand": "显示所有",
         "txt_gp2points": ["伤害", "得金豆", "得经验", "剩金豆", "排名", "加点"],
-        "txt_show_cost_points_cost": ["加点", "加点花费", "伤害花费", "经济花费"],
+        "txt_show_cost_points": "加点",
+        "txt_show_cost_difference": "差距",
+        "txt_show_cost_damage": "伤害",
+        "txt_show_cost_exp": "经验值",
+        "txt_show_cost_points_cost": "加点花费",
+        "txt_show_cost_damage_cost": "伤害花费",
+        "txt_show_cost_eco_cost": "经济花费",
         "txt_show_cost_atk_effeciency1": ["点攻击性价比"], 
         "txt_show_cost_atk_effeciency2": ["攻击类型", "提升攻击", "攻击花费", "攻击性价比"],
         "txt_show_cost_atk_effeciency3": ["基础攻击", "连击", "攻击次数"],
@@ -268,7 +280,7 @@
         "txt_my_exp": "my exp",
         "txt_my_gp": "my gp",
         "txt_my_points": "my points",
-        "txt_build_comparison": "build comparison",
+        "txt_build_comparison": "build comparison, support to specify opponent's level: 1,1,4,5,1(4)",
         "txt_compute_including_upgrades": "compute including upgrades",
         "filter0": "atk+3",
         "filter1": "c atk",
@@ -276,7 +288,7 @@
         "filter3": "gp",
         "filter4": "atk charge",
         "txt_buff_formula1": "buff formula: gold souls/10000",
-        "txt_buff_formula2": "for exp and gp buff, gold souls should be truncated at the hundred’s place(5950→5900/10000)",
+        "txt_buff_formula2": "for exp and gp buff, gold souls should be truncated at the hundred's place(5950→5900/10000)",
         "txt_buff_history": "buff history(maintained by Tragon)",
         "txt_buff_atk": "buff atk",
         "txt_buff_exp": "buff exp",
@@ -294,7 +306,13 @@
         "txt_omit_view_warning": "there are too many results. keeping the first 1000 results",
         "txt_omit_view_expand": "expand all",
         "txt_gp2points": ["damage", "get gp", "get xp", "rest gp", "rank", "points"],
-        "txt_show_cost_points_cost": ["points", "points cost", "atk cost", "eco cost"],
+        "txt_show_cost_points": "points",
+        "txt_show_cost_difference": "difference",
+        "txt_show_cost_damage": "damage",
+        "txt_show_cost_exp": "exp",
+        "txt_show_cost_points_cost": "points cost",
+        "txt_show_cost_damage_cost": "damage cost",
+        "txt_show_cost_eco_cost": "eco cost",
         "txt_show_cost_atk_effeciency1": ["atk cost efficiency"],
         "txt_show_cost_atk_effeciency2": ["atk type", "atk boost", "atk cost", "atk effeciency"],
         "txt_show_cost_atk_effeciency3": ["atk+3", "consecutive atk", "atk charge"],
@@ -371,7 +389,7 @@
     }
 
     var debug = false
-    var my_level = 0, my_gp = 0, my_xp = 0
+    var my_level = 0, my_gp = 0, my_xp = 0, op_level = 0
     var if_build_comparison = false
     var my_points = [], op_points = []
     var filters = []
@@ -414,6 +432,12 @@
         return result
     }
 
+    function cal_exp(level, rest_xp) {
+        let result = rest_xp
+        for (let i = 1; i < level; i++)
+            result += level_exp(i)
+        return result
+    }
 
     function cal_damage(points, level, debug) {
         let atk1 = 20 + points[0] * 3 + level
@@ -530,6 +554,21 @@
         return value
     }
 
+    function map_oppo_points(obj, userdata) {
+        let [len, _default] = userdata
+        const regex = /^(\d+)\D+(\d+)\D+(\d+)\D+(\d+)\D+(\d+)\D*[\(（](\d+)[）\)]\D*$/;
+        let value = obj.value.match(regex)
+        if (value) {
+            value = value.slice(1, 7).map(Number)
+            let ps = value.slice(0, 5)
+            let lvl = value[5]
+            return [ps, lvl]
+        }
+        value = (obj.value.match(/([0-9]+)/g) || []).map(Number)
+        truncate_list(value, len, _default)
+        return [value, null]
+    }
+
     function map_set(obj, userdata) {
         let value = (obj.value.match(/([0-9]+)/g) || []).map(Number)
         value = [...new Set(value)].sort((a, b) => a - b)
@@ -549,6 +588,15 @@
         obj.value = String(value)
     }
 
+    function callback_oppo_points(obj, value) {
+        let [ps, lvl] = value
+        if (lvl) {
+            obj.value = ps + "(" + lvl + ")"
+        } else {
+            obj.value = String(ps)
+        }
+    }
+
     function init_value(){
         debug = read_value('console_debug', map_checkbox, false, null, null)
 
@@ -563,7 +611,9 @@
 
         my_points = read_value('my_points', map_list, [], callback_normal, [5, 0])
         if_build_comparison = read_value('if_build_comparison', map_checkbox, false, null, null)
-        op_points = read_value('op_points', map_list, [], callback_normal, [5, 0])
+        op_stats = read_value('op_points', map_oppo_points, [], callback_oppo_points, [5, 0])
+        op_points = op_stats[0]; op_level = op_stats[1]
+
         filters = []
         for (let i = 0; i < 5; i++) {
             let name = 'filter' + i
@@ -777,7 +827,7 @@
     let gp_upperbound = 0
 
     function gp2points_render(results, use_omit_view) {
-        let op_damage = cal_damage(op_points, my_level, false)
+        let op_damage = cal_damage(op_points, op_level ? op_level : my_level, false)
         let [op_xp, op_gp] = cal_reward(op_points)
 
         let result_dom = document.getElementById('result')
@@ -851,15 +901,6 @@
         gp2points_render(results, false)
     }
 
-    function get_points_cost(ps) {
-        return [
-            ps,
-            cal_cost(ps),
-            cal_cost([ps[0], ps[1], 0, 0, ps[4]]),
-            cal_cost([0, 0, ps[2], ps[3], 0])
-        ]
-    }
-
     var show_cost_num
 
     function gen_show_cost_continue() {
@@ -870,6 +911,23 @@
         let continueLink = gen_span_link(text, show_cost_continue)
         new_div.appendChild(continueLink);
         return new_div
+    }
+
+    function cal_damage_cost(ps) {
+        return cal_cost([ps[0], ps[1], 0, 0, ps[4]])
+    }
+
+    function cal_eco_cost(ps) {
+        return cal_cost([0, 0, ps[2], ps[3], 0])
+    }
+
+    function gen_cost_comparison(text, my_value, op_value) {
+        return gen_line([
+            get_locale_text(text),
+            my_value,
+            op_value,
+            stringify_number(my_value - op_value)
+        ])
     }
 
     function gen_show_cost(n) {
@@ -895,23 +953,56 @@
     
         let objlist = []
 
-        objlist = get_locale_text("txt_show_cost_points_cost")
-        result_dom.appendChild(gen_line(objlist));
-
-        let my_ps_cost = get_points_cost(my_points)
-        result_dom.appendChild(gen_line(my_ps_cost));
-
         if (if_build_comparison) {
-            let op_ps_cost = get_points_cost(op_points)
-            result_dom.appendChild(gen_line(op_ps_cost));
-            
-            let ps_diff_cost = [
-                "",
-                stringify_number(my_ps_cost[1] - op_ps_cost[1]),
-                stringify_number(my_ps_cost[2] - op_ps_cost[2]),
-                stringify_number(my_ps_cost[3] - op_ps_cost[3])
-            ];
-            result_dom.appendChild(gen_line(ps_diff_cost));
+            objlist = [
+                get_locale_text("txt_show_cost_points"),
+                my_points,
+                op_points,
+                get_locale_text("txt_show_cost_difference"),
+            ]
+            result_dom.appendChild(gen_line(objlist));
+            result_dom.appendChild(gen_cost_comparison(
+                "txt_show_cost_damage",
+                cal_damage(my_points, my_level, false),
+                cal_damage(op_points, op_level ? op_level : my_level, false)
+            ));
+            if (op_level) {
+                result_dom.appendChild(gen_cost_comparison(
+                    "txt_show_cost_exp",
+                    cal_exp(my_level, my_xp),
+                    cal_exp(op_level, 0)
+                ));
+            }
+            result_dom.appendChild(gen_cost_comparison(
+                "txt_show_cost_points_cost",
+                cal_cost(my_points),
+                cal_cost(op_points)
+            ));
+            result_dom.appendChild(gen_cost_comparison(
+                "txt_show_cost_damage_cost",
+                cal_damage_cost(my_points),
+                cal_damage_cost(op_points)
+            ));
+            result_dom.appendChild(gen_cost_comparison(
+                "txt_show_cost_eco_cost",
+                cal_eco_cost(my_points),
+                cal_eco_cost(op_points)
+            ))
+        } else {
+            objlist = [
+                get_locale_text("txt_show_cost_points"),
+                get_locale_text("txt_show_cost_points_cost"),
+                get_locale_text("txt_show_cost_damage_cost"),
+                get_locale_text("txt_show_cost_eco_cost"),
+            ]
+            result_dom.appendChild(gen_line(objlist));
+            objlist = [
+                my_points,
+                cal_cost(my_points),
+                cal_damage_cost(my_points),
+                cal_eco_cost(my_points),
+            ]
+            result_dom.appendChild(gen_line(objlist));
         }
         
         result_dom.appendChild(gen_empty_line());
