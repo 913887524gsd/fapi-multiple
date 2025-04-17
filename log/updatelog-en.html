@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head>
-      <title>man-zh</title>
+      <title>updatelog-en</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
@@ -24,77 +24,62 @@
     
       <div class="crossnote markdown-preview  ">
       
-<h1 id="输入">输入 </h1>
-<h3 id="boss等级">BOSS等级 </h3>
-<p>在游戏里面你会在最上方看到这样的界面。</p>
-<p><img src="./images/bosslevel.png" alt=""></p>
-<p>我们只需要关注最中间的那行<code>The Path Macker(T37)</code>，这里的T37就是BOSS的等级。</p>
-<h3 id="等级">等级 </h3>
-<p>在游戏的左上方有这么一个界面。</p>
-<p><img src="./images/urlevel.png" alt=""></p>
-<p>其中的34就是你的等级，340就是你当前等级经验条下的经验值。</p>
-<h3 id="金豆加点">金豆/加点 </h3>
-<p>点开加点界面。</p>
-<p><img src="./images/points.png" alt=""></p>
-<p>左上角的就是你现有的金豆数量，中间的五个数字就是你的加点。</p>
-<p>关于加点的输入你可以有以下的方式：</p>
-<pre data-role="codeBlock" data-info="txt" class="language-txt txt"><code>1 2 3 4 5
-1,2,3,4,5
-1.2.3.4.5
-1-2-3-4-5
-</code></pre><p>只要数字之间用非数字字符隔开系统就能自动识别，如果你填多了/填少了系统会自动帮你纠正到5个而且缺省的数字默认填成0。</p>
-<h3 id="比较加点">比较加点 </h3>
-<p><img src="./images/buildcomparison-zh.png" alt=""></p>
-<p>在你的加点右侧，有一个比较加点功能，上面有一个勾选框，如果勾选会影响<strong>金豆计算加点和查看消耗</strong>的结果。</p>
-<p>下面有一个文本框，里面可以存放对手的加点。对手的等级<strong>默认跟你的等级相同</strong>，如果要制定对手的等级可以在加点后面放一对括号强制制定对手等级。</p>
-<h3 id="buff计算">BUFF计算 </h3>
-<p>在游戏中你会看到这样的buff，它们的最底框是绿色。</p>
-<p><img src="./images/buff.png" alt=""></p>
-<p>这三个分别代表了攻击buff、经验buff和金豆buff，这三个是可以点开的：</p>
-<p><img src="./images/goldsoul.png" alt=""></p>
-<p>点开就可以看到金魂的数量，然后计算总量后按照网站上的公式计算得到buff。</p>
-<h3 id="排行榜">排行榜 </h3>
-<p><img src="./images/leaderboard.png" alt=""></p>
-<p>点开排行榜就能查看到前1000名的排名数据以及它们的伤害，如果你找不到第n个排名对应的伤害，那么把n稍微减小看看能不能找到，因为是并列的原因。</p>
-<p>跟加点一样，如果你输入的数字不是7个，就会自动帮你补充/截断到7个，补充的部分填0。</p>
-<h1 id="金豆计算加点">金豆计算加点 </h1>
-<h3 id="计算加点">计算加点 </h3>
-<p><img src="./images/gptodamage1.png" alt=""></p>
-<p>将上面输入部分数据填好后就可以开始计算了，普通计算会在<strong>尽可能</strong>花光你的金豆的情况下计算你可能的加点情况并按照伤害和排名计算你这轮的收益。</p>
-<p>其中得金豆和得经验后面的<strong>括号</strong>是计算你下轮的金豆/经验情况。</p>
-<p>如果模拟出来的结果太多，系统会自动截断到1000前1000条，当然你也可以展开（不推荐就是了）。</p>
-<h3 id="计算包含升级项">计算包含升级项 </h3>
-<p><img src="./images/includeingupgrades.png" alt=""></p>
-<p>当你加点有一定的倾向性时（比如有时候集中经济，有时候集中伤害）。上图一共有五个按钮分别代表不同的升级项，<strong>蓝色代表激活</strong>，没激活的升级项会在下次计算中直接被忽略，减少搜索空间。</p>
-<h3 id="比较加点-1">比较加点 </h3>
-<p><img src="./images/gptodamage2.png" alt=""></p>
-<p>如果你勾选了加点比较，那么<code>伤害，得金豆和得经验</code>这三项就会显示出加点完你跟对手的加点的差距。</p>
-<h3 id="快速输入">快速输入 </h3>
-<p><img src="./images/gptodamage3-zh.png" alt=""></p>
-<p>现在该系统支持加点快速输入，现在加点是可点击的，如果点击可以直接将模拟出来的<strong>金豆、经验、等级和加点</strong>同步到上方的输入框，方便下一次模拟。</p>
-<h3 id="优先级排序">优先级排序 </h3>
-<p><img src="./images/gptopoints4-zh.png" alt=""></p>
-<p>在结果的最上面这栏，可以支持按照一定的优先级排序：</p>
+<h2 id="417">4.17 </h2>
 <ul>
-<li>伤害：按照伤害从大到小排序</li>
-<li>金豆：按照金豆从大到小排序，相同金豆伤害从大到小排序</li>
-<li>经验：按照经验从大到小排序，相同经验伤害从大到小排序</li>
-<li>剩余金豆：按照剩余金豆从小到大排序，相同剩余金豆伤害从大到小排序</li>
+<li>Support for quickly inputting build from GP to Points results</li>
+<li>Support for sorting based on different criteria</li>
 </ul>
-<h1 id="查看消耗">查看消耗 </h1>
-<p><img src="./images/showcost1-zh.png" alt=""></p>
-<p>这个能够查看你当前加点的消耗，攻击的性价比和未来加点需求（未来加点需求的最下方有个继续按钮可以接着查看）</p>
-<h3 id="比较加点-2">比较加点 </h3>
-<p><img src="./images/showcost2-zh.png" alt=""></p>
-<p>如果你勾选了比较加点，那么该功能展示出比较两个加点之间的消耗差距。这里需要强调的是，如果你强制制定了对手的等级，比较加点还会显示出跟对手的经验值差距。</p>
-<h1 id="伤害可能加点">伤害可能加点 </h1>
-<h3 id="输入-1">输入 </h3>
-<p><img src="./images/dmgtopoints1-zh.png" alt=""></p>
-<p>根据当前局势上的情况你可以通过伤害反推某个人的加点，输入若干个伤害，中间用非位数字字符隔开，然后你还可以限制花费节省搜索解空间的时间。</p>
-<p>由于等级会影响伤害，所以需要在遍历等级范围处填写等级的范围。</p>
-<h3 id="计算">计算 </h3>
-<p><img src="./images/dmgtopoints2-zh.png" alt=""></p>
-<p>计算会反推加点，还能根据你目前的加点计算追赶要花多少经济。</p>
+<h2 id="410">4.10 </h2>
+<ul>
+<li>Support for specifying opponent level in build comparison</li>
+<li>UI layout optimization</li>
+</ul>
+<h2 id="47">4.7 </h2>
+<ul>
+<li>Automatically collapses output if it's too long</li>
+<li>"Show Cost" supports a continue button for future cost display</li>
+</ul>
+<h2 id="42">4.2 </h2>
+<ul>
+<li>Improved enumeration efficiency</li>
+<li>Supports truncating to top 1000 results if too many are generated</li>
+<li>Minor adjustments to layout on mobile platforms</li>
+</ul>
+<h2 id="331">3.31 </h2>
+<ul>
+<li>Fixed incorrect BUFF formula text</li>
+</ul>
+<h2 id="330">3.30 </h2>
+<ul>
+<li>Manual written</li>
+<li>Support for multilingual interface (Chinese/English)</li>
+<li>"Show Cost" supports build comparison</li>
+<li>Input fields now support mathematical expressions</li>
+</ul>
+<h2 id="326">3.26 </h2>
+<ul>
+<li>Added import/export feature to transfer builds across pages</li>
+<li>"Show Cost" for future levels now displays level inside parentheses on the right</li>
+<li>GP to Points calculation supports previewing GP in the next round</li>
+<li>Damage to Points supports showing GP gap from target build</li>
+<li>Fixed layout issues on mobile platforms</li>
+</ul>
+<h2 id="323">3.23 </h2>
+<ul>
+<li>Added calculation including upgrades</li>
+<li>Fixed issue requiring 8 inputs for ranking</li>
+<li>Added link to Tragon documentation</li>
+</ul>
+<h2 id="321">3.21 </h2>
+<ul>
+<li>GP to Points calculation supports previewing next level-up</li>
+<li>Enhanced robustness of build input</li>
+<li>Added debugging console</li>
+</ul>
+<h2 id="310">3.10 </h2>
+<ul>
+<li>Support for Season 3 competition rules</li>
+</ul>
 
       </div>
       

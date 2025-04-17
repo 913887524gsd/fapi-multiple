@@ -75,7 +75,8 @@
     <div id="special-container0">
         <div style="display: inline-flex; vertical-align: middle;">
             <div id="txt_guideline" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
-            <a id="txt_manual" target="_blank"></a>
+            <a style="white-space: nowrap; align-content: center; margin-right: 5px;" id="txt_manual" target="_blank"></a>
+            <a style="white-space: nowrap; align-content: center; margin-right: 5px;" id="txt_updatelog" target="_blank"></a>
         </div>
         <div style="display: inline-flex;">
             <button id="txt_language" onclick="toggle_language()" style="width: auto; padding: 5px 10px;"></button>
@@ -178,7 +179,8 @@
 
 <script>
     const text_area = [
-        "txt_guideline", "txt_manual", "txt_language", "txt_console_debug",
+        "txt_guideline", "txt_manual", "txt_updatelog",
+        "txt_language", "txt_console_debug",
         "txt_export", "txt_import",
         "txt_support_expression", "txt_boss_tier",
         "txt_my_level", "txt_my_exp", "txt_my_gp",
@@ -215,15 +217,16 @@
     const zh_text = {
         "txt_guideline": "可以用手机直接打开",
         "txt_manual": "说明书",
+        "txt_updatelog": "更新日志",
         "txt_language": "English",
         "txt_console_debug": "操纵台调试",
         "txt_export": "导出",
         "txt_import": "导入",
         "txt_support_expression": "BOSS等级、你的等级、你的经验、你的金豆支持输入表达式比如：a+b",
         "txt_boss_tier": "BOSS等级",
-        "txt_my_level": "你的等级",
-        "txt_my_exp": "你的经验",
-        "txt_my_gp": "你的金豆",
+        "txt_my_level": "等级",
+        "txt_my_exp": "经验",
+        "txt_my_gp": "金豆",
         "txt_my_points": "加点",
         "txt_build_comparison": "比较加点，支持指定对手等级：1,1,4,5,1(4)",
         "txt_compute_including_upgrades": "计算包含升级项(这些按钮是可以按的)",
@@ -270,16 +273,17 @@
     const en_text = {
         "txt_guideline": "suitable for mobile",
         "txt_manual": "manual",
+        "txt_updatelog": "update log",
         "txt_language": "简体中文",
         "txt_console_debug": "console debug",
         "txt_export": "export",
         "txt_import": "import",
         "txt_support_expression": "boss tier, my level, my exp and my gp support input expression like a+b",
         "txt_boss_tier": "boss tier",
-        "txt_my_level": "my level",
-        "txt_my_exp": "my exp",
-        "txt_my_gp": "my gp",
-        "txt_my_points": "my points",
+        "txt_my_level": "level",
+        "txt_my_exp": "exp",
+        "txt_my_gp": "gp",
+        "txt_my_points": "points",
         "txt_build_comparison": "build comparison, support to specify opponent's level: 1,1,4,5,1(4)",
         "txt_compute_including_upgrades": "compute including upgrades(you can toggle these upgrades!!!)",
         "filter0": "atk+3",
@@ -305,7 +309,7 @@
         //
         "txt_omit_view_warning": "there are too many results. keeping the first 1000 results",
         "txt_omit_view_expand": "expand all",
-        "txt_gp2points": ["damage", "get gp", "get xp", "rest gp", "rank", "points"],
+        "txt_gp2points": ["damage", "gain gp", "gain xp", "rest gp", "rank", "points"],
         "txt_show_cost_points": "points",
         "txt_show_cost_difference": "difference",
         "txt_show_cost_damage": "damage",
@@ -332,8 +336,10 @@
     function change_language(lang) {
         if (lang == "zh") {
             document.getElementById('txt_manual').href="manuals/man-zh.html"
+            document.getElementById('txt_updatelog').href="log/updatelog-zh.html"
         } else {
             document.getElementById('txt_manual').href="manuals/man-en.html"
+            document.getElementById('txt_updatelog').href="log/updatelog-en.html"
         }
         for (let k of text_area) {
             let _text = get_locale_text(k);
@@ -764,31 +770,6 @@
             return 100 - step * (total - 1)
     }
 
-    function gen_line(objlist, width = []) {
-        let objlen = objlist.length
-        let new_div = document.createElement("div");
-        new_div.style = "display:flex; width=100%;"
-        new_div.innerHTML = ""
-        for(let i = 0; i < objlen; i++){
-            let _width = 0
-            let _wrap = ""
-            if (width.length != objlist.length)
-                _width = get_ws(i, objlen)
-            else
-                _width = width[i]
-            if (i + 1 < objlen)
-                _wrap = "word-break: break-word; overflow-wrap: break-word;"
-            new_div.innerHTML += "<div style='width: " + _width + "%;" + _wrap +  " '>"+ objlist[i] +"</div>"
-        }
-        return new_div
-    }
-
-    function gen_empty_line() {
-        let empty_div = document.createElement("div");
-        empty_div.style = "display:flex; width:100%; height:20px;"; // 可以调整高度
-        return empty_div;
-    }
-
     function gen_span_link(text, func) {
         let link = document.createElement("span");
         link.innerText = text;
@@ -798,6 +779,51 @@
         link.style.color = "blue";
         link.onclick = func;
         return link
+    }
+
+    function gen_line(objlist, width = []) {
+        let objlen = objlist.length;
+        let new_div = document.createElement("div");
+        Object.assign(new_div.style, {
+            display: "flex",
+            width: "100%"
+        });
+
+        for (let i = 0; i < objlen; i++) {
+            let item = objlist[i];
+            let col_div = document.createElement("div");
+
+            // 设置宽度
+            let _width = width.length === objlen ? width[i] : get_ws(i, objlen);
+            col_div.style.width = _width + "%";
+
+            // 设置文本自动换行
+            if (i + 1 < objlen) {
+                Object.assign(col_div.style, {
+                    wordBreak: "break-word",
+                    overflowWrap: "break-word"
+                });
+            }
+
+            if (item instanceof Node) {
+                col_div.appendChild(item)
+            } else {
+                col_div.textContent = item;
+            }
+            new_div.appendChild(col_div);
+        }
+
+        return new_div;
+    }
+
+    function gen_empty_line() {
+        let empty_div = document.createElement("div");
+        Object.assign(empty_div.style, {
+            display: "flex",
+            width: "100%",
+            height: "20px"
+        });
+        return empty_div;
     }
 
     function gen_omit_view_message(func) {
@@ -825,6 +851,36 @@
     let valid_enums = []
     let damage_upperbound = 0
     let gp_upperbound = 0
+    let gp2points_sort_function = null
+
+    function gp2points_sort_by_damage(a, b) {
+        return b[0] - a[0]
+    }
+
+    function gp2points_sort_by_gp(a, b) {
+        if (a[1] != b[1])
+            return b[1] - a[1]
+        return b[0] - a[0]
+    }
+
+    function gp2points_sort_by_exp(a, b) {
+        if (a[2] != b[2])
+            return b[2] - a[2]
+        return b[0] - a[0]
+    }
+
+    function gp2points_sort_by_restgp(a, b) {
+        if (a[3] != b[3])
+            return a[3] - b[3]
+        return b[0] - a[0]
+    }
+
+    function gp2points_updateinput(lvl, exp, gp, ps) {
+        document.getElementById('my_level').value = lvl;
+        document.getElementById('my_xp').value = exp;
+        document.getElementById('my_gp').value = gp;
+        document.getElementById('my_points').value = ps;
+    }
 
     function gp2points_render(results, use_omit_view) {
         let op_damage = cal_damage(op_points, op_level ? op_level : my_level, false)
@@ -837,19 +893,31 @@
             result_dom.appendChild(gen_omit_view_message(gp2points_expandall));
 
         let objlist = []
-
-        objlist = get_locale_text("txt_gp2points")
+        {
+            let temp = get_locale_text("txt_gp2points")            
+            objlist = [
+                gen_span_link(temp[0], () => {gp2points_sort_function = gp2points_sort_by_damage; gp2points_resort()}),
+                gen_span_link(temp[1], () => {gp2points_sort_function = gp2points_sort_by_gp; gp2points_resort()}),
+                gen_span_link(temp[2], () => {gp2points_sort_function = gp2points_sort_by_exp; gp2points_resort()}),
+                gen_span_link(temp[3], () => {gp2points_sort_function = gp2points_sort_by_restgp; gp2points_resort()}),
+                temp[4],
+                temp[5]
+            ]
+        }
         result_dom.appendChild(gen_line(objlist));
 
         for (let r of results) {
             let [damage, gp, xp, rest_gp, rank, ps] = r;
+            let _ps = String(ps);
+            let [level_up, rest_xp] = cal_levelup(my_xp + xp);
+            let link = gen_span_link(_ps, () => gp2points_updateinput(
+                my_level + level_up, rest_xp, gp + rest_gp, _ps));
             if (if_build_comparison) {
                 let diff_damage = stringify_number(damage - op_damage);
                 let diff_gp = stringify_number(gp - op_gp);
                 let diff_xp = stringify_number(xp - op_xp);
-                objlist = [diff_damage, diff_gp, diff_xp, rest_gp, rank, ps]
+                objlist = [diff_damage, diff_gp, diff_xp, rest_gp, rank, link];
             } else {
-                let [level_up, rest_xp] = cal_levelup(my_xp + xp)
                 let _xp = ""
                 if (level_up > 0) {
                     _xp = xp + " (+" + level_up + "/" + rest_xp + ")"
@@ -857,7 +925,7 @@
                     _xp = xp + " (" + rest_xp + ")"
                 }
                 let _gp = gp + " (" + (gp + rest_gp) + ")"
-                objlist = [damage, _gp, _xp, rest_gp, rank, ps]
+                objlist = [damage, _gp, _xp, rest_gp, rank, link]
             }
             result_dom.appendChild(gen_line(objlist));
         }
@@ -874,7 +942,7 @@
             results.push([damage, gp, xp, rest_gp, rank, ps])
         }
 
-        results.sort((a, b) => { return b[0] - a[0] })
+        results.sort(gp2points_sort_function)
         return results
     }
 
@@ -889,6 +957,11 @@
         let _points = JSON.parse(JSON.stringify(my_points))
         enum_gp(_points, my_gp, 0)
 
+        gp2points_sort_function = gp2points_sort_by_damage
+        gp2points_resort()
+    }
+
+    function gp2points_resort() {
         let results = gp2points_getresults()
         let use_omit_view = results.length > 1000
         if (use_omit_view)

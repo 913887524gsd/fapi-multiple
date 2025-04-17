@@ -1,7 +1,3 @@
----
-geometry: a4paper,left=2cm,right=2cm,top=2.5cm,bottom=2.5cm
----
-
 # Input
 
 ### BOSS Level
@@ -12,7 +8,7 @@ In the game, you will see an interface like this at the top.
 
 We only need to focus on the middle line `The Path Macker(T37)`, where `T37` represents the BOSS level.
 
-### My Level
+### Level
 
 In the top-left corner of the game, there is an interface like this.
 
@@ -20,15 +16,15 @@ In the top-left corner of the game, there is an interface like this.
 
 Here, `34` is your level, and `340` is the experience value under your current level's experience bar.
 
-### My gp/Points
+### GP/Points
 
 Open the points allocation interface.
 
 ![](./images/points.png)
 
-The number in the top-left corner represents your available gold potatoes. The five numbers in the middle represent your allocated points.
+The number in the top-left corner represents your available gp. The five numbers in the middle represent your allocated points.
 
-Regarding point allocation input, you can use any of the following formats:
+You can input point allocations using the following formats:
 
 ```txt
 1 2 3 4 5
@@ -37,29 +33,35 @@ Regarding point allocation input, you can use any of the following formats:
 1-2-3-4-5
 ```
 
-As long as the numbers are separated by non-numeric characters, the system can automatically recognize them. If you enter more or fewer numbers than required, the system will automatically adjust it to five numbers, filling in missing values with `0`.
+As long as the numbers are separated by non-digit characters, the system will automatically recognize them. If you enter too many or too few numbers, the system will automatically correct them to five numbers, with missing values defaulting to 0.
+
+### Build Comparison
+
+![](./images/buildcomparison-en.png)
+
+To the right of your points, there's a build comparison feature. On the top, there's a checkbox which, if checked, affects the result of **GP-to-points calculation and cost checking**.
+
+Below that, there's a text box where you can input your opponent's point allocation. By default, your opponent's level is the same as yours, but you can override it by adding a pair of parentheses after the points.
 
 ### BUFF Calculation
 
-In the game, you will see buffs with a green bottom border.
+In the game, you'll see these buffs with a green bottom border.
 
 ![](./images/buff.png)
 
-These three represent the attack buff, experience buff, and gold potato buff, respectively. These can be clicked to expand:
+These three represent the attack buff, experience buff, and gold potato buff. They can be expanded:
 
 ![](./images/goldsoul.png)
 
-Clicking on them reveals the amount of gold souls. The total amount is then calculated using the formula provided on the website to determine the buff values.
+Click to reveal the number of gold souls. The total is then calculated using the formula from the website to get the buff values.
 
 ### Leaderboard
 
 ![](./images/leaderboard.png)
 
-Opening the leaderboard allows you to view the ranking data of the top 1000 players and their damage values. If you cannot find the damage corresponding to the `n`-th rank, try slightly decreasing `n` to check, as ranks may be tied.
+Open the leaderboard to view the top 1000 rankings and their damage values. If you can't find the damage for rank `n`, try lowering `n` a little in case of ties.
 
-Similar to point allocation, if you enter fewer or more than seven numbers, the system will automatically adjust by filling in or truncating the input to exactly seven numbers, with missing values set to `0`.
-
-<div STYLE="page-break-after: always;"></div>
+Similar to point allocation, if you enter fewer or more than seven numbers, the system will automatically correct to exactly seven values, filling in with 0s where needed.
 
 # GP to Points Calculation
 
@@ -67,31 +69,52 @@ Similar to point allocation, if you enter fewer or more than seven numbers, the 
 
 ![](./images/gptodamage1.png)
 
-After filling in the input data from the previous section, you can start the calculation. The standard calculation will attempt to **spend all your gold potatoes optimally** to determine your potential point allocation and calculate your gains in terms of damage and ranking.
+Once the input section above is filled out, you can begin the calculation. The standard calculation attempts to **spend your GP as much as possible** and outputs the possible point allocations along with projected damage and ranking benefits.
 
-The values in parentheses after "get gp" and "get exp" indicate the estimated amount of gold potatoes/experience you will have in the next round.
+The numbers in parentheses after GP gain and EXP gain represent projected values for the **next round**.
 
-### Calculation Including Upgrades
+If there are too many simulated results, the system will automatically truncate to the top 1000 results. You can expand them if necessary (though it's not recommended).
+
+### Include Upgrades in Calculation
 
 ![](./images/includeingupgrades.png)
 
-When you have a specific point allocation preference (e.g., focusing on economy or damage), click this button to ensure the calculation only includes these upgrade options.
+If your point allocation has a particular focus (like economy or damage), the image above shows five toggle buttons for different upgrades. **Blue indicates active**. Inactive upgrades will be skipped in the next calculation to reduce the search space.
 
 ### Build Comparison
 
-![](./images/buildcomparison.png)
-
-This function allows you to compare all your point allocations against a target build, making it easier to compare calculations efficiently and compare with others.
-
 ![](./images/gptodamage2.png)
+
+If you enabled build comparison, the values for `damage, GP gain, and EXP gain` will show the **difference between your build and the opponent’s build**.
+
+### Quick Input
+
+![](./images/gptodamage3-en.png)
+
+The system now supports quick point input. Your simulated builds are now clickable — clicking one will directly fill the upper input fields with the simulated **GP, EXP, level, and points**, making it easier to re-run the simulation.
+
+Priority Sorting
+
+![](./images/gptopoints4-en.png)
+
+At the top of the results section, you can sort based on different priorities:
+
++ Damage: Sort by damage in descending order.
++ GP: Sort by gp in descending order; if equal, sort by damage in descending order.
++ Exp: Sort by experience in descending order; if equal, sort by damage in descending order.
++ Rest GP: Sort by rest gp in ascending order; if equal, sort by damage in descending order.
 
 # Show Cost
 
-![](./images/showcost.png)
+![](./images/showcost1-en.png)
 
-This feature allows you to view the cost of your current point allocation, the cost-effectiveness of attack upgrades, and future point allocation needs.
+This shows the cost of your current point allocation, the cost-efficiency of attacks, and your future point allocation needs. At the bottom of the future allocation, there's a continue button to view further.
 
-If you have clicked `build comparison` checkbox, the system will compare the cost between these two points.
+### Build Comparison
+
+![](./images/showcost2-en.png)
+
+If you enabled build comparison, this will show the **difference in costs** between the two builds. Also, if you forced a level for the opponent, it will additionally show **EXP gap** between you and the opponent.
 
 # Damage to Points
 
@@ -99,13 +122,13 @@ If you have clicked `build comparison` checkbox, the system will compare the cos
 
 ![](./images/dmgtopoints1-en.png)
 
-Based on the current game state, you can infer a player's point allocation by entering multiple damage values separated by non-numeric characters. You can also set a spending limit to reduce search space and improve calculation efficiency.
+Based on the current situation, you can reverse-infer a player's build based on their damage. Enter multiple damage values separated by non-digit characters. You can also limit the cost to reduce search space.
 
-Since level affects damage, you need to input levels you want to look up in the `level range` area.
+Since level affects damage, you must fill in a level range to try.
 
 ### Calculation
 
 ![](./images/dmgtopoints2-en.png)
 
-The calculation will infer the player's point allocation and determine the amount of gold potatoes needed to catch up based on your current allocation.
+The calculation will reverse-infer a build and determine how much economy is needed to catch up, based on your current allocation.
 
