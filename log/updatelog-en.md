@@ -1,3 +1,7 @@
+## 4.20
+
++ Support for using enter/tab to quickly swtich between input areas
+
 ## 4.17
 
 + Support for quickly inputting build from GP to Points results

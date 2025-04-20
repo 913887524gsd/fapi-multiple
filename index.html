@@ -68,10 +68,62 @@
             color: white;
         }
 
+        .messageBox {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fefefe;
+            border: 1px solid #ddd;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            padding: 16px 20px;
+            font-size: 15px;
+            font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+            line-height: 1.6;
+            z-index: 9999;
+            border-radius: 12px;
+            display: none;
+            min-width: 260px;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .messageBox button {
+            margin-top: 12px;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            background: linear-gradient(to right, #3a8ffd, #007bff);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .messageBox button:hover {
+            background: linear-gradient(to right, #2f75e5, #006ae0);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div id="update_info", class="messageBox">
+        <div id="txt_update_info"></div>
+        <button id="txt_update_info_close" onclick="close_update()"></button>
+    </div>
     <div id="special-container0">
         <div style="display: inline-flex; vertical-align: middle;">
             <div id="txt_guideline" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
@@ -92,7 +144,7 @@
     <div id="txt_support_expression"></div>
     <div>
         <div id="txt_boss_tier"></div>
-        <input id="boss_level" type="text" value="21" />
+        <input id="boss_level" type="text" value="21" tabindex="1" />
     </div>
     <a href="https://docs.google.com/spreadsheets/d/1W1ubd2s2Y_wkTQDMhJKhg0MyXrHzUm1PoPU910E12_8/edit?gid=339576003#gid=339576003"
         target="_blank" id="txt_buff_history">
@@ -105,9 +157,9 @@
         <div id="txt_buff_gp" style="text-align: left; flex: 1;"></div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
-        <input id="bonus_atk" type="number" value="0.67" />
-        <input id="bonus_xp" type="number" value="0.10" />
-        <input id="bonus_gp" type="number" value="0.15" />
+        <input id="bonus_atk" type="number" value="0.67" tabindex="2"/>
+        <input id="bonus_xp" type="number" value="0.10" tabindex="3"/>
+        <input id="bonus_gp" type="number" value="0.15" tabindex="4"/>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
         <div id="txt_my_level" style="text-align: left; flex: 1;"></div>
@@ -115,9 +167,9 @@
         <div id="txt_my_gp" style="text-align: left; flex: 1;"></div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
-        <input id="my_level" type="text" value="14" />
-        <input id="my_xp" type="text" value="15" />
-        <input id="my_gp" type="text" value="150" />
+        <input id="my_level" type="text" value="14" tabindex="5"/>
+        <input id="my_xp" type="text" value="15" tabindex="6"/>
+        <input id="my_gp" type="text" value="150" tabindex="7"/>
     </div>
     <div style="display: flex;">
         <div id="txt_my_points" style="width: 50%;"></div>
@@ -127,7 +179,7 @@
         </div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
-        <input id="my_points" value="14,2,8,18,5" />
+        <input id="my_points" value="14,2,8,18,5" tabindex="8"/>
         <input id="op_points" value="0,0,0,0,0" />
     </div>
     <div id="special-container1">
@@ -141,7 +193,7 @@
     <div>
         <div id="txt_rank_score1"></div>
         <div id="txt_rank_score2"></div>
-        <textarea id="rank_scores" type="text"
+        <textarea id="rank_scores" type="text" tabindex="9"
             style="width: 100%; height: 60px; font-size: 20px;">3000,2800,2700,2600,2100,2000,1800</textarea>
     </div>
     <div>
@@ -179,6 +231,7 @@
 
 <script>
     const text_area = [
+        "txt_update_info", "txt_update_info_close",
         "txt_guideline", "txt_manual", "txt_updatelog",
         "txt_language", "txt_console_debug",
         "txt_export", "txt_import",
@@ -214,10 +267,14 @@
         "txt_dmg2points",
     ]
 
+    const updatedate = "2025.4.20"
+
     const zh_text = {
+        "txt_update_info": "新版本已更新，检查更新日志获取最新改动",
+        "txt_update_info_close": "关闭",
         "txt_guideline": "可以用手机直接打开",
         "txt_manual": "说明书",
-        "txt_updatelog": "更新日志",
+        "txt_updatelog": "更新日志(" + updatedate + ")",
         "txt_language": "English",
         "txt_console_debug": "操纵台调试",
         "txt_export": "导出",
@@ -271,9 +328,11 @@
     };
 
     const en_text = {
+        "txt_update_info": "updated, check update log to get new changes",
+        "txt_update_info_close": "close",
         "txt_guideline": "suitable for mobile",
         "txt_manual": "manual",
-        "txt_updatelog": "update log",
+        "txt_updatelog": "update log(" + updatedate + ")",
         "txt_language": "简体中文",
         "txt_console_debug": "console debug",
         "txt_export": "export",
@@ -387,6 +446,34 @@
 
     applyStyle();
     window.addEventListener("resize", applyStyle);
+    const inputs = Array.from(document.querySelectorAll('input[tabindex], textarea[tabindex]'))
+        .sort((a, b) => +a.tabIndex - +b.tabIndex);
+    inputs.forEach((el, index) => {
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === 'Tab') {
+                e.preventDefault();
+                if (index + 1 < inputs.length)
+                    next = inputs[index + 1];
+                else
+                    next = inputs[0];
+                next.focus()
+                next.select();
+            }
+        });
+    });
+
+    function close_update() {
+        localStorage.setItem('updatedate', updatedate);
+        document.getElementById('update_info').style.display = "none";
+    }
+
+    function check_update() {
+        if (localStorage.getItem('updatedate') != updatedate) {
+            document.getElementById('update_info').style.display = "block";
+        }
+    }
+
+    check_update();
 
     function toggle(obj) {
         let selected = obj.getAttribute("data-select") == "true";
