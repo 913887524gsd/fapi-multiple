@@ -125,15 +125,15 @@
         <button id="txt_update_info_close" onclick="close_update()"></button>
     </div>
     <div id="special-container0">
-        <div style="display: inline-flex; vertical-align: middle;">
-            <div id="txt_guideline" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
-            <a style="white-space: nowrap; align-content: center; margin-right: 5px;" id="txt_manual" target="_blank"></a>
-            <a style="white-space: nowrap; align-content: center; margin-right: 5px;" id="txt_updatelog" target="_blank"></a>
+        <div style="display: inline-flex; vertical-align: middle; gap: 5px;">
+            <div id="txt_guideline" style="white-space: nowrap; align-content: center;"></div>
+            <a style="white-space: nowrap; align-content: center;" id="txt_manual" target="_blank"></a>
+            <a style="white-space: nowrap; align-content: center;" id="txt_updatelog" target="_blank"></a>
         </div>
-        <div style="display: inline-flex;">
+        <div style="display: inline-flex; gap: 5px;">
             <button id="txt_language" onclick="toggle_language()" style="width: auto; padding: 5px 10px;"></button>
-            <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="console_debug" type="checkbox">
-            <div id="txt_console_debug" style="white-space: nowrap; align-content: center; margin-right: 5px;"></div>
+            <input style="width: 16px; vertical-align: middle;" id="console_debug" type="checkbox">
+            <div id="txt_console_debug" style="white-space: nowrap; align-content: center;"></div>
         </div>
     </div>
     <div style="display: flex; gap: 5px;">
@@ -146,27 +146,29 @@
         <div id="txt_boss_tier"></div>
         <input id="boss_level" type="text" value="21" tabindex="1" />
     </div>
-    <a href="https://docs.google.com/spreadsheets/d/1W1ubd2s2Y_wkTQDMhJKhg0MyXrHzUm1PoPU910E12_8/edit?gid=339576003#gid=339576003"
-        target="_blank" id="txt_buff_history">
-    </a>
-    <div id="txt_buff_formula1"></div>
+    <div style="display: inline-flex; gap: 10px;">
+        <div id="txt_buff_formula1"></div>
+        <a href="https://docs.google.com/spreadsheets/d/1W1ubd2s2Y_wkTQDMhJKhg0MyXrHzUm1PoPU910E12_8/edit?gid=339576003#gid=339576003"
+            target="_blank" id="txt_buff_history">
+        </a>
+    </div>
     <div id="txt_buff_formula2"></div>
-    <div style="display: flex; justify-content: space-between; width: 100%;">
+    <div style="display: flex; justify-content: space-between;">
         <div id="txt_buff_atk" style="text-align: left; flex: 1;"></div>
         <div id="txt_buff_exp" style="text-align: left; flex: 1;"></div>
         <div id="txt_buff_gp" style="text-align: left; flex: 1;"></div>
     </div>
-    <div style="display: flex; justify-content: space-between; width: 100%;">
+    <div style="display: flex; justify-content: space-between;">
         <input id="bonus_atk" type="number" value="0.67" tabindex="2"/>
         <input id="bonus_xp" type="number" value="0.10" tabindex="3"/>
         <input id="bonus_gp" type="number" value="0.15" tabindex="4"/>
     </div>
-    <div style="display: flex; justify-content: space-between; width: 100%;">
+    <div style="display: flex; justify-content: space-between;">
         <div id="txt_my_level" style="text-align: left; flex: 1;"></div>
         <div id="txt_my_exp" style="text-align: left; flex: 1;"></div>
         <div id="txt_my_gp" style="text-align: left; flex: 1;"></div>
     </div>
-    <div style="display: flex; justify-content: space-between; width: 100%;">
+    <div style="display: flex; justify-content: space-between;">
         <input id="my_level" type="text" value="14" tabindex="5"/>
         <input id="my_xp" type="text" value="15" tabindex="6"/>
         <input id="my_gp" type="text" value="150" tabindex="7"/>
@@ -200,19 +202,17 @@
         <div id="txt_find_damage1"></div>
         <div id="txt_find_damage2"></div>
     </div>
-    <div style="display: inline-flex">
+    <div style="display: inline-flex; gap: 5px;">
         <div id="txt_level_range" style="white-space: nowrap; vertical-align: middle; 
-            align-content: center; margin-right: 5px;"></div>
+            align-content: center;"></div>
         <input id="level_range_low" type="number" value="0" style=  "width: 90px; height: 30px;">
         <div style="vertical-align: middle; align-content: center;">~</div>
         <input id="level_range_high" type="number" value="10" style="width: 90px; height: 30px;">
     </div>
     <br>
-    <div style="display: inline-flex">
-        <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="if_limit_dmg_cost" type="checkbox">
-        <label id="txt_limit_damage_cost" style="white-space: nowrap; vertical-align: middle; 
-            align-content: center; margin-right: 5px;">
-        </label>
+    <div style="display: inline-flex; gap: 5px;">
+        <input style="width: 16px; vertical-align: middle;" id="if_limit_dmg_cost" type="checkbox">
+        <div id="txt_limit_damage_cost" style="white-space: nowrap; vertical-align: middle; align-content: center;"></div>
         <input id="limit_dmg_cost" type="number" value="1919" style="width: 120px; height: 30px;">
     </div>
     <div>
