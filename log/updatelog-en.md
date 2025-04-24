@@ -1,3 +1,7 @@
+## 4.24
+
++ Add a new sort method: damage efficiency
+
 ## 4.20
 
 + Support for using enter/tab to quickly swtich between input areas

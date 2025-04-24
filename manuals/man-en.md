@@ -100,6 +100,7 @@ Priority Sorting
 At the top of the results section, you can sort based on different priorities:
 
 + Damage: Sort by damage in descending order.
++ Efficiency: Sort by damage efficiency in desending order.
 + GP: Sort by gp in descending order; if equal, sort by damage in descending order.
 + Exp: Sort by experience in descending order; if equal, sort by damage in descending order.
 + Rest GP: Sort by rest gp in ascending order; if equal, sort by damage in descending order.

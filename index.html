@@ -258,16 +258,16 @@
         "txt_show_cost_points_cost",
         "txt_show_cost_damage_cost",
         "txt_show_cost_eco_cost",
-        "txt_show_cost_atk_effeciency1", 
-        "txt_show_cost_atk_effeciency2",
-        "txt_show_cost_atk_effeciency3",
+        "txt_show_cost_atk_efficiency1", 
+        "txt_show_cost_atk_efficiency2",
+        "txt_show_cost_atk_efficiency3",
         "txt_show_cost_future_cost1",
         "txt_show_cost_future_cost2",
         "txt_show_cost_continue",
         "txt_dmg2points",
     ]
 
-    const updatedate = "2025.4.20"
+    const updatedate = "2025.4.24"
 
     const zh_text = {
         "txt_update_info": "新版本已更新，检查更新日志获取最新改动",
@@ -310,7 +310,7 @@
         //
         "txt_omit_view_warning": "搜索出来的结果太多了，仅保留前1000条",
         "txt_omit_view_expand": "显示所有",
-        "txt_gp2points": ["伤害", "得金豆", "得经验", "剩金豆", "排名", "加点"],
+        "txt_gp2points": [["伤害", "性价比"], "得金豆", "得经验", "剩金豆", "排名", "加点"],
         "txt_show_cost_points": "加点",
         "txt_show_cost_difference": "差距",
         "txt_show_cost_damage": "伤害",
@@ -318,9 +318,9 @@
         "txt_show_cost_points_cost": "加点花费",
         "txt_show_cost_damage_cost": "伤害花费",
         "txt_show_cost_eco_cost": "经济花费",
-        "txt_show_cost_atk_effeciency1": ["点攻击性价比"], 
-        "txt_show_cost_atk_effeciency2": ["攻击类型", "提升攻击", "攻击花费", "攻击性价比"],
-        "txt_show_cost_atk_effeciency3": ["基础攻击", "连击", "攻击次数"],
+        "txt_show_cost_atk_efficiency1": ["点攻击性价比"], 
+        "txt_show_cost_atk_efficiency2": ["攻击类型", "提升攻击", "攻击花费", "攻击性价比"],
+        "txt_show_cost_atk_efficiency3": ["基础攻击", "连击", "攻击次数"],
         "txt_show_cost_future_cost1": ["未来加点/经验需求"],
         "txt_show_cost_future_cost2": ["等级提升", "基础攻击", "连击", "加经验", "加金豆", "攻击次数"],
         "txt_show_cost_continue": "继续",
@@ -368,7 +368,7 @@
         //
         "txt_omit_view_warning": "there are too many results. keeping the first 1000 results",
         "txt_omit_view_expand": "expand all",
-        "txt_gp2points": ["damage", "gain gp", "gain xp", "rest gp", "rank", "points"],
+        "txt_gp2points": [["damage", "efficiency"], "gain gp", "gain xp", "rest gp", "rank", "points"],
         "txt_show_cost_points": "points",
         "txt_show_cost_difference": "difference",
         "txt_show_cost_damage": "damage",
@@ -376,9 +376,9 @@
         "txt_show_cost_points_cost": "points cost",
         "txt_show_cost_damage_cost": "damage cost",
         "txt_show_cost_eco_cost": "eco cost",
-        "txt_show_cost_atk_effeciency1": ["atk cost efficiency"],
-        "txt_show_cost_atk_effeciency2": ["atk type", "atk boost", "atk cost", "atk effeciency"],
-        "txt_show_cost_atk_effeciency3": ["atk+3", "consecutive atk", "atk charge"],
+        "txt_show_cost_atk_efficiency1": ["atk cost efficiency"],
+        "txt_show_cost_atk_efficiency2": ["atk type", "atk boost", "atk cost", "atk efficiency"],
+        "txt_show_cost_atk_efficiency3": ["atk+3", "consecutive atk", "atk charge"],
         "txt_show_cost_future_cost1": ["future points/exp cost"],
         "txt_show_cost_future_cost2": ["levelup", "atk+3", "c atk", "add xp", "add gp", "atk charge"],
         "txt_show_cost_continue": "continue",
@@ -857,12 +857,13 @@
             return 100 - step * (total - 1)
     }
 
-    function gen_span_link(text, func) {
+    function gen_span_link(text, func, need_margin_left=false) {
         let link = document.createElement("span");
         link.innerText = text;
         link.style.cursor = "pointer";
         link.style.textDecoration = "underline";
-        link.style.marginLeft = "4px";
+        if (need_margin_left)
+            link.style.marginLeft = "4px";
         link.style.color = "blue";
         link.onclick = func;
         return link
@@ -920,7 +921,7 @@
         new_div.style.display = "inline";
 
         let warningText = document.createTextNode(warning + " ");
-        let expandLink = gen_span_link(expand, func);
+        let expandLink = gen_span_link(expand, func, true);
 
         new_div.appendChild(warningText);
         new_div.appendChild(expandLink);
@@ -940,26 +941,35 @@
     let gp_upperbound = 0
     let gp2points_sort_function = null
 
-    function gp2points_sort_by_damage(a, b) {
+    function gp2points_sort_by_damage_amount(a, b) {
         return b[0] - a[0]
+    }
+
+    function gp2points_sort_by_damage_efficiency(a, b) {
+        let co_a = cal_catching_up_cost(my_points, a[5], [1, 1, 0, 0, 1]);
+        let co_b = cal_catching_up_cost(my_points, b[5], [1, 1, 0, 0, 1]);
+        if (co_a > 0 && co_b > 0)
+            return b[0] / co_b - a[0] / co_a;
+        else
+            return b[0] - a[0];
     }
 
     function gp2points_sort_by_gp(a, b) {
         if (a[1] != b[1])
             return b[1] - a[1]
-        return b[0] - a[0]
+        return b[0] - a[0];
     }
 
     function gp2points_sort_by_exp(a, b) {
         if (a[2] != b[2])
             return b[2] - a[2]
-        return b[0] - a[0]
+        return b[0] - a[0];
     }
 
     function gp2points_sort_by_restgp(a, b) {
         if (a[3] != b[3])
             return a[3] - b[3]
-        return b[0] - a[0]
+        return b[0] - a[0];
     }
 
     function gp2points_updateinput(lvl, exp, gp, ps) {
@@ -981,9 +991,14 @@
 
         let objlist = []
         {
-            let temp = get_locale_text("txt_gp2points")            
+            let temp = get_locale_text("txt_gp2points")
+            let damage_div = document.createElement("div");
+            damage_div.style.display = "inline";
+            damage_div.appendChild(gen_span_link(temp[0][0], () => {gp2points_sort_function = gp2points_sort_by_damage_amount; gp2points_resort()}));
+            damage_div.appendChild(document.createTextNode("/"));
+            damage_div.appendChild(gen_span_link(temp[0][1], () => {gp2points_sort_function = gp2points_sort_by_damage_efficiency; gp2points_resort()}));
             objlist = [
-                gen_span_link(temp[0], () => {gp2points_sort_function = gp2points_sort_by_damage; gp2points_resort()}),
+                damage_div,
                 gen_span_link(temp[1], () => {gp2points_sort_function = gp2points_sort_by_gp; gp2points_resort()}),
                 gen_span_link(temp[2], () => {gp2points_sort_function = gp2points_sort_by_exp; gp2points_resort()}),
                 gen_span_link(temp[3], () => {gp2points_sort_function = gp2points_sort_by_restgp; gp2points_resort()}),
@@ -1044,7 +1059,7 @@
         let _points = JSON.parse(JSON.stringify(my_points))
         enum_gp(_points, my_gp, 0)
 
-        gp2points_sort_function = gp2points_sort_by_damage
+        gp2points_sort_function = gp2points_sort_by_damage_amount
         gp2points_resort()
     }
 
@@ -1167,10 +1182,10 @@
         
         result_dom.appendChild(gen_empty_line());
 
-        objlist = get_locale_text("txt_show_cost_atk_effeciency1")
+        objlist = get_locale_text("txt_show_cost_atk_efficiency1")
         result_dom.appendChild(gen_line(objlist));
 
-        objlist = get_locale_text("txt_show_cost_atk_effeciency2")
+        objlist = get_locale_text("txt_show_cost_atk_efficiency2")
         result_dom.appendChild(gen_line(objlist));
         
         let results = enum_atk_eff(my_points)
@@ -1344,7 +1359,7 @@
     function enum_atk_eff(points) {
         let results = []
         let dmg_index = [0, 1, 4]
-        let dmg_type = get_locale_text("txt_show_cost_atk_effeciency3")
+        let dmg_type = get_locale_text("txt_show_cost_atk_efficiency3")
 
         for (let i = 0; i < dmg_index.length; i++) {
             let index = dmg_index[i]
