@@ -67,11 +67,13 @@ Similar to point allocation, if you enter fewer or more than seven numbers, the 
 
 ### Standard Calculation
 
-![](./images/gptodamage1.png)
+![](./images/gptodamage1-en.png)
 
 Once the input section above is filled out, you can begin the calculation. The standard calculation attempts to **spend your GP as much as possible** and outputs the possible point allocations along with projected damage and ranking benefits.
 
 The numbers in parentheses after GP gain and EXP gain represent projected values for the **next round**.
+
+The number in parentheses after damage represents projected values for the **this round**.
 
 If there are too many simulated results, the system will automatically truncate to the top 1000 results. You can expand them if necessary (though it's not recommended).
 

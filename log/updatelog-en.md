@@ -1,6 +1,7 @@
 ## 4.24
 
 + Add a new sort method: damage efficiency
++ GP to Points calculation supports checking damage efficiency in this round
 
 ## 4.20
 

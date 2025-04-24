@@ -602,6 +602,14 @@
         return cost
     }
 
+    function cal_damage_efficiency(ps) {
+        let cost = cal_catching_up_cost(my_points, ps, [1, 1, 0, 0, 1]);
+        if (cost > 0)
+            return (cal_damage(ps, my_level, false) - cal_damage(my_points, my_level, false)) / cost;
+        else
+            return 0
+    }
+
     function truncate_list(list = [], length = 0, _default = 0) {
         while (list.length > length)
             list.pop()
@@ -935,6 +943,16 @@
             return String(num)
     }
 
+    function format_float(num) {
+        if (Math.abs(num) != 0 && (Math.abs(num) < 0.01 || Math.abs(num) >= 5e3)) {
+            return num.toExponential(4);
+        } else if (Math.abs(num) != 0) {
+            return num.toFixed(4);
+        } else {
+            return "0";
+        }
+    }
+
     let valid_index = []
     let valid_enums = []
     let damage_upperbound = 0
@@ -942,33 +960,28 @@
     let gp2points_sort_function = null
 
     function gp2points_sort_by_damage_amount(a, b) {
-        return b[0] - a[0]
+        return b[0] - a[0];
     }
 
     function gp2points_sort_by_damage_efficiency(a, b) {
-        let co_a = cal_catching_up_cost(my_points, a[5], [1, 1, 0, 0, 1]);
-        let co_b = cal_catching_up_cost(my_points, b[5], [1, 1, 0, 0, 1]);
-        if (co_a > 0 && co_b > 0)
-            return b[0] / co_b - a[0] / co_a;
-        else
-            return b[0] - a[0];
+        return cal_damage_efficiency(b[5]) - cal_damage_efficiency(a[5]);
     }
 
     function gp2points_sort_by_gp(a, b) {
         if (a[1] != b[1])
-            return b[1] - a[1]
+            return b[1] - a[1];
         return b[0] - a[0];
     }
 
     function gp2points_sort_by_exp(a, b) {
         if (a[2] != b[2])
-            return b[2] - a[2]
+            return b[2] - a[2];
         return b[0] - a[0];
     }
 
     function gp2points_sort_by_restgp(a, b) {
         if (a[3] != b[3])
-            return a[3] - b[3]
+            return a[3] - b[3];
         return b[0] - a[0];
     }
 
@@ -1012,14 +1025,17 @@
             let [damage, gp, xp, rest_gp, rank, ps] = r;
             let _ps = String(ps);
             let [level_up, rest_xp] = cal_levelup(my_xp + xp);
-            let link = gen_span_link(_ps, () => gp2points_updateinput(
+            let atk_eff = cal_damage_efficiency(ps);
+            let ps_link = gen_span_link(_ps, () => gp2points_updateinput(
                 my_level + level_up, rest_xp, gp + rest_gp, _ps));
             if (if_build_comparison) {
                 let diff_damage = stringify_number(damage - op_damage);
+                let _damage = diff_damage + " (" + format_float(atk_eff) + ")";
                 let diff_gp = stringify_number(gp - op_gp);
                 let diff_xp = stringify_number(xp - op_xp);
-                objlist = [diff_damage, diff_gp, diff_xp, rest_gp, rank, link];
+                objlist = [_damage, diff_gp, diff_xp, rest_gp, rank, ps_link];
             } else {
+                let _damage = damage + " (" + format_float(atk_eff) + ")";
                 let _xp = ""
                 if (level_up > 0) {
                     _xp = xp + " (+" + level_up + "/" + rest_xp + ")"
@@ -1027,7 +1043,7 @@
                     _xp = xp + " (" + rest_xp + ")"
                 }
                 let _gp = gp + " (" + (gp + rest_gp) + ")"
-                objlist = [damage, _gp, _xp, rest_gp, rank, link]
+                objlist = [_damage, _gp, _xp, rest_gp, rank, ps_link]
             }
             result_dom.appendChild(gen_line(objlist));
         }
