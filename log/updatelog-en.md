@@ -1,3 +1,9 @@
+## 5.2
+
++ Introduce cost cache to make computation faster
++ Add a penalty factor to make sorting more reasonable
++ GP to Points calculation supports spending gp as ratio(more close to ratio, rank higher)
+
 ## 4.24
 
 + Add a new sort method: damage efficiency

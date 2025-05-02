@@ -192,6 +192,11 @@
         <div id="filter3" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
         <div id="filter4" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
     </div>
+    <div style="display: inline-flex; margin-left: auto; gap: 5px;">
+        <input style="width: 16px; vertical-align: middle;" id="if_spend_close_to_ratio" type="checkbox">
+        <div id="txt_spend_close_to_ratio" style="align-content: center; white-space: nowrap;"></div>
+        <input id="spend_ratio" value="1.0,0,0"/>
+    </div>
     <div>
         <div id="txt_rank_score1"></div>
         <div id="txt_rank_score2"></div>
@@ -240,6 +245,7 @@
         "txt_my_points", "txt_build_comparison",
         "txt_compute_including_upgrades",
         "filter0", "filter1", "filter2", "filter3", "filter4",
+        "txt_spend_close_to_ratio",
         "txt_buff_formula1", "txt_buff_formula2", "txt_buff_history",
         "txt_buff_atk", "txt_buff_exp", "txt_buff_gp",
         "txt_rank_score1", "txt_rank_score2",
@@ -267,7 +273,7 @@
         "txt_dmg2points",
     ]
 
-    const updatedate = "2025.4.24"
+    const updatedate = "2025.5.2"
 
     const zh_text = {
         "txt_update_info": "新版本已更新，检查更新日志获取最新改动",
@@ -292,6 +298,7 @@
         "filter2": "经验",
         "filter3": "金豆",
         "filter4": "攻击次数",
+        "txt_spend_close_to_ratio": "按照(攻击/经验/金豆)比率花费",
         "txt_buff_formula1": "BUFF计算方式:金魂/10000",
         "txt_buff_formula2": "计算经验和金豆buff时会截断百位数后的部分（5950→5900/10000）",
         "txt_buff_history": "BUFF历史（由Tragon维护）",
@@ -350,6 +357,7 @@
         "filter2": "exp",
         "filter3": "gp",
         "filter4": "atk charge",
+        "txt_spend_close_to_ratio": "spend gp as atk/exp/gp ratio",
         "txt_buff_formula1": "buff formula: gold souls/10000",
         "txt_buff_formula2": "for exp and gp buff, gold souls should be truncated at the hundred's place(5950→5900/10000)",
         "txt_buff_history": "buff history(maintained by Tragon)",
@@ -486,6 +494,7 @@
     var if_build_comparison = false
     var my_points = [], op_points = []
     var filters = []
+    var if_spend_close_to_ratio = false, spend_ratio = []
     var boss_level = 0
     var bonus_atk = 0, bonus_gp = 0, bonus_xp = 0
     var rank_scores = []
@@ -493,25 +502,45 @@
     var level_range_low = 0, level_range_high = 0
     var if_limit_dmg_cost = false, limit_dmg_cost = 0
 
+    var shop_cost_cache = [[], [], [], [], []]
+    var level_cache = []
+
     function shop_cost(which, level) {
+        if (level < shop_cost_cache[which].length) {
+            return shop_cost_cache[which][level];
+        }
         if (which == 0) {
             return Math.floor((5 + level) * (1 + 0.1 * level))
-        }
-
-        if (which == 1) {
+        } else if (which == 1) {
             return Math.floor((25 + 25 * level) * (Math.pow(1.6, level)))
-        }
-
-        if (which == 4) {
+        } else if (which == 4) {
             return Math.floor((10) * (Math.pow(1.9, level)))
+        } else {
+            return Math.floor((5 + level) * (1 + 0.05 * level))
         }
-
-        return Math.floor((5 + level) * (1 + 0.05 * level))
     }
 
-    function level_exp(n) {
-        return Math.floor((10 + n * 5) * Math.pow(1.02, n))
+    function level_exp(level) {
+        if (level < level_cache.length) {
+            return level_cache[level];
+        }
+        return Math.floor((10 + level * 5) * Math.pow(1.02, level))
     }
+
+    function init_cache() {
+        for (let i = 0; i < 5; i++)
+            for (let j = 0; j < 500; j++) {
+                let value = shop_cost(i, j);
+                if (value > 1e7)
+                    break;
+                shop_cost_cache[i].push(value);
+            }
+        for (let i = 0; i < 500; i++) {
+            level_cache.push(level_exp(i));
+        }        
+    }
+
+    init_cache();
 
     function cal_cost(points) {
         if (debug)
@@ -602,10 +631,10 @@
         return cost
     }
 
-    function cal_damage_efficiency(ps) {
-        let cost = cal_catching_up_cost(my_points, ps, [1, 1, 0, 0, 1]);
+    function cal_damage_efficiency(ps, penalty = 1) {
+        let cost = cal_catching_up_cost(my_points, ps, atk_mask);
         if (cost > 0)
-            return (cal_damage(ps, my_level, false) - cal_damage(my_points, my_level, false)) / cost;
+            return (cal_damage(ps, my_level, false) - cal_damage(my_points, my_level, false)) / Math.pow(cost, penalty);
         else
             return 0
     }
@@ -670,6 +699,20 @@
         return [value, null]
     }
 
+    function map_ratio(obj, userdata) {
+        let [len, _default] = userdata
+        let value = (obj.value.match(/[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?/g) || []).map(Number);
+        truncate_list(value, len, _default);
+        let sum = 0;
+        for (let i = 0; i < value.length; i++)
+            sum += value[i];
+        if (sum == 0)
+            return [1, 0, 0];
+        for (let i = 0; i < value.length; i++)
+            value[i] /= sum;
+        return value
+    }
+
     function map_set(obj, userdata) {
         let value = (obj.value.match(/([0-9]+)/g) || []).map(Number)
         value = [...new Set(value)].sort((a, b) => a - b)
@@ -698,6 +741,16 @@
         }
     }
 
+    function callback_ratio(obj, value) {
+        let _value = JSON.parse(JSON.stringify(value));
+        for (let i = 0; i < _value.length; i++) {
+            if (Math.floor(_value[i]) == _value[i])
+                continue;
+            _value[i] = _value[i].toFixed(2);
+        }
+        obj.value = String(_value);
+    }
+
     function init_value(){
         debug = read_value('console_debug', map_checkbox, false, null, null)
 
@@ -721,6 +774,8 @@
             let filter = read_value(name, map_option, false, callback_normal, ['data-select', 'true'])
             filters.push(filter)
         }
+        if_spend_close_to_ratio = read_value('if_spend_close_to_ratio', map_checkbox, false, null, null);
+        spend_ratio = read_value('spend_ratio', map_ratio, [1, 0, 0], callback_ratio, [3, 0]);
         
         target_dmgs = read_value('target_dmgs', map_set, [], callback_normal, null)
         level_range_low = read_value('level_range_low', map_int, 0, callback_normal, null)
@@ -739,6 +794,7 @@
         "my_level", "my_gp", "my_xp",
         "bonus_atk", "bonus_gp", "bonus_xp",
         "my_points", "op_points",
+        "spend_ratio",
         "boss_level", "rank_scores",
         "level_range_low", "level_range_high",
         "target_dmgs", "limit_dmg_cost"
@@ -747,6 +803,7 @@
     const checkboxes = [
         "if_build_comparison",
         "if_limit_dmg_cost",
+        "if_spend_close_to_ratio",
         "console_debug"
     ]
 
@@ -953,18 +1010,23 @@
         }
     }
 
-    let valid_index = []
-    let valid_enums = []
-    let damage_upperbound = 0
-    let gp_upperbound = 0
-    let gp2points_sort_function = null
+    var valid_index = []
+    var valid_enums = []
+    var damage_upperbound = 0
+    var gp_upperbound = 0
+    var gp2points_sort_function = null
+    var dummy_mask = [1, 1, 1, 1, 1]
+    var atk_mask = [1, 1, 0, 0, 1]
+    var exp_mask = [0, 0, 1, 0, 0]
+    var gp_mask = [0, 0, 0, 1, 0]
 
     function gp2points_sort_by_damage_amount(a, b) {
         return b[0] - a[0];
     }
 
     function gp2points_sort_by_damage_efficiency(a, b) {
-        return cal_damage_efficiency(b[5]) - cal_damage_efficiency(a[5]);
+        let penalty = 0.8
+        return cal_damage_efficiency(b[5], penalty) - cal_damage_efficiency(a[5], penalty);
     }
 
     function gp2points_sort_by_gp(a, b) {
@@ -983,6 +1045,22 @@
         if (a[3] != b[3])
             return a[3] - b[3];
         return b[0] - a[0];
+    }
+
+    function gp2points_sort_by_close_to_ratio(a, b) {
+        let calc_error_square = (ps) => {
+            let calc_diff = (now, tar) => {return (now - tar) / tar}
+            let atk_cost = calc_diff(cal_catching_up_cost(my_points, ps, atk_mask), (spend_ratio[0] * my_gp));
+            let exp_cost = calc_diff(cal_catching_up_cost(my_points, ps, exp_mask), (spend_ratio[1] * my_gp));
+            let gp_cost = calc_diff(cal_catching_up_cost(my_points, ps, gp_mask), (spend_ratio[2] * my_gp));
+            return atk_cost * atk_cost + exp_cost * exp_cost + gp_cost * gp_cost;
+        }
+        let err_a = calc_error_square(a[5]);
+        let err_b = calc_error_square(b[5]);
+        if (err_a != err_b)
+            return err_a - err_b;
+        else
+            return b[0] - a[0];
     }
 
     function gp2points_updateinput(lvl, exp, gp, ps) {
@@ -1075,7 +1153,10 @@
         let _points = JSON.parse(JSON.stringify(my_points))
         enum_gp(_points, my_gp, 0)
 
-        gp2points_sort_function = gp2points_sort_by_damage_amount
+        if (if_spend_close_to_ratio)
+            gp2points_sort_function = gp2points_sort_by_close_to_ratio
+        else
+            gp2points_sort_function = gp2points_sort_by_damage_amount
         gp2points_resort()
     }
 
@@ -1265,7 +1346,7 @@
             let [ps, gp, lvl] = pair
             results.push([
                 cal_damage(ps, lvl, false),
-                gp, cal_catching_up_cost(my_points, ps, [1, 1, 0, 0, 1]),
+                gp, cal_catching_up_cost(my_points, ps, atk_mask),
                 lvl, ps
             ])
         }

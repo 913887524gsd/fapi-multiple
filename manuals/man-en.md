@@ -67,7 +67,7 @@ Similar to point allocation, if you enter fewer or more than seven numbers, the 
 
 ### Standard Calculation
 
-![](./images/gptodamage1-en.png)
+![](./images/gptopoints1-en.png)
 
 Once the input section above is filled out, you can begin the calculation. The standard calculation attempts to **spend your GP as much as possible** and outputs the possible point allocations along with projected damage and ranking benefits.
 
@@ -79,19 +79,25 @@ If there are too many simulated results, the system will automatically truncate 
 
 ### Include Upgrades in Calculation
 
-![](./images/includeingupgrades.png)
+![](./images/gptopoints2.png)
 
 If your point allocation has a particular focus (like economy or damage), the image above shows five toggle buttons for different upgrades. **Blue indicates active**. Inactive upgrades will be skipped in the next calculation to reduce the search space.
 
 ### Build Comparison
 
-![](./images/gptodamage2.png)
+![](./images/gptopoints3.png)
 
 If you enabled build comparison, the values for `damage, GP gain, and EXP gain` will show the **difference between your build and the opponent’s build**.
 
+### Spend as ratio
+
+![](./images/gptopoints5-en.png)
+
+If you enabled spend as radio, the first results will sort to be close to your input ratio.
+
 ### Quick Input
 
-![](./images/gptodamage3-en.png)
+![](./images/gptopoints6-en.png)
 
 The system now supports quick point input. Your simulated builds are now clickable — clicking one will directly fill the upper input fields with the simulated **GP, EXP, level, and points**, making it easier to re-run the simulation.
 
