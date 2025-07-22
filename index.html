@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>game</title>
+    <title>fapi multiplayer(made by gsd)</title>
     <style>
         label,
         input,
@@ -52,20 +52,31 @@
             border-bottom: 1px solid #ccc;
             width: 100%;
         }
-        
-        .option-btn {
-            padding: 5px 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
+
+        .attr_checkbox {
+            width: 16px;
+            height: 16px;
+            padding: 3px 0;
+            margin-left: 4px;
+            margin-right: 16px;
             display: inline-block;
-            margin: 5px;
-            user-select: none;
+            text-align: center;
+            vertical-align: middle;
         }
 
-        .option-btn.active {
-            background-color: #007bff;
-            color: white;
+        .attr_text {
+            padding: 3px 0px;
+            padding-right: 20px;
+            margin: 3px 3px;
+            flex: 1;
+            text-align: left;
+        }
+
+        .attr_input {
+            padding: 8px 8px;
+            margin: 3px 3px;
+            flex: 1;
+            text-align: left;
         }
 
         .messageBox {
@@ -120,10 +131,12 @@
 </head>
 
 <body>
+    <!--update info-->
     <div id="update_info", class="messageBox">
         <div id="txt_update_info"></div>
         <button id="txt_update_info_close" onclick="close_update()"></button>
     </div>
+    <!--manual/update log/language/debug-->
     <div id="special-container0">
         <div style="display: inline-flex; vertical-align: middle; gap: 5px;">
             <div id="txt_guideline" style="white-space: nowrap; align-content: center;"></div>
@@ -136,889 +149,269 @@
             <div id="txt_console_debug" style="white-space: nowrap; align-content: center;"></div>
         </div>
     </div>
+    <!--github repo-->
+    <div style="display: inline-flex;">
+        <a style="white-space: nowrap; align-content: center;" id="txt_github_repo" target="_blank"
+            href="https://github.com/913887524gsd/fapi-multiple"></a>
+        <div id="txt_github"></div>
+    </div>
+    <!--quick input/output-->
     <div style="display: flex; gap: 5px;">
         <button id="txt_export" onclick="json_save()" style="width: 75px;"></button>
         <button id="txt_import" onclick="json_load()" style="width: 75px;"></button>
         <textarea id="json_string" type="text"></textarea>
     </div>
-    <div id="txt_support_expression"></div>
+    <strong id="txt_global_attr" style="font-size: 30px;"></strong>
+    <hr>
+    <!--boss info-->
+    <div id="txt_boss_info"></div>
+    <!--boss tier-->
     <div>
-        <div id="txt_boss_tier"></div>
-        <input id="boss_level" type="text" value="21" tabindex="1" />
+        <div style="display: flex; justify-content: space-between;">
+            <div id="txt_boss_tier" style="text-align: left; flex: 1;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <input id="boss_tier" type="text" value="21"/>
+        </div>
     </div>
-    <div style="display: inline-flex; gap: 10px;">
+    <!--buff-->
+    <div>
+        <div style="display: inline-flex; gap: 10px;">
         <div id="txt_buff_formula1"></div>
         <a href="https://docs.google.com/spreadsheets/d/1W1ubd2s2Y_wkTQDMhJKhg0MyXrHzUm1PoPU910E12_8/edit?gid=339576003#gid=339576003"
             target="_blank" id="txt_buff_history">
         </a>
-    </div>
-    <div id="txt_buff_formula2"></div>
-    <div style="display: flex; justify-content: space-between;">
-        <div id="txt_buff_atk" style="text-align: left; flex: 1;"></div>
-        <div id="txt_buff_exp" style="text-align: left; flex: 1;"></div>
-        <div id="txt_buff_gp" style="text-align: left; flex: 1;"></div>
-    </div>
-    <div style="display: flex; justify-content: space-between;">
-        <input id="bonus_atk" type="number" value="0.67" tabindex="2"/>
-        <input id="bonus_xp" type="number" value="0.10" tabindex="3"/>
-        <input id="bonus_gp" type="number" value="0.15" tabindex="4"/>
-    </div>
-    <div style="display: flex; justify-content: space-between;">
-        <div id="txt_my_level" style="text-align: left; flex: 1;"></div>
-        <div id="txt_my_exp" style="text-align: left; flex: 1;"></div>
-        <div id="txt_my_gp" style="text-align: left; flex: 1;"></div>
-    </div>
-    <div style="display: flex; justify-content: space-between;">
-        <input id="my_level" type="text" value="14" tabindex="5"/>
-        <input id="my_xp" type="text" value="15" tabindex="6"/>
-        <input id="my_gp" type="text" value="150" tabindex="7"/>
-    </div>
-    <div style="display: flex;">
-        <div id="txt_my_points" style="width: 50%;"></div>
-        <div style="display: inline-flex; margin-left: auto; width: 50%;">
-            <input style="width: 16px; vertical-align: middle; margin-right: 5px;" id="if_build_comparison" type="checkbox">
-            <div id="txt_build_comparison"></div>
+        </div>
+        <div id="txt_buff_formula2"></div>
+        <div style="display: flex; justify-content: space-between;">
+            <div id="txt_buff_atk" style="text-align: left; flex: 1;"></div>
+            <div id="txt_buff_exp" style="text-align: left; flex: 1;"></div>
+            <div id="txt_buff_gp" style="text-align: left; flex: 1;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <input id="buff_atk" type="number" value="0.67"/>
+            <input id="buff_xp" type="number" value="0.10"/>
+            <input id="buff_gp" type="number" value="0.15"/>
         </div>
     </div>
-    <div style="display: flex; justify-content: space-between; width: 100%;">
-        <input id="my_points" value="14,2,8,18,5" tabindex="8"/>
-        <input id="op_points" value="0,0,0,0,0" />
-    </div>
-    <div id="special-container1">
-        <div id="txt_compute_including_upgrades" style="align-content: center;"></div>
-        <div id="filter0" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
-        <div id="filter1" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
-        <div id="filter2" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
-        <div id="filter3" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
-        <div id="filter4" class="option-btn active" data-select="true" onclick="toggle(this)"></div>
-    </div>
-    <div style="display: inline-flex; margin-left: auto; gap: 5px;">
-        <input style="width: 16px; vertical-align: middle;" id="if_spend_close_to_ratio" type="checkbox">
-        <div id="txt_spend_close_to_ratio" style="align-content: center; white-space: nowrap;"></div>
-        <input id="spend_ratio" value="1.0,0,0"/>
-    </div>
+    <!--rank score-->
     <div>
         <div id="txt_rank_score1"></div>
         <div id="txt_rank_score2"></div>
-        <textarea id="rank_scores" type="text" tabindex="9"
-            style="width: 100%; height: 60px; font-size: 20px;">3000,2800,2700,2600,2100,2000,1800</textarea>
+        <input id="rank_scores" style="height: 50px;" type="text" value="3000,2800,2700,2600,2100,2000,1800">
     </div>
-    <div>
-        <div id="txt_find_damage1"></div>
-        <div id="txt_find_damage2"></div>
-    </div>
-    <div style="display: inline-flex; gap: 5px;">
-        <div id="txt_level_range" style="white-space: nowrap; vertical-align: middle; 
-            align-content: center;"></div>
-        <input id="level_range_low" type="number" value="0" style=  "width: 90px; height: 30px;">
-        <div style="vertical-align: middle; align-content: center;">~</div>
-        <input id="level_range_high" type="number" value="10" style="width: 90px; height: 30px;">
+    
+    <strong id="txt_player_attr" style="font-size: 30px;"></strong>
+    <hr>    
+    <!--spend close to ratio-->
+    <div style="display: inline-flex; align-items: center;">
+        <input id="if_spend_close_to_ratio" class="attr_checkbox" type="checkbox">
+        <div id="txt_spend_close_to_ratio" class="attr_text" style="align-content: center; white-space: nowrap;"></div>
+        <input id="spend_ratio" class="attr_input" value="1.0,0,0"/>
     </div>
     <br>
-    <div style="display: inline-flex; gap: 5px;">
-        <input style="width: 16px; vertical-align: middle;" id="if_limit_dmg_cost" type="checkbox">
-        <div id="txt_limit_damage_cost" style="white-space: nowrap; vertical-align: middle; align-content: center;"></div>
-        <input id="limit_dmg_cost" type="number" value="1919" style="width: 120px; height: 30px;">
+    <!--build comparision-->
+    <div style="display: inline-flex; align-items: center;">
+        <input id="if_build_comparision" class="attr_checkbox" type="checkbox">
+        <div id="txt_build_comparision" class="attr_text" style="align-content: center; white-space: nowrap;"></div>
     </div>
+    <!--attributes-->
     <div>
-        <textarea id="target_dmgs" type="text"
-            style="width: 100%; height: 60px; font-size: 20px;">114,514</textarea>
+        <!-- headline -->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <span id="info_checkboxes" class="attr_checkbox">ℹ️</span>
+            <div style="display: flex; flex: 1;">
+                <div id="txt_attr" class="attr_text">attr</div>
+                <div id="txt_mine" class="attr_text">mine</div>
+                <div id="txt_oppo" class="attr_text">oppo</div>
+            </div>
+        </div>  
+
+        <hr>
+
+        <!-- level -->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_level" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_level" class="attr_text">level</div>
+                <input id="my_level" class="attr_input" type="number" value="0">
+                <input id="op_level" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <!--xp-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <div class="attr_checkbox">-</div>
+            <div style="display: flex; flex: 1;">
+                <div id="txt_xp" class="attr_text">xp</div>
+                <input id="my_xp" class="attr_input" type="number" value="0">
+                <div class="attr_input">-</div>
+            </div>
+        </div>
+
+        <!--gp-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <div class="attr_checkbox">-</div>
+            <div style="display: flex; flex: 1;">
+                <div id="txt_gp" class="attr_text">gp</div>
+                <input id="my_gp" class="attr_input" type="number" value="0">
+                <div class="attr_input">-</div>
+            </div>
+        </div>
+
+        <!--crit hit-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <div class="attr_checkbox">-</div>
+            <div style="display: flex; flex: 1;">
+                <div id="txt_crit_hits_left" class="attr_text">hits left to next crit</div>
+                <input id="my_crit_hits" class="attr_input" type="number" value="15">
+                <input id="op_crit_hits" class="attr_input" type="number" value="15">
+            </div>
+        </div>
+
+        <!--reserve hits-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <div class="attr_checkbox">-</div>
+            <div style="display: flex; flex: 1;">
+                <div id="txt_reserve_hits" class="attr_text">reserve hits current round</div>
+                <input id="my_reserve_hits" class="attr_input" type="number" value="0">
+                <input id="op_reserve_hits" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <hr>
+
+        <!--base atk-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_base_atk" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_base_atk" class="attr_text">base atk</div>
+                <input id="my_base_atk" class="attr_input" type="number" value="0">
+                <input id="op_base_atk" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <!--consecutive-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_consecutive" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_consecutive" class="attr_text">consecutive</div>
+                <input id="my_consecutive" class="attr_input" type="number" value="0">
+                <input id="op_consecutive" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <!--gp bonus-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_gp_bonus" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_gp_bonus" class="attr_text">gp bonus</div>
+                <input id="my_gp_bonus" class="attr_input" type="number" value="0">
+                <input id="op_gp_bonus" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <!--xp bonus-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_xp_bonus" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_xp_bonus" class="attr_text">xp bonus</div>
+                <input id="my_xp_bonus" class="attr_input" type="number" value="0">
+                <input id="op_xp_bonus" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <!--atk charge-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_atk_charge" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_atk_charge" class="attr_text">atk charge</div>
+                <input id="my_atk_charge" class="attr_input" type="number" value="0">
+                <input id="op_atk_charge" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <!--atk bonus-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_atk_bonus" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_atk_bonus" class="attr_text">atk bonus</div>
+                <input id="my_atk_bonus" class="attr_input" type="number" value="0">
+                <input id="op_atk_bonus" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <!--crit hits-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_crit_atk" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_crit_hits" class="attr_text">crit hits</div>
+                <input id="my_crit_atk" class="attr_input" type="number" value="0">
+                <input id="op_crit_atk" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <!--compact format-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <div class="attr_checkbox">-</div>
+            <div style="display: flex; flex: 1;">
+                <div id="txt_compact_format" class="attr_text">compact format</div>
+                <input id="my_compact_format" class="attr_input" type="text">
+                <input id="op_compact_format" class="attr_input" type="text">
+            </div>
+        </div>
     </div>
-    <div id="special-container2">
-        <button id="txt_gp_to_points" onclick="gp2points()"></button>
+
+    <strong id="txt_reverse_damage_attr" style="font-size: 30px;"></strong>
+    <hr>
+    <!--reverse damage-->
+    <div>
+        <div id="txt_reverse_damage1"></div>
+        <div id="txt_reverse_damage2"></div>
+        <div style="display: inline-flex; gap: 5px;">
+            <div id="txt_level_range" style="white-space: nowrap; vertical-align: middle; 
+                    align-content: center;"></div>
+            <input id="level_range_low" type="number" value="0" style=  "width: 90px; height: 30px;">
+            <div style="vertical-align: middle; align-content: center;">~</div>
+            <input id="level_range_high" type="number" value="10" style="width: 90px; height: 30px;">
+        </div>
+        <br>
+        <div style="display: inline-flex; gap: 5px;">
+            <input style="width: 16px; vertical-align: middle;" id="if_limit_dmg_cost" type="checkbox">
+            <div id="txt_limit_damage_cost" style="white-space: nowrap; vertical-align: middle; align-content: center;"></div>
+            <input id="limit_dmg_cost" type="number" value="1919" style="width: 120px; height: 30px;">
+        </div>
+        <div>
+            <textarea id="target_dmgs" type="text"
+                style="width: 100%; height: 60px; font-size: 20px;">114,514</textarea>
+        </div>
+    </div>
+    <!--buttons-->
+    <div id="special-container1">
+        <button id="txt_emulate_spend" onclick="gp2points()"></button>
         <button id="txt_show_cost" onclick="show_cost()"></button>
-        <button id="txt_damage_to_points" onclick="dmg2points()"></button>
+        <button id="txt_reverse_damage" onclick="dmg2points()"></button>
     </div>
     <div>
         <div id="result"></div>
     </div>
 </body>
 
+<link rel="stylesheet" href="tippy/light.css" />
+<script src="tippy/core@2"></script>
+<script src="tippy/tippy.js@6"></script>
+<script src="core.js"></script>
+<script src="input.js"></script>
+<script src="localization.js"></script>
+<script src="realtime.js"></script>
+<script src="render.js"></script>
+
 <script>
-    const text_area = [
-        "txt_update_info", "txt_update_info_close",
-        "txt_guideline", "txt_manual", "txt_updatelog",
-        "txt_language", "txt_console_debug",
-        "txt_export", "txt_import",
-        "txt_support_expression", "txt_boss_tier",
-        "txt_my_level", "txt_my_exp", "txt_my_gp",
-        "txt_my_points", "txt_build_comparison",
-        "txt_compute_including_upgrades",
-        "filter0", "filter1", "filter2", "filter3", "filter4",
-        "txt_spend_close_to_ratio",
-        "txt_buff_formula1", "txt_buff_formula2", "txt_buff_history",
-        "txt_buff_atk", "txt_buff_exp", "txt_buff_gp",
-        "txt_rank_score1", "txt_rank_score2",
-        "txt_find_damage1", "txt_find_damage2", "txt_level_range", "txt_limit_damage_cost",
-        "txt_gp_to_points", "txt_show_cost", "txt_damage_to_points"
-    ];
-
-    const result_text_area = [
-        "txt_omit_view_warning",
-        "txt_omit_view_expand",
-        "txt_gp2points",
-        "txt_show_cost_points",
-        "txt_show_cost_difference",
-        "txt_show_cost_damage",
-        "txt_show_cost_exp",
-        "txt_show_cost_points_cost",
-        "txt_show_cost_damage_cost",
-        "txt_show_cost_eco_cost",
-        "txt_show_cost_atk_efficiency1", 
-        "txt_show_cost_atk_efficiency2",
-        "txt_show_cost_atk_efficiency3",
-        "txt_show_cost_future_cost1",
-        "txt_show_cost_future_cost2",
-        "txt_show_cost_continue",
-        "txt_dmg2points",
-    ]
-
-    const updatedate = "2025.5.2"
-
-    const zh_text = {
-        "txt_update_info": "新版本已更新，检查更新日志获取最新改动",
-        "txt_update_info_close": "好的",
-        "txt_guideline": "可以用手机直接打开",
-        "txt_manual": "说明书",
-        "txt_updatelog": "更新日志(" + updatedate + ")",
-        "txt_language": "English",
-        "txt_console_debug": "操纵台调试",
-        "txt_export": "导出",
-        "txt_import": "导入",
-        "txt_support_expression": "BOSS等级、你的等级、你的经验、你的金豆支持输入表达式比如：a+b",
-        "txt_boss_tier": "BOSS等级",
-        "txt_my_level": "等级",
-        "txt_my_exp": "经验",
-        "txt_my_gp": "金豆",
-        "txt_my_points": "加点",
-        "txt_build_comparison": "比较加点，支持指定对手等级：1,1,4,5,1(4)",
-        "txt_compute_including_upgrades": "计算包含升级项(这些按钮是可以按的)",
-        "filter0": "基础伤害",
-        "filter1": "连击",
-        "filter2": "经验",
-        "filter3": "金豆",
-        "filter4": "攻击次数",
-        "txt_spend_close_to_ratio": "按照(攻击/经验/金豆)比率花费",
-        "txt_buff_formula1": "BUFF计算方式:金魂/10000",
-        "txt_buff_formula2": "计算经验和金豆buff时会截断百位数后的部分（5950→5900/10000）",
-        "txt_buff_history": "BUFF历史（由Tragon维护）",
-        "txt_buff_atk": "BUFF攻击",
-        "txt_buff_exp": "BUFF经验",
-        "txt_buff_gp": "BUFF金豆",
-        "txt_rank_score1": "排名伤害, 填写第1、3、10、50、250、1000、2500名的伤害",
-        "txt_rank_score2": "排名2500的伤害只能猜,除非你有2500名的朋友(分隔符只要非数字就可以)",
-        "txt_find_damage1": "寻找伤害可能的加点方式",
-        "txt_find_damage2": "支持对多个伤害查找，伤害之间用非数字分隔符隔开",
-        "txt_level_range": "遍历等级范围",
-        "txt_limit_damage_cost": "限制伤害花费",
-        "txt_gp_to_points": "金豆可能加点",
-        "txt_show_cost": "查看消耗",
-        "txt_damage_to_points": "伤害可能加点",
-        //
-        "txt_omit_view_warning": "搜索出来的结果太多了，仅保留前1000条",
-        "txt_omit_view_expand": "显示所有",
-        "txt_gp2points": [["伤害", "性价比"], "得金豆", "得经验", "剩金豆", "排名", "加点"],
-        "txt_show_cost_points": "加点",
-        "txt_show_cost_difference": "差距",
-        "txt_show_cost_damage": "伤害",
-        "txt_show_cost_exp": "经验值",
-        "txt_show_cost_points_cost": "加点花费",
-        "txt_show_cost_damage_cost": "伤害花费",
-        "txt_show_cost_eco_cost": "经济花费",
-        "txt_show_cost_atk_efficiency1": ["点攻击性价比"], 
-        "txt_show_cost_atk_efficiency2": ["攻击类型", "提升攻击", "攻击花费", "攻击性价比"],
-        "txt_show_cost_atk_efficiency3": ["基础攻击", "连击", "攻击次数"],
-        "txt_show_cost_future_cost1": ["未来加点/经验需求"],
-        "txt_show_cost_future_cost2": ["等级提升", "基础攻击", "连击", "加经验", "加金豆", "攻击次数"],
-        "txt_show_cost_continue": "继续",
-        "txt_dmg2points": ["伤害", "攻击花费", "追赶花费", "等级", "加点"],
-    };
-
-    const en_text = {
-        "txt_update_info": "updated, check update log to get new changes",
-        "txt_update_info_close": "OK",
-        "txt_guideline": "suitable for mobile",
-        "txt_manual": "manual",
-        "txt_updatelog": "update log(" + updatedate + ")",
-        "txt_language": "简体中文",
-        "txt_console_debug": "console debug",
-        "txt_export": "export",
-        "txt_import": "import",
-        "txt_support_expression": "boss tier, level, exp and gp support input expression like a+b",
-        "txt_boss_tier": "boss tier",
-        "txt_my_level": "level",
-        "txt_my_exp": "exp",
-        "txt_my_gp": "gp",
-        "txt_my_points": "points",
-        "txt_build_comparison": "build comparison, support to specify opponent's level: 1,1,4,5,1(4)",
-        "txt_compute_including_upgrades": "compute including upgrades(you can toggle these upgrades!!!)",
-        "filter0": "atk+3",
-        "filter1": "c atk",
-        "filter2": "exp",
-        "filter3": "gp",
-        "filter4": "atk charge",
-        "txt_spend_close_to_ratio": "spend gp as atk/exp/gp ratio",
-        "txt_buff_formula1": "buff formula: gold souls/10000",
-        "txt_buff_formula2": "for exp and gp buff, gold souls should be truncated at the hundred's place(5950→5900/10000)",
-        "txt_buff_history": "buff history(maintained by Tragon)",
-        "txt_buff_atk": "buff atk",
-        "txt_buff_exp": "buff exp",
-        "txt_buff_gp": "buff gp",
-        "txt_rank_score1": "enter damage values for ranks 1, 3, 10, 50, 250, 1000, and 2500, separated by non-digit characters",
-        "txt_rank_score2": "you can only guess the damage made by rank 2500 player unless you have a friend",
-        "txt_find_damage1": "find points matching the input damage",
-        "txt_find_damage2": "support finding multiple damages, separated by non-digit characters",
-        "txt_level_range": "level range",
-        "txt_limit_damage_cost": "limit damage cost",
-        "txt_gp_to_points": "gp to points",
-        "txt_show_cost": "show cost",
-        "txt_damage_to_points": "damage to points",
-        //
-        "txt_omit_view_warning": "there are too many results. keeping the first 1000 results",
-        "txt_omit_view_expand": "expand all",
-        "txt_gp2points": [["damage", "efficiency"], "gain gp", "gain xp", "rest gp", "rank", "points"],
-        "txt_show_cost_points": "points",
-        "txt_show_cost_difference": "difference",
-        "txt_show_cost_damage": "damage",
-        "txt_show_cost_exp": "exp",
-        "txt_show_cost_points_cost": "points cost",
-        "txt_show_cost_damage_cost": "damage cost",
-        "txt_show_cost_eco_cost": "eco cost",
-        "txt_show_cost_atk_efficiency1": ["atk cost efficiency"],
-        "txt_show_cost_atk_efficiency2": ["atk type", "atk boost", "atk cost", "atk efficiency"],
-        "txt_show_cost_atk_efficiency3": ["atk+3", "consecutive atk", "atk charge"],
-        "txt_show_cost_future_cost1": ["future points/exp cost"],
-        "txt_show_cost_future_cost2": ["levelup", "atk+3", "c atk", "add xp", "add gp", "atk charge"],
-        "txt_show_cost_continue": "continue",
-        "txt_dmg2points": ["damage", "atk cost", "catch up cost", "level", "points"],
-    };
-
-    function get_locale_text(key) {
-        if (lang == "zh")
-            return zh_text[key]
-        else
-            return en_text[key]
-    }
-
-    function change_language(lang) {
-        if (lang == "zh") {
-            document.getElementById('txt_manual').href="manuals/man-zh.html"
-            document.getElementById('txt_updatelog').href="log/updatelog-zh.html"
-        } else {
-            document.getElementById('txt_manual').href="manuals/man-en.html"
-            document.getElementById('txt_updatelog').href="log/updatelog-en.html"
-        }
-        for (let k of text_area) {
-            let _text = get_locale_text(k);
-            let _obj = document.getElementById(k);
-            if (_text == null || _obj == null) {
-                console.log("error loading text" + k);
-                continue
-            }
-            _obj.innerText = _text
-        }
-    }
-
-    var lang=""
-
-    function init_language() {
-        lang=localStorage.getItem("lang") || navigator.language.split('-')[0];
-        change_language(lang)
-    }
-
-    function toggle_language() {
-        if (lang == "zh") {
-            lang = "en"
-        } else {
-            lang = "zh"
-        }
-        change_language(lang)
-        localStorage.setItem("lang", lang)
-    }
-
-    init_language()
-
-    const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-    function applyStyle() {
-        for (let i = 0; i < 3; i++) {
-            let name = "special-container" + i;
-            let container = document.getElementById(name);
-            if (isMobile) {
-                container.style.display = "block";
-            } else {
-                container.style.display = "flex";
-                container.style.gap = "5px";
-            }
-        }
-    }
-
-    applyStyle();
-    window.addEventListener("resize", applyStyle);
-    const inputs = Array.from(document.querySelectorAll('input[tabindex], textarea[tabindex]'))
-        .sort((a, b) => +a.tabIndex - +b.tabIndex);
-    inputs.forEach((el, index) => {
-        el.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === 'Tab') {
-                e.preventDefault();
-                if (index + 1 < inputs.length)
-                    next = inputs[index + 1];
-                else
-                    next = inputs[0];
-                next.focus()
-                next.select();
-            }
-        });
-    });
-
-    function close_update() {
-        localStorage.setItem('updatedate', updatedate);
-        document.getElementById('update_info').style.display = "none";
-    }
-
-    function check_update() {
-        if (localStorage.getItem('updatedate') != updatedate) {
-            document.getElementById('update_info').style.display = "block";
-        }
-    }
-
-    check_update();
-
-    function toggle(obj) {
-        let selected = obj.getAttribute("data-select") == "true";
-        obj.setAttribute("data-select", !selected);
-        obj.classList.toggle("active");
-    }
-
-    var debug = false
-    var my_level = 0, my_gp = 0, my_xp = 0, op_level = 0
-    var if_build_comparison = false
-    var my_points = [], op_points = []
-    var filters = []
-    var if_spend_close_to_ratio = false, spend_ratio = []
-    var boss_level = 0
-    var bonus_atk = 0, bonus_gp = 0, bonus_xp = 0
-    var rank_scores = []
-    var target_dmgs = []
-    var level_range_low = 0, level_range_high = 0
-    var if_limit_dmg_cost = false, limit_dmg_cost = 0
-
-    var shop_cost_cache = [[], [], [], [], []]
-    var level_cache = []
-
-    function shop_cost(which, level) {
-        if (level < shop_cost_cache[which].length) {
-            return shop_cost_cache[which][level];
-        }
-        if (which == 0) {
-            return Math.floor((5 + level) * (1 + 0.1 * level))
-        } else if (which == 1) {
-            return Math.floor((25 + 25 * level) * (Math.pow(1.6, level)))
-        } else if (which == 4) {
-            return Math.floor((10) * (Math.pow(1.9, level)))
-        } else {
-            return Math.floor((5 + level) * (1 + 0.05 * level))
-        }
-    }
-
-    function level_exp(level) {
-        if (level < level_cache.length) {
-            return level_cache[level];
-        }
-        return Math.floor((10 + level * 5) * Math.pow(1.02, level))
-    }
-
-    function init_cache() {
-        for (let i = 0; i < 5; i++)
-            for (let j = 0; j < 500; j++) {
-                let value = shop_cost(i, j);
-                if (value > 1e7)
-                    break;
-                shop_cost_cache[i].push(value);
-            }
-        for (let i = 0; i < 500; i++) {
-            level_cache.push(level_exp(i));
-        }        
-    }
-
-    init_cache();
-
-    function cal_cost(points) {
-        if (debug)
-            console.log(points)
-        let result = 0
-        for (let i = 0; i < 5; i++) {
-            for (let j = 0; j < points[i]; j++) {
-                result += shop_cost(i,j)
-            }
-        }
-        return result
-    }
-
-    function cal_exp(level, rest_xp) {
-        let result = rest_xp
-        for (let i = 1; i < level; i++)
-            result += level_exp(i)
-        return result
-    }
-
-    function cal_damage(points, level, debug) {
-        let atk1 = 20 + points[0] * 3 + level
-        let num = 8 + points[4] + Math.floor(level / 25)
-        let total = 0
-        let dmgs = []
-        for (let i = 0; i < num; i++) {
-            let atk2 = (atk1 + i * (points[1] + 1)) * (1 + bonus_atk)
-            let atk3 = Math.ceil(atk2 * (1 + level / 100))
-            total += atk3
-            if (debug)
-                dmgs.push(atk3)
-        }
-        if (debug) {
-            console.log(points)
-            console.log(dmgs)
-        }
-        return total
-    }
-
-    function cal_scale(damage) {
-        let scales = [1.10, 1.08, 1.06, 1.05, 1.04, 1.03, 1.02, 1.00]
-        for (i = 0; i < rank_scores.length; i++) {
-            let rd = rank_scores[i]
-            if (debug)
-                console.log(damage, rd)
-            if (damage >= rd) {
-                return [scales[i], i]
-            }
-        }
-        return [scales[7], 7]
-    }
-
-    function cal_reward(points) {
-
-        damage = cal_damage(points, my_level, false)
-        let [rank_scale, rank] = cal_scale(damage)
-        let xp = (10 + boss_level) * (1 + 0.05 * points[2]) * Math.pow(1.05, boss_level) * rank_scale
-        xp = Math.ceil(xp * (1 + bonus_xp))
-        let gp = (10 + boss_level) * (1 + 0.05 * points[3]) * Math.pow(1.05, boss_level) * rank_scale
-        gp = Math.ceil(gp * (1 + bonus_gp))
-
-        return [xp, gp, rank]
-    }
-
-    function cal_levelup(xp) {
-        let level_up = 0
-        let rest_xp = xp
-        while (true) {
-            let need_xp = level_exp(my_level + level_up);
-            if (need_xp > rest_xp)
-                break
-            rest_xp -= need_xp
-            level_up++
-        }
-        return [level_up, rest_xp]
-    }
-
-    function cal_catching_up_cost(cur_ps, tar_ps, filter) {
-        let cost = 0
-        for (let i = 0; i < 5; i++) {
-            if (!filter[i])
-                continue
-            for (let j = cur_ps[i]; j < tar_ps[i]; j++)
-                cost += shop_cost(i, j)
-            for (let j = tar_ps[i]; j < cur_ps[i]; j++)
-                cost -= shop_cost(i, j)
-        }
-        return cost
-    }
-
-    function cal_damage_efficiency(ps, penalty = 1) {
-        let cost = cal_catching_up_cost(my_points, ps, atk_mask);
-        if (cost > 0)
-            return (cal_damage(ps, my_level, false) - cal_damage(my_points, my_level, false)) / Math.pow(cost, penalty);
-        else
-            return 0
-    }
-
-    function truncate_list(list = [], length = 0, _default = 0) {
-        while (list.length > length)
-            list.pop()
-        while (list.length < length)
-            list.push(_default)
-    }
-
-    function read_value(id, map, _default, callback, userdata) {
-        let obj = document.getElementById(id)
-        if (obj == null) {
-            if (debug)
-                console.log("error finding" + id)
-            return _default
-        }
-        let value = map(obj, userdata) || _default;
-        if (callback)
-            callback(obj, value)
-        return value
-    }
-
-    function map_int(obj, userdata) {
-        return Math.floor(Number(obj.value))
-    }
-
-    function map_float(obj, userdata) {
-        return Number(obj.value)
-    }
-
-    function map_expr_int(obj, userdata) {
-        try {
-            return Math.floor(Number(
-                Function("return " + obj.value)()
-            ))
-        } catch (error) {
-            return null
-        }
-    }
-
-    function map_list(obj, userdata) {
-        let [len, _default] = userdata
-        let value = (obj.value.match(/([0-9]+)/g) || []).map(Number)
-        truncate_list(value, len, _default)
-        return value
-    }
-
-    function map_oppo_points(obj, userdata) {
-        let [len, _default] = userdata
-        const regex = /^(\d+)\D+(\d+)\D+(\d+)\D+(\d+)\D+(\d+)\D*[\(（](\d+)[）\)]\D*$/;
-        let value = obj.value.match(regex)
-        if (value) {
-            value = value.slice(1, 7).map(Number)
-            let ps = value.slice(0, 5)
-            let lvl = value[5]
-            return [ps, lvl]
-        }
-        value = (obj.value.match(/([0-9]+)/g) || []).map(Number)
-        truncate_list(value, len, _default)
-        return [value, null]
-    }
-
-    function map_ratio(obj, userdata) {
-        let [len, _default] = userdata
-        let value = (obj.value.match(/[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?/g) || []).map(Number);
-        truncate_list(value, len, _default);
-        let sum = 0;
-        for (let i = 0; i < value.length; i++)
-            sum += value[i];
-        if (sum == 0)
-            return [1, 0, 0];
-        for (let i = 0; i < value.length; i++)
-            value[i] /= sum;
-        return value
-    }
-
-    function map_set(obj, userdata) {
-        let value = (obj.value.match(/([0-9]+)/g) || []).map(Number)
-        value = [...new Set(value)].sort((a, b) => a - b)
-        return value
-    }
-
-    function map_checkbox(obj, userdata) {
-        return Boolean(obj.checked)
-    }
-
-    function map_option(obj, userdata) {
-        let [attr, target] = userdata
-        return obj.getAttribute(attr) == target
-    }
-
-    function callback_normal(obj, value) {
-        obj.value = String(value)
-    }
-
-    function callback_oppo_points(obj, value) {
-        let [ps, lvl] = value
-        if (lvl) {
-            obj.value = ps + "(" + lvl + ")"
-        } else {
-            obj.value = String(ps)
-        }
-    }
-
-    function callback_ratio(obj, value) {
-        let _value = JSON.parse(JSON.stringify(value));
-        for (let i = 0; i < _value.length; i++) {
-            if (Math.floor(_value[i]) == _value[i])
-                continue;
-            _value[i] = _value[i].toFixed(2);
-        }
-        obj.value = String(_value);
-    }
-
-    function init_value(){
-        debug = read_value('console_debug', map_checkbox, false, null, null)
-
-        my_level = read_value('my_level', map_expr_int, 0, callback_normal, null)
-        my_gp = read_value('my_gp', map_expr_int, 0, callback_normal, null)
-        my_xp = read_value('my_xp', map_expr_int, 0, callback_normal, null)
-        boss_level = read_value('boss_level', map_expr_int, 0, callback_normal, null)
-        bonus_atk = read_value('bonus_atk', map_float, 0, callback_normal, null)
-        bonus_gp = read_value('bonus_gp', map_float, 0, callback_normal, null)
-        bonus_xp = read_value('bonus_xp', map_float, 0, callback_normal, null)
-        rank_scores = read_value('rank_scores', map_list, [], callback_normal, [7, 0])
-
-        my_points = read_value('my_points', map_list, [], callback_normal, [5, 0])
-        if_build_comparison = read_value('if_build_comparison', map_checkbox, false, null, null)
-        op_stats = read_value('op_points', map_oppo_points, [], callback_oppo_points, [5, 0])
-        op_points = op_stats[0]; op_level = op_stats[1]
-
-        filters = []
-        for (let i = 0; i < 5; i++) {
-            let name = 'filter' + i
-            let filter = read_value(name, map_option, false, callback_normal, ['data-select', 'true'])
-            filters.push(filter)
-        }
-        if_spend_close_to_ratio = read_value('if_spend_close_to_ratio', map_checkbox, false, null, null);
-        spend_ratio = read_value('spend_ratio', map_ratio, [1, 0, 0], callback_ratio, [3, 0]);
-        
-        target_dmgs = read_value('target_dmgs', map_set, [], callback_normal, null)
-        level_range_low = read_value('level_range_low', map_int, 0, callback_normal, null)
-        level_range_high = read_value('level_range_high', map_int, 0, callback_normal, null)
-        if (level_range_high < level_range_low) {
-            level_range_high = level_range_low
-            document.getElementById('level_range_high').value = String(level_range_high)
-        }
-        if_limit_dmg_cost = read_value('if_limit_dmg_cost', map_checkbox, false, null, null)
-        limit_dmg_cost = read_value('limit_dmg_cost', map_int, 0, callback_normal, null, null)
-
-        local_save()
-    }
-
-    const ids = [
-        "my_level", "my_gp", "my_xp",
-        "bonus_atk", "bonus_gp", "bonus_xp",
-        "my_points", "op_points",
-        "spend_ratio",
-        "boss_level", "rank_scores",
-        "level_range_low", "level_range_high",
-        "target_dmgs", "limit_dmg_cost"
-    ]
-
-    const checkboxes = [
-        "if_build_comparison",
-        "if_limit_dmg_cost",
-        "if_spend_close_to_ratio",
-        "console_debug"
-    ]
-
-    const optionboxes = [
-        "filter0", "filter1", "filter2", "filter3", "filter4"
-    ]
-
-    function load(get_value, userdata) {
-        do {
-            let k = 'console_debug'
-            let r = get_value(k, userdata)
-            debug = r == "true"
-        } while (false)
-        for(let k of ids){
-            let r = get_value(k, userdata)
-            if (debug)
-                console.log('load', k, r)
-            if (!r)
-                continue
-            document.getElementById(k).value = r
-        }
-        for (let k of checkboxes) {
-            let r = get_value(k, userdata)
-            if (debug)
-                console.log('load', k, r)
-            if (!r)
-                continue
-            let checked = r == "true"
-            document.getElementById(k).checked = checked 
-        }
-        for (let k of optionboxes) {
-            let r = get_value(k, userdata)
-            if (debug)
-                console.log('load', k, r)
-            if (!r)
-                continue
-            let obj = document.getElementById(k)
-            let now_statu = obj.getAttribute("data-select") == "true";
-            let req_statu = r == "true"
-            if (now_statu ^ req_statu)
-                toggle(obj)
-        }
-    }
-
-    function save(put_value, userdata) {
-        for(let k of ids){
-            let r = document.getElementById(k).value
-            if (debug)
-                console.log('save', k, r)
-            put_value(k, r, userdata)
-        }
-
-        for (let k of checkboxes) {
-            let r = document.getElementById(k).checked
-            if (debug)
-                console.log('save', k, r)
-            put_value(k, r, userdata)
-        }
-
-        for (let k of optionboxes) {
-            let r = document.getElementById(k).getAttribute('data-select')
-            if (debug)
-                console.log('save', k, r)
-            put_value(k, r, userdata)
-        }
-    }
-
-    function json_get_value(k, dic) {
-        return dic[k]
-    }
-
-    function json_put_value(k, v, dic) {
-        dic[k] = String(v)
-    }
-
-    function json_load() {
-        let dic = {}
-        try {
-            dic = JSON.parse(document.getElementById('json_string').value)
-        } catch (error) {
-            return
-        }
-        load(json_get_value, dic)
-        local_save()
-    }
-
-    function json_save() {
-        let dic = {}
-        save(json_put_value, dic)
-        document.getElementById('json_string').value = JSON.stringify(dic)
-    }
-
-    function local_get_value(k, dummy) {
-        return localStorage.getItem(k)
-    }
-
-    function local_put_value(k, v, dummy) {
-        localStorage.setItem(k, v)
-    }
-
-    function local_save() {
-        save(local_put_value, null)
-    }
-
-    function local_load() {
-        load(local_get_value, null)
-    }
-
-    local_load()
-
-    function get_ws(index, total) {
-        let step = Math.floor(100 / total)
-        if (index + 1 < total)
-            return step
-        else
-            return 100 - step * (total - 1)
-    }
-
-    function gen_span_link(text, func, need_margin_left=false) {
-        let link = document.createElement("span");
-        link.innerText = text;
-        link.style.cursor = "pointer";
-        link.style.textDecoration = "underline";
-        if (need_margin_left)
-            link.style.marginLeft = "4px";
-        link.style.color = "blue";
-        link.onclick = func;
-        return link
-    }
-
-    function gen_line(objlist, width = []) {
-        let objlen = objlist.length;
-        let new_div = document.createElement("div");
-        Object.assign(new_div.style, {
-            display: "flex",
-            width: "100%"
-        });
-
-        for (let i = 0; i < objlen; i++) {
-            let item = objlist[i];
-            let col_div = document.createElement("div");
-
-            // 设置宽度
-            let _width = width.length === objlen ? width[i] : get_ws(i, objlen);
-            col_div.style.width = _width + "%";
-
-            // 设置文本自动换行
-            if (i + 1 < objlen) {
-                Object.assign(col_div.style, {
-                    wordBreak: "break-word",
-                    overflowWrap: "break-word"
-                });
-            }
-
-            if (item instanceof Node) {
-                col_div.appendChild(item)
-            } else {
-                col_div.textContent = item;
-            }
-            new_div.appendChild(col_div);
-        }
-
-        return new_div;
-    }
-
-    function gen_empty_line() {
-        let empty_div = document.createElement("div");
-        Object.assign(empty_div.style, {
-            display: "flex",
-            width: "100%",
-            height: "20px"
-        });
-        return empty_div;
-    }
-
-    function gen_omit_view_message(func) {
-        let warning = get_locale_text("txt_omit_view_warning")
-        let expand = get_locale_text("txt_omit_view_expand")
-        let new_div = document.createElement("div");
-        new_div.style.display = "inline";
-
-        let warningText = document.createTextNode(warning + " ");
-        let expandLink = gen_span_link(expand, func, true);
-
-        new_div.appendChild(warningText);
-        new_div.appendChild(expandLink);
-        return new_div
-    }
-
-    function stringify_number(num) {
-        if (num > 0)
-            return "+" + num
-        else
-            return String(num)
-    }
-
-    function format_float(num) {
-        if (Math.abs(num) != 0 && (Math.abs(num) < 0.01 || Math.abs(num) >= 5e3)) {
-            return num.toExponential(4);
-        } else if (Math.abs(num) != 0) {
-            return num.toFixed(4);
-        } else {
-            return "0";
-        }
-    }
-
-    var valid_index = []
-    var valid_enums = []
-    var damage_upperbound = 0
-    var gp_upperbound = 0
-    var gp2points_sort_function = null
-    var dummy_mask = [1, 1, 1, 1, 1]
-    var atk_mask = [1, 1, 0, 0, 1]
-    var exp_mask = [0, 0, 1, 0, 0]
-    var gp_mask = [0, 0, 0, 1, 0]
+    init_localization();
+    init_realtime();
+    init_core();
+
+    var gp2points_sort_function = null;
 
     function gp2points_sort_by_damage_amount(a, b) {
         return b[0] - a[0];
@@ -1050,9 +443,9 @@
     function gp2points_sort_by_close_to_ratio(a, b) {
         let calc_error_square = (ps) => {
             let calc_diff = (now, tar) => {return (now - tar) / tar}
-            let atk_cost = calc_diff(cal_catching_up_cost(my_points, ps, atk_mask), (spend_ratio[0] * my_gp));
-            let exp_cost = calc_diff(cal_catching_up_cost(my_points, ps, exp_mask), (spend_ratio[1] * my_gp));
-            let gp_cost = calc_diff(cal_catching_up_cost(my_points, ps, gp_mask), (spend_ratio[2] * my_gp));
+            let atk_cost = calc_diff(cal_catching_up_cost(my_ps, ps, atk_mask), (spend_ratio[0] * my_gp));
+            let exp_cost = calc_diff(cal_catching_up_cost(my_ps, ps, exp_mask), (spend_ratio[1] * my_gp));
+            let gp_cost = calc_diff(cal_catching_up_cost(my_ps, ps, gp_mask), (spend_ratio[2] * my_gp));
             return atk_cost * atk_cost + exp_cost * exp_cost + gp_cost * gp_cost;
         }
         let err_a = calc_error_square(a[5]);
@@ -1063,16 +456,18 @@
             return b[0] - a[0];
     }
 
-    function gp2points_updateinput(lvl, exp, gp, ps) {
+    function gp2points_updateinput(lvl, exp, gp, crit_hits, ps) {
         document.getElementById('my_level').value = lvl;
         document.getElementById('my_xp').value = exp;
         document.getElementById('my_gp').value = gp;
-        document.getElementById('my_points').value = ps;
+        document.getElementById('my_crit_hits').value = crit_hits;
+        document.getElementById('my_compact_format').value = ps;
+        compact_flush_to_upgrades();
     }
 
     function gp2points_render(results, use_omit_view) {
-        let op_damage = cal_damage(op_points, op_level ? op_level : my_level, false)
-        let [op_xp, op_gp] = cal_reward(op_points)
+        let op_damage = cal_damage(op_ps, op_level, op_crit_hits, op_reserve_hits, false);
+        let [op_xp, op_gp] = cal_reward(op_ps, op_damage);
 
         let result_dom = document.getElementById('result')
         result_dom.innerHTML = ""
@@ -1088,11 +483,16 @@
             damage_div.appendChild(gen_span_link(temp[0][0], () => {gp2points_sort_function = gp2points_sort_by_damage_amount; gp2points_resort()}));
             damage_div.appendChild(document.createTextNode("/"));
             damage_div.appendChild(gen_span_link(temp[0][1], () => {gp2points_sort_function = gp2points_sort_by_damage_efficiency; gp2points_resort()}));
+            let gp_div = document.createElement("div");
+            gp_div.style.display = "inline";
+            gp_div.appendChild(gen_span_link(temp[1][0], () => {gp2points_sort_function = gp2points_sort_by_gp; gp2points_resort()}));
+            gp_div.appendChild(document.createTextNode("/"));
+            gp_div.appendChild(gen_span_link(temp[1][1], () => {gp2points_sort_function = gp2points_sort_by_restgp; gp2points_resort()}));
             objlist = [
                 damage_div,
-                gen_span_link(temp[1], () => {gp2points_sort_function = gp2points_sort_by_gp; gp2points_resort()}),
+                gp_div,
                 gen_span_link(temp[2], () => {gp2points_sort_function = gp2points_sort_by_exp; gp2points_resort()}),
-                gen_span_link(temp[3], () => {gp2points_sort_function = gp2points_sort_by_restgp; gp2points_resort()}),
+                temp[3],
                 temp[4],
                 temp[5]
             ]
@@ -1100,18 +500,18 @@
         result_dom.appendChild(gen_line(objlist));
 
         for (let r of results) {
-            let [damage, gp, xp, rest_gp, rank, ps] = r;
+            let [damage, gp, xp, rest_gp, crit_hits, rank, ps] = r;
             let _ps = String(ps);
             let [level_up, rest_xp] = cal_levelup(my_xp + xp);
-            let atk_eff = cal_damage_efficiency(ps);
+            let atk_eff = cal_damage_efficiency(ps, my_crit_hits, my_reserve_hits, 1);
             let ps_link = gen_span_link(_ps, () => gp2points_updateinput(
-                my_level + level_up, rest_xp, gp + rest_gp, _ps));
-            if (if_build_comparison) {
+                my_level + level_up, rest_xp, gp + rest_gp, crit_hits, _ps));
+            if (if_build_comparision) {
                 let diff_damage = stringify_number(damage - op_damage);
                 let _damage = diff_damage + " (" + format_float(atk_eff) + ")";
                 let diff_gp = stringify_number(gp - op_gp);
                 let diff_xp = stringify_number(xp - op_xp);
-                objlist = [_damage, diff_gp, diff_xp, rest_gp, rank, ps_link];
+                objlist = [_damage, diff_gp, diff_xp, crit_hits, rank, ps_link];
             } else {
                 let _damage = damage + " (" + format_float(atk_eff) + ")";
                 let _xp = ""
@@ -1120,8 +520,8 @@
                 } else {
                     _xp = xp + " (" + rest_xp + ")"
                 }
-                let _gp = gp + " (" + (gp + rest_gp) + ")"
-                objlist = [_damage, _gp, _xp, rest_gp, rank, ps_link]
+                let _gp = gp + "/" + rest_gp + " (" + (gp + rest_gp) + ")"
+                objlist = [_damage, _gp, _xp, crit_hits, rank, ps_link]
             }
             result_dom.appendChild(gen_line(objlist));
         }
@@ -1131,11 +531,12 @@
         let results = []
 
         for (let pair of valid_enums) {
-            let [ps, rest_gp] = pair
-            let damage = cal_damage(ps, my_level, debug)
-            let [xp, gp, rank] = cal_reward(ps)
-            rank = ["1", "3", "10", "50", "250", "1000", "2500", "2500+"][rank]
-            results.push([damage, gp, xp, rest_gp, rank, ps])
+            let [ps, rest_gp] = pair;
+            let damage = cal_damage(ps, my_level, my_crit_hits, my_reserve_hits, debug);
+            let [xp, gp, rank] = cal_reward(ps, damage);
+            let crit_hits = adjust_crit(ps, cal_crit(ps, my_level, my_crit_hits, my_reserve_hits));
+            rank = ["1", "3", "10", "50", "250", "1000", "2500", "2500+"][rank];
+            results.push([damage, gp, xp, rest_gp, crit_hits, rank, ps]);
         }
 
         results.sort(gp2points_sort_function)
@@ -1145,12 +546,8 @@
     function gp2points() {
         init_value()
 
-        valid_index = []
         valid_enums = []
-        for (let i = 0; i < 5; i++)
-            if (filters[i])
-                valid_index.push(i)
-        let _points = JSON.parse(JSON.stringify(my_points))
+        let _points = JSON.parse(JSON.stringify(my_ps))
         enum_gp(_points, my_gp, 0)
 
         if (if_spend_close_to_ratio)
@@ -1161,7 +558,9 @@
     }
 
     function gp2points_resort() {
-        let results = gp2points_getresults()
+        let results = gp2points_getresults();
+        if (debug)
+            console.log(results.length);
         let use_omit_view = results.length > 1000
         if (use_omit_view)
             truncate_list(results, 1000, null)
@@ -1173,7 +572,7 @@
         gp2points_render(results, false)
     }
 
-    var show_cost_num
+    var show_cost_num = 0;
 
     function gen_show_cost_continue() {
         let text = get_locale_text("txt_show_cost_continue")
@@ -1183,14 +582,6 @@
         let continueLink = gen_span_link(text, show_cost_continue)
         new_div.appendChild(continueLink);
         return new_div
-    }
-
-    function cal_damage_cost(ps) {
-        return cal_cost([ps[0], ps[1], 0, 0, ps[4]])
-    }
-
-    function cal_eco_cost(ps) {
-        return cal_cost([0, 0, ps[2], ps[3], 0])
     }
 
     function gen_cost_comparison(text, my_value, op_value) {
@@ -1204,16 +595,11 @@
 
     function gen_show_cost(n) {
         objlist = []
-        for(let i = 0; i < 6; i++){
-            let r = 0
-            if (i == 0){
-                let lvl = my_level + n
-                r = level_exp(lvl) + " (" + lvl + ")"
-            } else {
-                let lvl = my_points[i - 1] + n
-                r = shop_cost(i - 1, lvl) + " (" + lvl + ")"
-            }
-            objlist.push(r)
+        for (let i = 0; i < i_max; i++) {
+            if (!filters[i])
+                continue;
+            let lvl = (i == i_level ? my_level : my_ps[i]) + n;
+            objlist.push(shop_cost(i, lvl) + " (" + lvl + ")");
         }
         return gen_line(objlist)
     }
@@ -1225,40 +611,38 @@
     
         let objlist = []
 
-        if (if_build_comparison) {
+        if (if_build_comparision) {
             objlist = [
                 get_locale_text("txt_show_cost_points"),
-                my_points,
-                op_points,
+                my_ps,
+                op_ps,
                 get_locale_text("txt_show_cost_difference"),
             ]
             result_dom.appendChild(gen_line(objlist));
             result_dom.appendChild(gen_cost_comparison(
                 "txt_show_cost_damage",
-                cal_damage(my_points, my_level, false),
-                cal_damage(op_points, op_level ? op_level : my_level, false)
+                cal_damage(my_ps, my_level, my_crit_hits, my_reserve_hits, false),
+                cal_damage(op_ps, op_level, op_crit_hits, op_reserve_hits, false)
             ));
-            if (op_level) {
-                result_dom.appendChild(gen_cost_comparison(
-                    "txt_show_cost_exp",
-                    cal_exp(my_level, my_xp),
-                    cal_exp(op_level, 0)
-                ));
-            }
+            result_dom.appendChild(gen_cost_comparison(
+                "txt_show_cost_exp",
+                cal_exp(my_level, my_xp),
+                cal_exp(op_level, 0)
+            ));
             result_dom.appendChild(gen_cost_comparison(
                 "txt_show_cost_points_cost",
-                cal_cost(my_points),
-                cal_cost(op_points)
+                cal_cost(my_ps),
+                cal_cost(op_ps)
             ));
             result_dom.appendChild(gen_cost_comparison(
                 "txt_show_cost_damage_cost",
-                cal_damage_cost(my_points),
-                cal_damage_cost(op_points)
+                cal_damage_cost(my_ps),
+                cal_damage_cost(op_ps)
             ));
             result_dom.appendChild(gen_cost_comparison(
                 "txt_show_cost_eco_cost",
-                cal_eco_cost(my_points),
-                cal_eco_cost(op_points)
+                cal_eco_cost(my_ps),
+                cal_eco_cost(op_ps)
             ))
         } else {
             objlist = [
@@ -1269,10 +653,10 @@
             ]
             result_dom.appendChild(gen_line(objlist));
             objlist = [
-                my_points,
-                cal_cost(my_points),
-                cal_damage_cost(my_points),
-                cal_eco_cost(my_points),
+                my_ps,
+                cal_cost(my_ps),
+                cal_damage_cost(my_ps),
+                cal_eco_cost(my_ps),
             ]
             result_dom.appendChild(gen_line(objlist));
         }
@@ -1285,24 +669,30 @@
         objlist = get_locale_text("txt_show_cost_atk_efficiency2")
         result_dom.appendChild(gen_line(objlist));
         
-        let results = enum_atk_eff(my_points)
+        let results = enum_atk_eff(my_ps)
         for (let r of results) {
             result_dom.appendChild(gen_line(r))
         }
 
         result_dom.appendChild(gen_empty_line());
 
-        objlist = get_locale_text("txt_show_cost_future_cost1")
-        result_dom.appendChild(gen_line(objlist));
+        let upgrades_list = [];
+        for (let i = 0; i < i_max; i++)
+            if (filters[i])
+                upgrades_list.push(get_locale_text("txt_upgrades")[i]);
+        if (upgrades_list.length > 0) {
+            objlist = get_locale_text("txt_show_cost_future_cost1");
+            result_dom.appendChild(gen_line(objlist));
 
-        objlist = get_locale_text("txt_show_cost_future_cost2")
-        result_dom.appendChild(gen_line(objlist));
+            objlist = upgrades_list;
+            result_dom.appendChild(gen_line(objlist));
 
-        show_cost_num = 10
-        for (let n = 0; n < show_cost_num; n++){ 
-            result_dom.appendChild(gen_show_cost(n));
+            show_cost_num = 10
+            for (let n = 0; n < show_cost_num; n++){ 
+                result_dom.appendChild(gen_show_cost(n));
+            }
+            result_dom.appendChild(gen_show_cost_continue())
         }
-        result_dom.appendChild(gen_show_cost_continue())
     }
 
     function show_cost_continue() {
@@ -1336,19 +726,25 @@
         result_dom.appendChild(gen_line(objlist, width));
 
         for (let r of results) {
-            result_dom.appendChild(gen_line(r, width));
+            objlist = [];
+            objlist.push(r[0]);
+            objlist.push(r[1] + "/" + r[2]);
+            objlist.push(r[3]);
+            objlist.push(r[4]);
+            objlist.push(r[5]);
+            result_dom.appendChild(gen_line(objlist, width));
         }
     }
 
     function dmg2points_getresults() {
-        let results = []
+        let results = [];
         for (let pair of valid_enums) {
-            let [ps, gp, lvl] = pair
+            let [ps, gp, lvl, crit_hits] = pair;
             results.push([
-                cal_damage(ps, lvl, false),
-                gp, cal_catching_up_cost(my_points, ps, atk_mask),
-                lvl, ps
-            ])
+                cal_damage(ps, lvl, crit_hits, false),
+                gp, cal_catching_up_cost(my_ps, ps, atk_mask),
+                adjust_crit(ps, cal_crit(ps, lvl, crit_hits, 0)), lvl, ps
+            ]);
         }
         results.sort((a, b) => {
             if (a[0] != b[0])
@@ -1356,119 +752,35 @@
             if (a[1] != b[1])
                 return a[1] - b[1]
             return a[2] - b[2]
-        })
-        return results
+        });
+        return results;
     }
 
     function dmg2points() {
         init_value()
 
-        valid_index = [0, 1, 4]
-        valid_enums = []
+        valid_enums = [];
         if (target_dmgs.length > 0) {
-            damage_upperbound = target_dmgs[target_dmgs.length - 1]
+            damage_upperbound = target_dmgs[target_dmgs.length - 1];
             if (if_limit_dmg_cost)
-                gp_upperbound = limit_dmg_cost
+                gp_upperbound = limit_dmg_cost;
             else
-                gp_upperbound = Number.MAX_VALUE
-            for (let lvl = level_range_low; lvl <= level_range_high; lvl++)
-                enum_dmg([0, 0, 0, 0, 0], lvl, 0, 0, true)
+                gp_upperbound = Number.MAX_VALUE;
+            for (let lvl = level_range[0]; lvl <= level_range[1]; lvl++)
+                for (let crit_hits = 0; crit_hits < 15; crit_hits++)
+                    enum_dmg([0, 0, 0, 0, 0, 0, 0], lvl, 0, crit_hits, 0, true);
         }
         
-        let results = dmg2points_getresults()
-        let use_omit_view = results.length > 1000
+        let results = dmg2points_getresults();
+        let use_omit_view = results.length > 1000;
         if (use_omit_view)
-            truncate_list(results, 1000, null)
-        dmg2points_render(results, use_omit_view)
+            truncate_list(results, 1000, null);
+        dmg2points_render(results, use_omit_view);
     }
 
     function dmg2points_expandall() {
-        let results = dmg2points_getresults()
-        dmg2points_render(results, false)
-    }
-
-    function enum_gp(points, gp, index = 0) {
-        if (index >= valid_index.length) {
-            let _points = JSON.parse(JSON.stringify(points))
-            valid_enums.push([_points, gp])
-            return
-        } else if (index + 1 >= valid_index.length) {
-            let _points = JSON.parse(JSON.stringify(points))
-            let shop_index = valid_index[index];
-            while (true) {
-                let cost = shop_cost(shop_index, _points[shop_index])
-                if (cost > gp)
-                    break
-                _points[shop_index]++
-                gp -= cost
-            }
-            valid_enums.push([_points, gp])
-            return
-        }
-
-        let shop_index = valid_index[index];
-        let ori_level = points[shop_index];
-        enum_gp(points, gp, index + 1)
-        while (true) {
-            let cost = shop_cost(shop_index, points[shop_index])
-            if (cost > gp)
-                break
-            points[shop_index]++
-            gp -= cost
-            enum_gp(points, gp, index + 1)
-        }
-        points[shop_index] = ori_level
-    }
-
-    function enum_dmg(points, level, gp, index, is_new) {
-        let shop_index = valid_index[index]
-        let ori_level = points[shop_index]
-        let dmg = cal_damage(points, level, false)
-
-        if (gp > gp_upperbound || gp < 0)
-            return false
-        if (dmg > damage_upperbound)
-            return false
-        if (is_new) {
-            for (let _dmg of target_dmgs) {
-                if (dmg == _dmg) {
-                    let _points = JSON.parse(JSON.stringify(points))
-                    valid_enums.push([_points, gp, level])
-                }
-            }
-        }
-        if (index >= valid_index.length)
-            return true
-        if (!enum_dmg(points, level, gp, index + 1, false))
-            return true
-        while (true) {
-            let cost = shop_cost(shop_index, points[shop_index])
-            points[shop_index]++
-            gp += cost
-            if (!enum_dmg(points, level, gp, index + 1, true))
-                break
-        }
-        points[shop_index] = ori_level
-
-        return true
-    }
-
-    function enum_atk_eff(points) {
-        let results = []
-        let dmg_index = [0, 1, 4]
-        let dmg_type = get_locale_text("txt_show_cost_atk_efficiency3")
-
-        for (let i = 0; i < dmg_index.length; i++) {
-            let index = dmg_index[i]
-            let _points = JSON.parse(JSON.stringify(points))
-            _points[index] += 1
-            let dmg_diff = cal_damage(_points, my_level, false) - cal_damage(points, my_level, false)
-            let dmg_cost = shop_cost(index, points[index])
-            let dmg_eff = dmg_diff / dmg_cost
-            results.push([dmg_type[i], dmg_diff, dmg_cost, dmg_eff])
-        }
-
-        return results
+        let results = dmg2points_getresults();
+        dmg2points_render(results, false);
     }
 
 </script>
