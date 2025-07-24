@@ -53,20 +53,23 @@ function gen_boss_info(ms) {
     }
 }
 
-function boss_need_alert(ms) {
+function boss_color(ms) {
     if (season_start <= ms && ms < season_end) {
         let running_time = (ms - season_start) % boss_round_duration;
+        if (running_time < boss_alert_duration)
+            return "green"
         if (boss_alert_duration <= running_time && running_time < boss_running_duration)
-            return true;
+            return "red";
     }
-    return false;
+    return "";
 }
 
 function update_boss_info() {
     let ms = Date.now();
     let boss_info = document.getElementById('txt_boss_info');
     boss_info.innerText = gen_boss_info(ms);
-    boss_info.style = boss_need_alert(ms) ? "color: red; font-weight: bold;" : "font-weight: bold;";
+    boss_info.style.fontWeight = "bold";
+    boss_info.style.color = boss_color(ms);
 }
 
 function init_boss_info() {

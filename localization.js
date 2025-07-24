@@ -1,4 +1,4 @@
-const updatedate = "2025.7.22"
+const updatedate = "2025.7.24"
 
 const text_area = [
     "txt_update_info", "txt_update_info_close",
@@ -13,7 +13,7 @@ const text_area = [
     "txt_player_attr",
     "txt_spend_close_to_ratio",
     "txt_build_comparision",
-    "txt_attr", "txt_mine", "txt_oppo",
+    "txt_attr", "txt_mine", "txt_oppo", "txt_headline_hint",
     "txt_level", "txt_xp", "txt_gp", "txt_crit_hits_left", "txt_reserve_hits",
     "txt_base_atk", "txt_consecutive", "txt_gp_bonus", "txt_xp_bonus", "txt_atk_charge", 
     "txt_atk_bonus", "txt_crit_hits", "txt_compact_format",
@@ -81,6 +81,7 @@ const zh_text = {
     "txt_attr": "属性",
     "txt_mine": "我的加点",
     "txt_oppo": "对手加点",
+    "txt_headline_hint": "推荐取消勾选下面的一些勾选框以减少模拟时间",
     "txt_level": "英雄等级",
     "txt_xp": "经验值",
     "txt_gp": "金豆",
@@ -166,6 +167,7 @@ const en_text = {
     "txt_attr": "attribute",
     "txt_mine": "your build",
     "txt_oppo": "opponent's build",
+    "txt_headline_hint": "recommand to uncheck some checkboxes below to reduce search time",
     "txt_level": "hero level",
     "txt_xp": "hero exp",
     "txt_gp": "gold potato",

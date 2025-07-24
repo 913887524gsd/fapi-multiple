@@ -1,3 +1,9 @@
+## 2025.7.24
+
++ fix some cost formulars
++ colorful boss info
++ fix the url of Tragon's google document
+
 ## 2025.7.22
 
 + Prepare for season 4

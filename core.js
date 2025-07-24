@@ -52,10 +52,10 @@ function init_shop_formulars() {
     for (let i = 0; i < i_max; i++)
         shop_cost_formulars.push(null);
     shop_cost_formulars[i_base_atk] = (level) =>    {return Math.floor((5 + level) * (1 + 0.1 * level));};
-    shop_cost_formulars[i_consecutive] = (level) => {return Math.floor((25 + 25 * level) * Math.pow(1.6, level));};
+    shop_cost_formulars[i_consecutive] = (level) => {return Math.floor((20 + 25 * level) * Math.pow(1.2, level));};
     shop_cost_formulars[i_gp] = (level) =>          {return Math.floor((5 + level) * (1 + 0.05 * level));};
     shop_cost_formulars[i_xp] = (level) =>          {return Math.floor((5 + level) * (1 + 0.05 * level));};
-    shop_cost_formulars[i_charge] = (level) =>      {return Math.floor((10) * (Math.pow(1.9, level)));};
+    shop_cost_formulars[i_charge] = (level) =>      {return Math.floor((10) * (Math.pow(2, level)));};
     shop_cost_formulars[i_atk_bonus] = (level) =>   {return Math.floor((20 + 25 * level) * Math.pow(1.4, level));};
     shop_cost_formulars[i_crit_atk] = (level) =>    {return Math.floor((25 + 25 * level) * Math.pow(2, level));};
     shop_cost_formulars[i_level] = (level) =>       {return Math.floor((10 + level * 5) * Math.pow(1.02, level));};
