@@ -146,7 +146,6 @@ function init_input_flush() {
         document.getElementById(compact_ids[i])
                 .addEventListener('input', compact_flush_to_upgrades);
     }
-    upgrades_flush_to_compact();
 }
 
 function init_realtime() {

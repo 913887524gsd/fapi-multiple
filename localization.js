@@ -328,6 +328,8 @@ function load(get_value, userdata) {
         let checked = r == "true"
         document.getElementById(k).checked = checked 
     }
+
+    upgrades_flush_to_compact();
 }
 
 function save(put_value, userdata) {
