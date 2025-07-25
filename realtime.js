@@ -32,44 +32,54 @@ var season_start = 0, season_end = 0;
 var boss_alert_duration = 0;
 var boss_running_duration = 0;
 var boss_round_duration = 0;
-
-function gen_boss_info(ms) {
-    if (ms < season_start) {
-        return format(get_locale_text("txt_start_season"), gen_time_duration(season_start - ms));
-    } else if (ms < season_end) {
-        let boss_index = Math.floor((ms - season_start) / boss_round_duration) + 1;
-        let running_time = (ms - season_start) % boss_round_duration;
-        if (running_time < boss_running_duration) {
-            return format(get_locale_text("txt_start_boss"), 
-                    gen_oridinal_number(boss_index),
-                    gen_time_duration(boss_running_duration - running_time));
-        } else {
-            return format(get_locale_text("txt_end_boss"),
-                    gen_oridinal_number(boss_index),
-                    gen_time_duration(boss_round_duration - running_time));
-        }
-    } else {
-        return get_locale_text("txt_end_season");
-    }
-}
-
-function boss_color(ms) {
-    if (season_start <= ms && ms < season_end) {
-        let running_time = (ms - season_start) % boss_round_duration;
-        if (running_time < boss_alert_duration)
-            return "green"
-        if (boss_alert_duration <= running_time && running_time < boss_running_duration)
-            return "red";
-    }
-    return "";
-}
+var running_color = "#50C864";
+var alert_color = "red";
 
 function update_boss_info() {
     let ms = Date.now();
     let boss_info = document.getElementById('txt_boss_info');
-    boss_info.innerText = gen_boss_info(ms);
+    boss_info.innerHTML = "";
+    boss_info.style.textAlign = "center";
+    boss_info.style.width = "100%";
     boss_info.style.fontWeight = "bold";
-    boss_info.style.color = boss_color(ms);
+    boss_info.style.fontSize = "26px";
+    
+    if (ms < season_start) {
+        let new_div = null;
+        new_div = document.createElement("div");
+        new_div.textContent = format(get_locale_text("txt_start_season"), gen_time_duration(season_start - ms));
+        boss_info.appendChild(new_div);
+    } else if (ms < season_end) {
+        let boss_index = Math.floor((ms - season_start) / boss_round_duration) + 1;
+        let running_time = (ms - season_start) % boss_round_duration;
+        let boss_index_div = document.createElement("div");
+        boss_index_div.textContent = format("Boss: {0}/120", boss_index);
+        boss_info.appendChild(boss_index_div);
+        let boss_time_div = document.createElement("div");
+        let statu_div = document.createElement("div");
+        statu_div.style.display = "inline";
+        let time_div = document.createElement("div");
+        time_div.style.display = "inline";
+        if (running_time < boss_running_duration) {
+            statu_div.textContent = get_locale_text("txt_start_boss") + ": ";
+            time_div.textContent = gen_time_duration(boss_running_duration - running_time);
+            if (running_time < boss_alert_duration)
+                boss_time_div.style.color = running_color;
+            else
+                boss_time_div.style.color = alert_color;
+        } else {
+            statu_div.textContent = get_locale_text("txt_end_boss") + ": ";
+            time_div.textContent = gen_time_duration(boss_round_duration - running_time);
+        }
+        boss_time_div.appendChild(statu_div);
+        boss_time_div.appendChild(time_div);
+        boss_info.appendChild(boss_time_div);
+    } else {
+        let new_div = null;
+        new_div = document.createElement("div");
+        new_div.textContent = get_locale_text("txt_end_season");
+        boss_info.appendChild(new_div);
+    }
 }
 
 function init_boss_info() {
@@ -83,24 +93,24 @@ function init_boss_info() {
 }
 
 const upgrade_ids = [
-    [
-        "my_base_atk",
-        "my_consecutive",
-        "my_gp_bonus",
-        "my_xp_bonus",
-        "my_atk_charge",
-        "my_atk_bonus",
-        "my_crit_atk",
-    ],
-    [
-        "op_base_atk",
-        "op_consecutive",
-        "op_gp_bonus",
-        "op_xp_bonus",
-        "op_atk_charge",
-        "op_atk_bonus",
-        "op_crit_atk",
-    ],
+    {
+        [i_base_atk]: "my_base_atk",
+        [i_atk_bonus]: "my_atk_bonus",
+        [i_crit_atk]: "my_crit_atk",
+        [i_consecutive]: "my_consecutive",
+        [i_gp]: "my_gp_bonus",
+        [i_xp]: "my_xp_bonus",
+        [i_charge]: "my_atk_charge",
+    },
+    {
+        [i_base_atk]: "op_base_atk",
+        [i_atk_bonus]: "op_atk_bonus",
+        [i_crit_atk]: "op_crit_atk",
+        [i_consecutive]: "op_consecutive",
+        [i_gp]: "op_gp_bonus",
+        [i_xp]: "op_xp_bonus",
+        [i_charge]: "op_atk_charge",
+    },
 ];
 
 const compact_ids = [
@@ -111,28 +121,27 @@ const compact_ids = [
 function upgrades_flush_to_compact() {
     for (let i = 0; i < 2; i++) {
         let words = [];
-        for (let j of upgrade_ids[i])
-            words.push(document.getElementById(j).value);
+        for (let j = 0; j < i_ps_max; j++)
+            words.push(document.getElementById(upgrade_ids[i][j]).value);
         document.getElementById(compact_ids[i]).value = words.join(',');
     }
 }
 
 function compact_flush_to_upgrades() {
     for (let i = 0; i < 2; i++) {
-        let values = document.getElementById(compact_ids[i]).value.match(/\d+/g).map(Number);
-        let index = 0;
-        for (let j of upgrade_ids[i])
-            if (index >= values.length)
-                break;
+        let values = (document.getElementById(compact_ids[i]).value.match(/\d+/g) || []).map(Number);
+        for (let j = 0; j < i_ps_max; j++)
+            if (j < values.length)
+                document.getElementById(upgrade_ids[i][j]).value = String(values[j]);
             else
-                document.getElementById(j).value = String(values[index++]);
+                document.getElementById(upgrade_ids[i][j]).value = "";
     }
 }
 
 function init_input_flush() {
     for (let i = 0; i < 2; i++) {
-        for (let j of upgrade_ids[i])
-            document.getElementById(j)
+        for (let j = 0; j < i_ps_max; j++)
+            document.getElementById(upgrade_ids[i][j])
                     .addEventListener('input', upgrades_flush_to_compact);
         document.getElementById(compact_ids[i])
                 .addEventListener('input', compact_flush_to_upgrades);

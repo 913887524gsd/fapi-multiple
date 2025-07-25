@@ -103,6 +103,8 @@ function gen_oridinal_number(number) {
         return String(number) + "st";
     else if (number % 10 == 2 && number != 12)
         return String(number) + "nd";
+    else if (number % 10 == 3 && number != 13)
+        return String(number) + "rd";
     else
         return String(number) + "th";
 }

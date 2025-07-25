@@ -108,12 +108,12 @@ const zh_text = {
     "txt_omit_view_expand": "显示所有",
     "txt_upgrades": {
         [i_base_atk]: "基础攻击",
+        [i_atk_bonus]: "攻击加成",
+        [i_crit_atk]: "暴击",
         [i_consecutive]: "连击",
         [i_gp]: "金豆",
         [i_xp]: "经验",
         [i_charge]: "囤刀",
-        [i_atk_bonus]: "攻击加成",
-        [i_crit_atk]: "暴击",
         [i_level]: "等级",
     },
     "txt_gp2points": [["伤害", "性价比"], ["得金豆", "剩金豆"], "得经验", "暴击刀数", "排名", "加点"],
@@ -135,8 +135,8 @@ const zh_text = {
     "txt_info_checkboxes": "在模拟金豆花费中，如果某升级项没有被勾选，系统会在计算时忽略该升级项。<br>在查看消耗中，如果某项被勾选了，系统会计算该升级项未来的花费。",
     "txt_start_season": "第4赛季还未开启，赛季开启剩余时间: {0}",
     "txt_end_season": "第4赛季已经结束",
-    "txt_start_boss": "正在打boss {0}，boss结束剩余时间:{1}",
-    "txt_end_boss": "boss {0}已经结束，下一个boss剩余时间: {1}",
+    "txt_start_boss": "运行",
+    "txt_end_boss": "结束",
 };
 
 const en_text = {
@@ -194,13 +194,13 @@ const en_text = {
     "txt_omit_view_expand": "expand all",
     "txt_upgrades": {
         [i_base_atk]: "atk+3",
+        [i_atk_bonus]: "atk*1.05",
+        [i_crit_atk]: "crit",
         [i_consecutive]: "cons",
         [i_gp]: "gp",
         [i_xp]: "exp",
         [i_charge]: "charge",
-        [i_atk_bonus]: "atk*1.05",
-        [i_crit_atk]: "crit",
-        [i_level]: "hero lvl",
+        [i_level]: "level",
     },
     "txt_gp2points": [["damage", "efficiency"], ["gain gp", "rest gp"], "gain xp", "hits to crit", "rank", "points"],
     "txt_show_cost_points": "points",
@@ -221,8 +221,8 @@ const en_text = {
     "txt_info_checkboxes": "In `emulate spend`, if one upgrade is unchecked, the system will ignore this upgrade when computing.<br>In `show cost`, if one checkbox is checked, the system will calculate this one's future cost",
     "txt_start_season": "Season 4 has not started yet. Time remaining until start: {0}",
     "txt_end_season": "Season 4 has already ended.",
-    "txt_start_boss": "Currently running boss {0}, time remaining until boss ends: {1}",
-    "txt_end_boss": "Boss {0} has ended. Time remaining until next boss: {1}",
+    "txt_start_boss": "Running",
+    "txt_end_boss": "Dead",
 };
 
 var lang=""

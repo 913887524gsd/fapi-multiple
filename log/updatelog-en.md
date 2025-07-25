@@ -1,3 +1,8 @@
+## 2025.7.25
+
++ change the order of upgrades
++ more clear boss info
+
 ## 2025.7.24
 
 + fix some cost formulars

@@ -164,7 +164,10 @@
     <strong id="txt_global_attr" style="font-size: 30px;"></strong>
     <hr>
     <!--boss info-->
+    <br>
     <div id="txt_boss_info"></div>
+    <br>
+    <hr>
     <!--boss tier-->
     <div>
         <div style="display: flex; justify-content: space-between;">
@@ -228,7 +231,7 @@
         </div> 
 
         <hr>
-        
+
         <div id="txt_headline_hint"></div>
 
         <!-- level -->
@@ -293,6 +296,26 @@
             </div>
         </div>
 
+        <!--atk bonus-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_atk_bonus" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_atk_bonus" class="attr_text">atk bonus</div>
+                <input id="my_atk_bonus" class="attr_input" type="number" value="0">
+                <input id="op_atk_bonus" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
+        <!--crit hits-->
+        <div style="display: flex; align-items: center; width: 100%;">
+            <input id="if_filt_crit_atk" class="attr_checkbox" type="checkbox" checked="true">
+            <div style="display: flex; flex: 1;">
+                <div id="txt_crit_hits" class="attr_text">crit hits</div>
+                <input id="my_crit_atk" class="attr_input" type="number" value="0">
+                <input id="op_crit_atk" class="attr_input" type="number" value="0">
+            </div>
+        </div>
+
         <!--consecutive-->
         <div style="display: flex; align-items: center; width: 100%;">
             <input id="if_filt_consecutive" class="attr_checkbox" type="checkbox" checked="true">
@@ -330,26 +353,6 @@
                 <div id="txt_atk_charge" class="attr_text">atk charge</div>
                 <input id="my_atk_charge" class="attr_input" type="number" value="0">
                 <input id="op_atk_charge" class="attr_input" type="number" value="0">
-            </div>
-        </div>
-
-        <!--atk bonus-->
-        <div style="display: flex; align-items: center; width: 100%;">
-            <input id="if_filt_atk_bonus" class="attr_checkbox" type="checkbox" checked="true">
-            <div style="display: flex; flex: 1;">
-                <div id="txt_atk_bonus" class="attr_text">atk bonus</div>
-                <input id="my_atk_bonus" class="attr_input" type="number" value="0">
-                <input id="op_atk_bonus" class="attr_input" type="number" value="0">
-            </div>
-        </div>
-
-        <!--crit hits-->
-        <div style="display: flex; align-items: center; width: 100%;">
-            <input id="if_filt_crit_atk" class="attr_checkbox" type="checkbox" checked="true">
-            <div style="display: flex; flex: 1;">
-                <div id="txt_crit_hits" class="attr_text">crit hits</div>
-                <input id="my_crit_atk" class="attr_input" type="number" value="0">
-                <input id="op_crit_atk" class="attr_input" type="number" value="0">
             </div>
         </div>
 

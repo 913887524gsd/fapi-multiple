@@ -115,11 +115,11 @@ function init_value(){
     // filters
     filters[i_level] = read_value('if_filt_level', map_checkbox, false, null, null);
     filters[i_base_atk] = read_value('if_filt_base_atk', map_checkbox, false, null, null);
+    filters[i_charge] = read_value('if_filt_atk_charge', map_checkbox, false, null, null);
+    filters[i_atk_bonus] = read_value('if_filt_atk_bonus', map_checkbox, false, null, null);
     filters[i_consecutive] = read_value('if_filt_consecutive', map_checkbox, false, null, null);
     filters[i_gp] = read_value('if_filt_gp_bonus', map_checkbox, false, null, null);
     filters[i_xp] = read_value('if_filt_xp_bonus', map_checkbox, false, null, null);
-    filters[i_charge] = read_value('if_filt_atk_charge', map_checkbox, false, null, null);
-    filters[i_atk_bonus] = read_value('if_filt_atk_bonus', map_checkbox, false, null, null);
     filters[i_crit_atk] = read_value('if_filt_crit_atk', map_checkbox, false, null, null);
     // reverse damage
     level_range[0] = read_value('level_range_low', map_int, 0, callback_normal, null);

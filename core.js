@@ -3,12 +3,12 @@ var debug = false;
 
 // index
 const i_base_atk = 0;
-const i_consecutive = 1;
-const i_gp = 2;
-const i_xp = 3;
-const i_charge = 4;
-const i_atk_bonus = 5;
-const i_crit_atk = 6;
+const i_atk_bonus = 1;
+const i_crit_atk = 2;
+const i_consecutive = 3;
+const i_gp = 4;
+const i_xp = 5;
+const i_charge = 6;
 const i_ps_max = 7;
 const i_level = 7;
 const i_max = 8;
@@ -52,12 +52,12 @@ function init_shop_formulars() {
     for (let i = 0; i < i_max; i++)
         shop_cost_formulars.push(null);
     shop_cost_formulars[i_base_atk] = (level) =>    {return Math.floor((5 + level) * (1 + 0.1 * level));};
+    shop_cost_formulars[i_atk_bonus] = (level) =>   {return Math.floor((20 + 25 * level) * Math.pow(1.4, level));};
+    shop_cost_formulars[i_crit_atk] = (level) =>    {return Math.floor((25 + 25 * level) * Math.pow(2, level));};
     shop_cost_formulars[i_consecutive] = (level) => {return Math.floor((20 + 25 * level) * Math.pow(1.2, level));};
     shop_cost_formulars[i_gp] = (level) =>          {return Math.floor((5 + level) * (1 + 0.05 * level));};
     shop_cost_formulars[i_xp] = (level) =>          {return Math.floor((5 + level) * (1 + 0.05 * level));};
     shop_cost_formulars[i_charge] = (level) =>      {return Math.floor((10) * (Math.pow(2, level)));};
-    shop_cost_formulars[i_atk_bonus] = (level) =>   {return Math.floor((20 + 25 * level) * Math.pow(1.4, level));};
-    shop_cost_formulars[i_crit_atk] = (level) =>    {return Math.floor((25 + 25 * level) * Math.pow(2, level));};
     shop_cost_formulars[i_level] = (level) =>       {return Math.floor((10 + level * 5) * Math.pow(1.02, level));};
 }
 
@@ -76,14 +76,14 @@ function init_cache() {
 function init_mask() {
     for (let i of [atk_mask, eco_mask, exp_mask, gp_mask])
         for (let j = 0; j < i_ps_max; j++)
-            i.push(false)
-    atk_mask[i_base_atk] = true 
-    atk_mask[i_consecutive] = true 
-    atk_mask[i_charge] = true 
-    atk_mask[i_atk_bonus] = true 
-    atk_mask[i_crit_atk] = true
-    eco_mask[i_xp] = exp_mask[i_xp] = true
-    eco_mask[i_gp] = gp_mask[i_gp] = true 
+            i.push(false);
+    atk_mask[i_base_atk] = true;
+    atk_mask[i_atk_bonus] = true;
+    atk_mask[i_crit_atk] = true;
+    atk_mask[i_consecutive] = true;
+    atk_mask[i_charge] = true;
+    eco_mask[i_xp] = exp_mask[i_xp] = true;
+    eco_mask[i_gp] = gp_mask[i_gp] = true;
 }
 
 function cal_cost(ps) {
