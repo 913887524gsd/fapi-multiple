@@ -618,7 +618,7 @@
 
         if (if_build_comparision) {
             objlist = [
-                get_locale_text("txt_show_cost_points"),
+                get_locale_text("txt_show_cost_build"),
                 my_ps,
                 op_ps,
                 get_locale_text("txt_show_cost_difference"),
@@ -635,7 +635,7 @@
                 cal_exp(op_level, 0)
             ));
             result_dom.appendChild(gen_cost_comparison(
-                "txt_show_cost_points_cost",
+                "txt_show_cost_build_cost",
                 cal_cost(my_ps),
                 cal_cost(op_ps)
             ));
@@ -651,8 +651,8 @@
             ))
         } else {
             objlist = [
-                get_locale_text("txt_show_cost_points"),
-                get_locale_text("txt_show_cost_points_cost"),
+                get_locale_text("txt_show_cost_build"),
+                get_locale_text("txt_show_cost_build_cost"),
                 get_locale_text("txt_show_cost_damage_cost"),
                 get_locale_text("txt_show_cost_eco_cost"),
             ]
