@@ -1,4 +1,4 @@
-const updatedate = "2025.7.25"
+const updatedate = "2025.7.26";
 
 const text_area = [
     "txt_update_info", "txt_update_info_close",
