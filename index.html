@@ -442,11 +442,11 @@
 <link rel="stylesheet" href="tippy/light.css" />
 <script src="tippy/core@2"></script>
 <script src="tippy/tippy.js@6"></script>
-<script src="core.js?v=2025.7.26"></script>
-<script src="input.js?v=2025.7.26"></script>
-<script src="localization.js?v=2025.7.26"></script>
-<script src="realtime.js?v=2025.7.26"></script>
-<script src="render.js?v=2025.7.26"></script>
+<script src="core.js?v=2025.7.27"></script>
+<script src="input.js?v=2025.7.27"></script>
+<script src="localization.js?v=2025.7.27"></script>
+<script src="realtime.js?v=2025.7.27"></script>
+<script src="render.js?v=2025.7.27"></script>
 
 <script>
     init_localization();
@@ -783,9 +783,9 @@
         for (let pair of valid_enums) {
             let [ps, gp, lvl, crit_hits] = pair;
             results.push([
-                cal_damage(ps, lvl, crit_hits, false),
+                cal_damage(ps, lvl, crit_hits, 0, true),
                 gp, cal_catching_up_cost(my_ps, ps, atk_mask),
-                adjust_crit(ps, cal_crit(ps, lvl, crit_hits, 0)), lvl, ps
+                adjust_crit(ps, crit_hits), lvl, ps
             ]);
         }
         results.sort((a, b) => {
@@ -808,9 +808,21 @@
                 gp_upperbound = limit_dmg_cost;
             else
                 gp_upperbound = Number.MAX_VALUE;
-            for (let lvl = level_range[0]; lvl <= level_range[1]; lvl++)
-                for (let crit_hits = 0; crit_hits < 15; crit_hits++)
-                    enum_dmg([0, 0, 0, 0, 0, 0, 0], lvl, 0, crit_hits, 0, true);
+            
+            for (let lvl = level_range[0]; lvl <= level_range[1]; lvl++) {
+                let ps = [0, 0, 0, 0, 0, 0, 0];
+                let gp = 0;
+                for (let i = 0; i <= 12; i++) {
+                    if (i == 0) {
+                        enum_dmg(ps, lvl, gp, 0, 0, true);
+                    } else {
+                        for (let crit_hits = 0; crit_hits < 15 - ps[i_crit_atk]; crit_hits++)
+                            enum_dmg(ps, lvl, gp, crit_hits, 0, true);
+                    }
+                    ps[i_crit_atk]++;
+                    gp += shop_cost(i_crit_atk, i);
+                }
+            }
         }
         
         let results = dmg2points_getresults();

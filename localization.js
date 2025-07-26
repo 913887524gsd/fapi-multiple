@@ -1,4 +1,4 @@
-const updatedate = "2025.7.26";
+const updatedate = "2025.7.27";
 
 const text_area = [
     "txt_update_info", "txt_update_info_close",
@@ -51,6 +51,7 @@ const other_text_area = [
     "txt_end_season",
     "txt_start_boss",
     "txt_end_boss",
+    "txt_expect_value",
 ]
 
 const zh_text = {
@@ -138,6 +139,7 @@ const zh_text = {
     "txt_end_season": "第4赛季已经结束",
     "txt_start_boss": "运行",
     "txt_end_boss": "结束",
+    "txt_expect_value": "(期望值)",
 };
 
 const en_text = {
@@ -225,6 +227,7 @@ const en_text = {
     "txt_end_season": "Season 4 has already ended.",
     "txt_start_boss": "Running",
     "txt_end_boss": "Dead",
+    "txt_expect_value": "(expect value)",
 };
 
 var lang=""

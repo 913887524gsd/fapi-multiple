@@ -106,7 +106,7 @@ function cal_exp(level, rest_xp) {
 }
 
 function adjust_crit(ps, crit_hits) {
-    return 16 - ps[i_crit_atk] - crit_hits;
+    return 15 - ps[i_crit_atk] - crit_hits;
 }
 
 function cal_crit(ps, lvl, crit_hits, reserve_hits) {
@@ -115,7 +115,7 @@ function cal_crit(ps, lvl, crit_hits, reserve_hits) {
     let num = 8 + ps[i_charge] + Math.floor(lvl / 25) - reserve_hits;
     for (let i = 0; i < num; i++) {
         crit_hits++;
-        if (crit_hits >= 16 - ps[i_crit_atk]) {
+        if (crit_hits >= 15 - ps[i_crit_atk]) {
             crit_hits = 0;
         }
     }
@@ -127,6 +127,9 @@ function cal_damage(ps, level, crit_hits, reserve_hits, debug) {
     let num = 8 + ps[i_charge] + Math.floor(level / 25) - reserve_hits;
     let total = 0;
     let dmgs = [];
+    if (debug) {
+        console.log("crit before "  + crit_hits);
+    }
     for (let i = 0; i < num; i++) {
         let atk2 = (atk1 + i * (ps[i_consecutive] + 1)) * 
                     (1 + buff_atk) * 
@@ -134,7 +137,7 @@ function cal_damage(ps, level, crit_hits, reserve_hits, debug) {
                     Math.pow(1.05, ps[i_atk_bonus]);
         if (ps[i_crit_atk] > 0) {
             crit_hits++;
-            if (crit_hits >= 16 - ps[i_crit_atk]) {
+            if (crit_hits >= 15 - ps[i_crit_atk]) {
                 atk2 *= 5;
                 crit_hits = 0;
             }
@@ -145,8 +148,10 @@ function cal_damage(ps, level, crit_hits, reserve_hits, debug) {
             dmgs.push(atk3);
     }
     if (debug) {
-        console.log(ps);
-        console.log(dmgs);
+        console.log("ps " + ps);
+        console.log("dmgs " + dmgs);
+        console.log("crit after " + crit_hits);
+        console.log("dmg " + total);
     }
     return total;
 }
@@ -252,6 +257,9 @@ function enum_gp(ps, gp, index) {
 }
 
 function enum_dmg(ps, lvl, gp, crit_hits, index, is_new) {
+    if (index == i_crit_atk)
+        return enum_dmg(ps, lvl, gp, crit_hits, index + 1, is_new);
+
     let dmg = cal_damage(ps, lvl, crit_hits, 0, false);
 
     if (gp > gp_upperbound || gp < 0)
@@ -288,18 +296,34 @@ function enum_dmg(ps, lvl, gp, crit_hits, index, is_new) {
 function enum_atk_eff(ps) {
     let results = [];
     let upgrades = get_locale_text("txt_upgrades");
+    let expect_value = get_locale_text("txt_expect_value");
 
+    let crit_atk_level = ps[i_crit_atk];
+    ps[i_crit_atk] = 0;
     for (let index = 0; index < i_ps_max; index++) {
         if (!atk_mask[index])
             continue;
-        let _ps = JSON.parse(JSON.stringify(ps));
-        _ps[index] += 1;
-        let dmg_diff = cal_damage(_ps, my_level, my_crit_hits, my_reserve_hits, false) - 
-                        cal_damage(ps, my_level, my_crit_hits, my_reserve_hits, false);
-        let dmg_cost = shop_cost(index, ps[index]);
-        let dmg_eff = dmg_diff / dmg_cost;
-        results.push([upgrades[index], dmg_diff, dmg_cost, dmg_eff]);
+        if (index == i_crit_atk) {
+            let dmg = cal_damage(ps, my_level, 0, 0, false);
+            let dmg_diff = 0;
+            if (crit_atk_level == 0)
+                dmg_diff = 4 / 14 * dmg;
+            else
+                dmg_diff = 4 * dmg * (1 / (15 - crit_atk_level - 1) - 1 / (15 - crit_atk_level));
+            let dmg_cost = shop_cost(index, crit_atk_level);
+            let dmg_eff = dmg_diff / dmg_cost;
+            results.push([upgrades[index] + expect_value, dmg_diff, dmg_cost, dmg_eff]);
+        } else {
+            let _ps = JSON.parse(JSON.stringify(ps));
+            _ps[index] += 1;
+            let dmg_diff = cal_damage(_ps, my_level, 0, 0, false) - 
+                            cal_damage(ps, my_level, 0, 0, false);
+            let dmg_cost = shop_cost(index, ps[index]);
+            let dmg_eff = dmg_diff / dmg_cost;
+            results.push([upgrades[index], dmg_diff, dmg_cost, dmg_eff]);
+        }
     }
+    ps[i_crit_atk] = crit_atk_level;
 
     return results;
 }
