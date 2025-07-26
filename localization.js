@@ -3,7 +3,7 @@ const updatedate = "2025.7.25"
 const text_area = [
     "txt_update_info", "txt_update_info_close",
     "txt_guideline", "txt_manual", "txt_updatelog",
-    "txt_language", "txt_console_debug",
+    "txt_language", "txt_advance", "txt_console_debug",
     "txt_export", "txt_import",
     "txt_github_repo", "txt_github",
     "txt_global_attr", "txt_boss_tier",
@@ -60,6 +60,7 @@ const zh_text = {
     "txt_manual": "说明书",
     "txt_updatelog": "更新日志(" + updatedate + ")",
     "txt_language": "English",
+    "txt_advance": "",
     "txt_console_debug": "操纵台调试",
     "txt_export": "导出",
     "txt_import": "导入",
@@ -146,6 +147,7 @@ const en_text = {
     "txt_manual": "manual",
     "txt_updatelog": "update log(" + updatedate + ")",
     "txt_language": "简体中文",
+    "txt_advance": "",
     "txt_console_debug": "console debug",
     "txt_github_repo": "github repo",
     "txt_github": ", welcome issues and prs",
@@ -277,6 +279,59 @@ function toggle_language() {
     localStorage.setItem("lang", lang)
 }
 
+var advance = false;
+var advance_ids = [
+    "advance_json_load",
+    "advance_player_attr_setting",
+    "advance_txt_oppo",
+    "advance_op_level",
+    "advance_op_xp",
+    "advance_op_gp",
+    "advance_op_crit_hits",
+    "advance_reserve_hits",
+    "advance_op_base_atk",
+    "advance_op_atk_bonus",
+    "advance_op_crit_atk",
+    "advance_op_consecutive",
+    "advance_op_gp_bonus",
+    "advance_op_xp_bonus",
+    "advance_op_atk_charge",
+    "advance_op_compact_format",
+    "advance_reverse_damage",
+    "advance_buttons",
+];
+
+function set_advance() {
+    if (advance) {
+        zh_text["txt_advance"] = "普通模式";
+        en_text["txt_advance"] = "basic mode";
+        document.getElementById("txt_advance").innerText = get_locale_text("txt_advance");
+        for (let id of advance_ids)
+            document.getElementById(id).style.display = "contents";
+    } else {
+        zh_text["txt_advance"] = "专家模式";
+        en_text["txt_advance"] = "expert mode";
+        document.getElementById("txt_advance").innerText = get_locale_text("txt_advance");
+        for (let id of advance_ids)
+            document.getElementById(id).style.display = "none";
+    }
+}
+
+function init_advance() {
+    let val = localStorage.getItem("advance");
+    if (val == null)
+        advance = false;
+    else
+        advance = val == "true";
+    set_advance();
+}
+
+function toggle_advance() {
+    advance = !advance;
+    localStorage.setItem("advance", String(advance));
+    set_advance();
+}
+
 const ids = [
     "boss_tier", "buff_atk", "buff_xp", "buff_gp", "rank_scores",
     "spend_ratio", "my_level", "op_level", "my_xp",
@@ -391,5 +446,6 @@ function json_save() {
 
 function init_localization() {
     init_language();
+    init_advance();
     local_load();
 }

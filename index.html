@@ -145,6 +145,7 @@
         </div>
         <div style="display: inline-flex; gap: 5px;">
             <button id="txt_language" onclick="toggle_language()" style="width: auto; padding: 5px 10px;"></button>
+            <button id="txt_advance" onclick="toggle_advance()"style="width: auto; padding: 5px 10px;"></button>
             <input style="width: 16px; vertical-align: middle;" id="console_debug" type="checkbox">
             <div id="txt_console_debug" style="white-space: nowrap; align-content: center;"></div>
         </div>
@@ -156,12 +157,14 @@
         <div id="txt_github"></div>
     </div>
     <!--quick input/output-->
-    <div style="display: flex; gap: 5px;">
-        <button id="txt_export" onclick="json_save()" style="width: 75px;"></button>
-        <button id="txt_import" onclick="json_load()" style="width: 75px;"></button>
-        <textarea id="json_string" type="text"></textarea>
+    <div id="advance_json_load">
+        <div style="display: flex; gap: 5px;">
+            <button id="txt_export" onclick="json_save()" style="width: 75px;"></button>
+            <button id="txt_import" onclick="json_load()" style="width: 75px;"></button>
+            <textarea id="json_string" type="text"></textarea>
+        </div>
     </div>
-    <strong id="txt_global_attr" style="font-size: 30px;"></strong>
+    <strong id="txt_global_attr" style="display: block; font-size: 30px;"></strong>
     <hr>
     <!--boss info-->
     <br>
@@ -206,17 +209,19 @@
     
     <strong id="txt_player_attr" style="font-size: 30px;"></strong>
     <hr>    
-    <!--spend close to ratio-->
-    <div style="display: inline-flex; align-items: center;">
-        <input id="if_spend_close_to_ratio" class="attr_checkbox" type="checkbox">
-        <div id="txt_spend_close_to_ratio" class="attr_text" style="align-content: center; white-space: nowrap;"></div>
-        <input id="spend_ratio" class="attr_input" value="1.0,0,0"/>
-    </div>
-    <br>
-    <!--build comparision-->
-    <div style="display: inline-flex; align-items: center;">
-        <input id="if_build_comparision" class="attr_checkbox" type="checkbox">
-        <div id="txt_build_comparision" class="attr_text"></div>
+    <div id="advance_player_attr_setting">
+        <!--spend close to ratio-->
+        <div style="display: inline-flex; align-items: center;">
+            <input id="if_spend_close_to_ratio" class="attr_checkbox" type="checkbox">
+            <div id="txt_spend_close_to_ratio" class="attr_text" style="align-content: center; white-space: nowrap;"></div>
+            <input id="spend_ratio" class="attr_input" value="1.0,0,0"/>
+        </div>
+        <br>
+        <!--build comparision-->
+        <div style="display: inline-flex; align-items: center;">
+            <input id="if_build_comparision" class="attr_checkbox" type="checkbox">
+            <div id="txt_build_comparision" class="attr_text"></div>
+        </div>
     </div>
     <!--attributes-->
     <div>
@@ -226,7 +231,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_attr" class="attr_text">attr</div>
                 <div id="txt_mine" class="attr_text">mine</div>
-                <div id="txt_oppo" class="attr_text">oppo</div>
+                <div id="advance_txt_oppo">
+                    <div id="txt_oppo" class="attr_text">oppo</div>
+                </div>
             </div>
         </div> 
 
@@ -240,7 +247,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_level" class="attr_text">level</div>
                 <input id="my_level" class="attr_input" type="number" value="0">
-                <input id="op_level" class="attr_input" type="number" value="0">
+                <div id="advance_op_level">
+                    <input id="op_level" class="attr_input" type="number" value="0">
+                </div>
             </div>
         </div>
 
@@ -250,7 +259,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_xp" class="attr_text">xp</div>
                 <input id="my_xp" class="attr_input" type="number" value="0">
-                <div class="attr_input">-</div>
+                <div id="advance_op_xp">
+                    <div class="attr_input">-</div>
+                </div>
             </div>
         </div>
 
@@ -260,7 +271,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_gp" class="attr_text">gp</div>
                 <input id="my_gp" class="attr_input" type="number" value="0">
-                <div class="attr_input">-</div>
+                <div id="advance_op_gp">
+                    <div class="attr_input">-</div>
+                </div>
             </div>
         </div>
 
@@ -270,17 +283,21 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_crit_hits_left" class="attr_text">hits left to next crit</div>
                 <input id="my_crit_hits" class="attr_input" type="number" value="15">
-                <input id="op_crit_hits" class="attr_input" type="number" value="15">
+                <div id="advance_op_crit_hits">
+                    <input id="op_crit_hits" class="attr_input" type="number" value="15">
+                </div>
             </div>
         </div>
 
         <!--reserve hits-->
-        <div style="display: flex; align-items: center; width: 100%;">
-            <div class="attr_checkbox">-</div>
-            <div style="display: flex; flex: 1;">
-                <div id="txt_reserve_hits" class="attr_text">reserve hits current round</div>
-                <input id="my_reserve_hits" class="attr_input" type="number" value="0">
-                <input id="op_reserve_hits" class="attr_input" type="number" value="0">
+        <div id="advance_reserve_hits">
+            <div style="display: flex; align-items: center; width: 100%;">
+                <div class="attr_checkbox">-</div>
+                <div style="display: flex; flex: 1;">
+                    <div id="txt_reserve_hits" class="attr_text">reserve hits current round</div>
+                    <input id="my_reserve_hits" class="attr_input" type="number" value="0">
+                    <input id="op_reserve_hits" class="attr_input" type="number" value="0">
+                </div>
             </div>
         </div>
 
@@ -292,7 +309,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_base_atk" class="attr_text">base atk</div>
                 <input id="my_base_atk" class="attr_input" type="number" value="0">
-                <input id="op_base_atk" class="attr_input" type="number" value="0">
+                <div id="advance_op_base_atk">
+                    <input id="op_base_atk" class="attr_input" type="number" value="0">
+                </div>
             </div>
         </div>
 
@@ -302,7 +321,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_atk_bonus" class="attr_text">atk bonus</div>
                 <input id="my_atk_bonus" class="attr_input" type="number" value="0">
-                <input id="op_atk_bonus" class="attr_input" type="number" value="0">
+                <div id="advance_op_atk_bonus">
+                    <input id="op_atk_bonus" class="attr_input" type="number" value="0">
+                </div>
             </div>
         </div>
 
@@ -312,7 +333,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_crit_hits" class="attr_text">crit hits</div>
                 <input id="my_crit_atk" class="attr_input" type="number" value="0">
-                <input id="op_crit_atk" class="attr_input" type="number" value="0">
+                <div id="advance_op_crit_atk">
+                    <input id="op_crit_atk" class="attr_input" type="number" value="0">
+                </div>
             </div>
         </div>
 
@@ -322,7 +345,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_consecutive" class="attr_text">consecutive</div>
                 <input id="my_consecutive" class="attr_input" type="number" value="0">
-                <input id="op_consecutive" class="attr_input" type="number" value="0">
+                <div id="advance_op_consecutive">
+                    <input id="op_consecutive" class="attr_input" type="number" value="0">
+                </div>
             </div>
         </div>
 
@@ -332,7 +357,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_gp_bonus" class="attr_text">gp bonus</div>
                 <input id="my_gp_bonus" class="attr_input" type="number" value="0">
-                <input id="op_gp_bonus" class="attr_input" type="number" value="0">
+                <div id="advance_op_gp_bonus">
+                    <input id="op_gp_bonus" class="attr_input" type="number" value="0">
+                </div>
             </div>
         </div>
 
@@ -342,7 +369,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_xp_bonus" class="attr_text">xp bonus</div>
                 <input id="my_xp_bonus" class="attr_input" type="number" value="0">
-                <input id="op_xp_bonus" class="attr_input" type="number" value="0">
+                <div id="advance_op_xp_bonus">
+                    <input id="op_xp_bonus" class="attr_input" type="number" value="0">
+                </div>
             </div>
         </div>
 
@@ -352,7 +381,9 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_atk_charge" class="attr_text">atk charge</div>
                 <input id="my_atk_charge" class="attr_input" type="number" value="0">
-                <input id="op_atk_charge" class="attr_input" type="number" value="0">
+                <div id="advance_op_atk_charge">
+                    <input id="op_atk_charge" class="attr_input" type="number" value="0">
+                </div>
             </div>
         </div>
 
@@ -362,40 +393,46 @@
             <div style="display: flex; flex: 1;">
                 <div id="txt_compact_format" class="attr_text">compact format</div>
                 <input id="my_compact_format" class="attr_input" type="text">
-                <input id="op_compact_format" class="attr_input" type="text">
+                <div id="advance_op_compact_format">
+                    <input id="op_compact_format" class="attr_input" type="text">
+                </div>
             </div>
         </div>
     </div>
 
-    <strong id="txt_reverse_damage_attr" style="font-size: 30px;"></strong>
-    <hr>
-    <!--reverse damage-->
-    <div>
-        <div id="txt_reverse_damage1"></div>
-        <div id="txt_reverse_damage2"></div>
-        <div style="display: inline-flex; gap: 5px;">
-            <div id="txt_level_range" style="white-space: nowrap; vertical-align: middle; 
-                    align-content: center;"></div>
-            <input id="level_range_low" type="number" value="0" style=  "width: 90px; height: 30px;">
-            <div style="vertical-align: middle; align-content: center;">~</div>
-            <input id="level_range_high" type="number" value="10" style="width: 90px; height: 30px;">
-        </div>
-        <br>
-        <div style="display: inline-flex; gap: 5px;">
-            <input style="width: 16px; vertical-align: middle;" id="if_limit_dmg_cost" type="checkbox">
-            <div id="txt_limit_damage_cost" style="white-space: nowrap; vertical-align: middle; align-content: center;"></div>
-            <input id="limit_dmg_cost" type="number" value="1919" style="width: 120px; height: 30px;">
-        </div>
+    <div id="advance_reverse_damage">
+        <strong id="txt_reverse_damage_attr" style="font-size: 30px;"></strong>
+        <hr>
+        <!--reverse damage-->
         <div>
-            <textarea id="target_dmgs" type="text"
-                style="width: 100%; height: 60px; font-size: 20px;">114,514</textarea>
+            <div id="txt_reverse_damage1"></div>
+            <div id="txt_reverse_damage2"></div>
+            <div style="display: inline-flex; gap: 5px;">
+                <div id="txt_level_range" style="white-space: nowrap; vertical-align: middle; 
+                        align-content: center;"></div>
+                <input id="level_range_low" type="number" value="0" style=  "width: 90px; height: 30px;">
+                <div style="vertical-align: middle; align-content: center;">~</div>
+                <input id="level_range_high" type="number" value="10" style="width: 90px; height: 30px;">
+            </div>
+            <br>
+            <div style="display: inline-flex; gap: 5px;">
+                <input style="width: 16px; vertical-align: middle;" id="if_limit_dmg_cost" type="checkbox">
+                <div id="txt_limit_damage_cost" style="white-space: nowrap; vertical-align: middle; align-content: center;"></div>
+                <input id="limit_dmg_cost" type="number" value="1919" style="width: 120px; height: 30px;">
+            </div>
+            <div>
+                <textarea id="target_dmgs" type="text"
+                    style="width: 100%; height: 60px; font-size: 20px;">114,514</textarea>
+            </div>
         </div>
     </div>
     <!--buttons-->
     <div id="special-container1">
         <button id="txt_emulate_spend" onclick="gp2points()"></button>
-        <button id="txt_show_cost" onclick="show_cost()"></button>
-        <button id="txt_reverse_damage" onclick="dmg2points()"></button>
+        <div id="advance_buttons">
+            <button id="txt_show_cost" onclick="show_cost()"></button>
+            <button id="txt_reverse_damage" onclick="dmg2points()"></button>
+        </div>
     </div>
     <div>
         <div id="result"></div>

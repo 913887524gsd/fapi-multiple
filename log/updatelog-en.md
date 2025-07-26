@@ -1,3 +1,8 @@
+## 2025.7.26
+
++ introduce export mode and basic mode to reduce the diffculty for new fapi players
++ fix the issue of input mismatch after json load
+
 ## 2025.7.25
 
 + change the order of upgrades
