@@ -266,6 +266,10 @@ function enum_dmg(ps, lvl, gp, crit_hits, index, is_new) {
         return false;
     if (dmg > damage_upperbound)
         return false;
+    if (index >= i_ps_max)
+        return true;
+    if (!atk_mask[index])
+        return enum_dmg(ps, lvl, gp, crit_hits, index + 1, is_new);
     if (is_new) {
         for (let _dmg of target_dmgs) {
             if (dmg == _dmg) {
@@ -274,10 +278,6 @@ function enum_dmg(ps, lvl, gp, crit_hits, index, is_new) {
             }
         }
     }
-    if (index >= i_ps_max)
-        return true;
-    if (!atk_mask[index])
-        return enum_dmg(ps, lvl, gp, crit_hits, index + 1, is_new);
     if (!enum_dmg(ps, lvl, gp, crit_hits, index + 1, false))
         return true;
     let ori_level = ps[index];
